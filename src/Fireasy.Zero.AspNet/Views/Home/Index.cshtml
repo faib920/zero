@@ -1,0 +1,228 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+<link href="~/content/home.css" rel="stylesheet" />
+<script type="text/javascript">
+    var lastItem;
+    function selectItem(event) {
+        if (lastItem != undefined) {
+            $(lastItem).removeClass('selected');
+        }
+        var objEvent = event.srcElement || event.target;
+        $(objEvent).addClass('selected');
+        lastItem = objEvent;
+    }
+
+    function toMenu(title, url) {
+        if ($('#tt').tabs('exists', title)) {
+            $('#tt').tabs('select', title);
+        } else {
+            var id = Math.random();
+            var content = '<iframe id="' + id + '" name="' + id + '" style="width:100%;height:100%;overflow:hidden;border: 0px none;" scrolling="no" frameborder="0" src="' + url + '"></iframe>';
+            $('#tt').tabs('add', {
+                title: title,
+                selected: true,
+                closable: true,
+                content: content
+            });
+            tabClose();
+        }
+    }
+
+    function toMenu1(a) {
+        var url = $(a).attr('url');
+        var title = $(a).text();
+        toMenu(title, url);
+    }
+
+    function gotoHome() {
+        $('#tt').tabs('select', 0);
+    }
+
+    $(function () {
+        //toMenu('起始页', '@Url.Action("Start", "Home")');
+        tabCloseEven();
+    });
+
+    //绑定右键菜单事件
+    function tabCloseEven() {
+        //关闭当前
+        $('#mm-tabclose').click(function () {
+            var currtab_title = $('#mm').data("currtab");
+            $('#tt').tabs('close', currtab_title);
+        })
+        //全部关闭
+        $('#mm-tabcloseall').click(function () {
+            $('.tabs-inner span').each(function (i, n) {
+                var t = $(n).text();
+                if (t != '起始页') {
+                    $('#tt').tabs('close', t);
+                }
+            });
+        });
+        //关闭除当前之外的TAB
+        $('#mm-tabcloseother').click(function () {
+            var prevall = $('.tabs-selected').prevAll();
+            var nextall = $('.tabs-selected').nextAll();
+            if (prevall.length > 0) {
+                prevall.each(function (i, n) {
+                    var t = $('a:eq(0) span', $(n)).text();
+                    if (t != '起始页') {
+                        $('#tt').tabs('close', t);
+                    }
+                });
+            }
+            if (nextall.length > 0) {
+                nextall.each(function (i, n) {
+                    var t = $('a:eq(0) span', $(n)).text();
+                    if (t != 'welcome') {
+                        $('#tt').tabs('close', t);
+                    }
+                });
+            }
+            return false;
+        });
+    }
+
+    function tabClose() {
+        /*双击关闭TAB选项卡*/
+        $(".tabs-inner").dblclick(function () {
+            var subtitle = $(this).children(".tabs-closable").text();
+            $('#tt').tabs('close', subtitle);
+        });
+
+        /*为选项卡绑定右键*/
+        $(".tabs-inner").bind('contextmenu', function (e) {
+            $('#mm').menu('show', {
+                left: e.pageX,
+                top: e.pageY
+            });
+
+            var subtitle = $(this).children(".tabs-closable").text();
+
+            $('#mm').data("currtab", subtitle);
+            $('#tt').tabs('select', subtitle);
+            return false;
+        });
+    };
+
+    function modifyInfo() {
+        common.showDialog('@Url.Action("EditMyInfo", "User", new { area = "Admin" })', '修改个人资料', 799, 500, function (result) {
+            $('#lblName').text(result);
+        });
+    }
+
+    function config() {
+        common.showDialog('@Url.Action("Config", "Home", new { area = "" })', '样式风格', 880, 550, function (result) {
+            location.reload();
+        });
+    }
+</script>
+<style type="text/css">
+    .tabs-header {
+        background-color: #fcfcfc;
+        border-width: 0;
+    }
+
+    .tabs li a.tabs-inner {
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        overflow: hidden;
+    }
+
+    .menu-sep {
+        border-top: 0 solid #ddd;
+        border-bottom: 1px solid #ccc;
+    }
+</style>
+<div data-options="region:'north',bodyCls:'noscroll'" class="site-header">
+    <div class="site_logo">
+    </div>
+    <div class="header-right">
+        欢迎您，<span id="lblName">@ViewBag.UserName</span>
+        <br />
+        <a class="easyui-tooltip" href="javascript:config();" title="选择您喜欢的样式风格">
+            样式风格
+        </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a class="easyui-tooltip" href="javascript:modifyInfo()" title="修改您的个人信息及密码">
+            修改资料
+        </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a class="easyui-tooltip" href="@Url.Action("Logout")" title="退出系统">
+            退出系统
+        </a>
+    </div>
+</div>
+
+<div style="width: 220px;" data-options="region:'west', border:true, split:true,collapsible:true,title:'功能菜单'">
+    <div id="menu-accordion" class="easyui-accordion" data-options="fit:true">
+        @Html.Raw(GetRootModules(ViewBag.Modules))
+    </div>
+</div>
+<div data-options="region:'center',border:false" style="padding: 3px; overflow: hidden">
+    <div id="tt" class="easyui-tabs" data-options="fit:true" style="width:100%;height:100%;">
+        <div title="起始页">
+            <iframe style="width: 100%; height: 100%; overflow: hidden; border: 0px none;" scrolling="no" frameborder="0" src="@Url.Action("Start", "Home")"></iframe>
+        </div>
+    </div>
+    <div id="mm" class="easyui-menu cs-tab-menu">
+        <div id="mm-tabclose">关闭</div>
+        <div id="mm-tabcloseother">关闭其他</div>
+        <div id="mm-tabcloseall">关闭全部</div>
+    </div>
+</div>
+<div data-options="region:'south',border:false" style="height: 35px; padding-top: 8px; text-align: center; background-color: #066fb0; color: #fff">
+    Copyright &copy; @DateTime.Today.Year Fireasy, All Rights Reserved.
+</div>
+@functions {
+    public static string GetRootModules(List<SysModule> modules)
+    {
+        var sb = new System.Text.StringBuilder();
+
+        foreach (var module in modules)
+        {
+            if (!string.IsNullOrEmpty(module.Url) && module.Children.Count == 0)
+            {
+                sb.AppendFormat("<div data-options=\"title: '&lt;div class=&quot;{0}&guot; /&gt;&nbsp;&lt;a onclick=&guot;toMenu1(this)&quot; url=&guot;{1}&guot;&gt;{2}&lt;/a&gt;', border: false\" style=\"overflow: auto; \">", module.Icon1, module.Url, module.Name);
+            }
+            else
+            {
+                sb.AppendFormat("<div data-options=\"title: '&lt;div class=&quot;{0}&quot; /&gt;&nbsp;{1}&lt;/a&gt;', border: false\" style=\"overflow: auto; \">", module.Icon1, module.Name);
+                sb.Append("<ul class=\"easyui-tree\" data-options=\"fit:true\">");
+                sb.Append(GetChildModules(module.Children, 0));
+                sb.Append("</ul></div>");
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private static string GetChildModules(List<SysModule> modules, int level)
+    {
+        var sb = new System.Text.StringBuilder();
+
+        foreach (var module in modules)
+        {
+            sb.Append("<li>");
+
+            if (module.Children.Count > 0)
+            {
+                sb.AppendFormat("<span class=\"{0}\">{1}</span>", module.Icon1, module.Name);
+                sb.Append("<ul>");
+                sb.Append(GetChildModules(module.Children, level + 1));
+                sb.Append("</ul>");
+            }
+            else
+            {
+                sb.AppendFormat("<div onclick=\"selectItem(event); toMenu('{0}', '{1}')\" style=\"width:{3}px;\"><div class=\"{2}\"></div> {0}</div>", module.Name, module.Url, module.Icon1, 180 - level * 16);
+            }
+
+            sb.Append("</li>");
+        }
+
+        return sb.ToString();
+    }
+}

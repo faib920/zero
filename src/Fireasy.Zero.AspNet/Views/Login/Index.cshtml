@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Login";
+}
+<link href="@Url.Content("~/content/login_default.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/scripts/cloud.js")" type="text/javascript"></script>
+@Fireasy.Web.Mvc.BundleManager.Render("verifycode")
+<script language="javascript">
+    $(function () {
+        $('.systemlogo').css({ 'position': 'absolute', 'top': (($(window).height() - 560) / 2) - 180 });
+        $('.loginbox').css({ 'position': 'absolute', 'left': ($(window).width() - 692) / 2, 'top': ($(window).height() - 560) / 2 });
+        $(window).resize(function () {
+            $('.systemlogo').css({ 'position': 'absolute', 'top': (($(window).height() - 560) / 2) - 180 });
+            $('.loginbox').css({ 'position': 'absolute', 'left': ($(window).width() - 692) / 2, 'top': ($(window).height() - 560) / 2 });
+        })
+    });
+</script>
+
+<div id="mainBody">
+    <div id="cloud1" class="cloud"></div>
+    <div id="cloud2" class="cloud"></div>
+</div>
+<div class="logintop">
+    <span>Fireasy Zero</span>
+    <ul>
+        <li><a href="#">帮助</a></li>
+        <li><a href="#">关于</a></li>
+    </ul>
+</div>
+<div class="loginbody">
+    <span class="systemlogo"></span>
+    <div class="loginbox">
+        <ul>
+            <li class="form_control">
+                <input id="account" type="text" class="loginuser required" placeholder="用户名" value="@ViewBag.Account" data-tip="请输入您的邮箱" data-valid="isNonEmpty||isEmail" data-error="email不能为空||邮箱格式不正确" required />
+            </li>
+            <li class="form_control">
+                <input id="password" type="password" class="loginpwd required" placeholder="密码" value="@ViewBag.Password" />
+            </li>
+            <li class="form_control yzm">
+                <span><input id="code" class=" required" type="text" placeholder="验证码" style="ime-mode:disabled" /></span><cite><img id="valcode" style="margin-top:2px;vertical-align:middle;" /></cite>
+            </li>
+            <li>
+                <input name="" type="submit" class="loginbtn" onclick="checkLogin()" value="登录" />
+                <label><a href="javascript:forgetpwd()" style="color:red">忘记密码</a></label>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="loginbm">Copyright &copy; @DateTime.Today.Year Fireasy, All Rights Reserved.</div>
+@Html.AntiForgeryToken()
+<script type="text/javascript">
+    $(function () {
+        $('#valcode').verifyCode({
+            url: '@Url.Action("GetValidateImage")',
+            validateUrl: '@Url.Action("ValidateCode")'
+        })
+        $('#account').keydown(function (event) {
+			if (event.which == 13) {
+				$('#password').focus();
+			}
+		});
+		$('#password').keydown(function (event) {
+			if (event.which == 13) {
+				$('#code').focus();
+			}
+		});
+		$('#code').keydown(function (event) {
+			if (event.which == 13) {
+				checkLogin();
+			}
+        });
+    })
+
+    function checkLogin() {
+        if ($('#account').val() == '') {
+            common.alert('请输入用户名。', function () {
+                $('#account').focus();
+			});
+
+            return false;
+        }
+
+        if ($('#password').val() == '') {
+            common.alert('请输入密码。', function () {
+				$('#password').focus();
+			});
+
+            return false;
+        }
+
+        if ($('#code').val() == '') {
+            common.alert('请输入验证码。', function () {
+				$('#code').focus().select();
+			});
+
+            return false;
+        }
+
+        if (!$('#valcode').verifyCode('validate', $('#code').val())) {
+            common.alert('验证码不正确。', function () {
+                $('#code').focus().select();
+            });
+
+            return false;
+        }
+
+        var postData = { account: $('#account').val(), password: $('#password').val() };
+        common.antiToken(postData);
+
+        common.showProcess('正在验证登录，请稍候...');
+        $.post('@Url.Action("CheckLogin")', postData, function (result) {
+            common.processResult(result, function () {
+                location.href = '@Url.Action("Index", "Home")';
+            });
+        });
+
+        return false;
+    }
+</script>

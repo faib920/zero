@@ -1,0 +1,153 @@
+﻿@model SysModule
+@{
+    ViewBag.Title = "模块信息";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+<link href="/portal/content/base-icons.css" rel="stylesheet" />
+<script type="text/javascript">
+    var id = '@Request.QueryString["id"]';
+    var pid = '@Request.QueryString["parentId"]';
+    var retArray = [];
+    $(function () {
+        loadInfo();
+    });
+
+    //加载模块
+    function loadModules() {
+        $('#cboParent').combotree({
+            url: "@Url.Action("Data")?targetId=" + pid + '&currentId=' + id + '&flag=3',
+            onLoadSuccess: function () {
+                if (pid != '' && pid != null) {
+                    $('#cboParent').combotree('setValue', pid);
+                }
+            },
+            onSelect: function (row) {
+                getNextOrderNo(row.id);
+            }
+        });
+    }
+
+    function getNextOrderNo(parentId) {
+        $.getJSON('@Url.Action("GetNextOrderNo")?parentId=' + parentId, function (data) {
+            $('#txtOrderNo').numberbox('setValue', data);
+        });
+    }
+
+    //加载信息
+    function loadInfo() {
+        if (id !== '') {
+            $.getJSON('@Url.Action("Get")?id=' + id, function (data) {
+                common.processResult(data, function () {
+                    $('#form1').form('load', data);
+                    pid = data.ParentId;
+                    $('#icon').html('<div class="icon ' + data.Icon1 + '"></div>').attr('icon', data.Icon1);
+
+                    if (data.Icon2 != '') {
+                        $('#uicon').attr('src', data.Icon2);
+                    }
+
+                    loadModules();
+                });
+            });
+
+            $('#btnSaveAndNew').remove();
+        }
+        else {
+            getNextOrderNo(pid);
+            loadModules();
+        }
+    }
+
+    //保存信息
+    function saveInfo(isNew) {
+        if (!$('#form1').form('validate')) {
+            return;
+        }
+
+        var postData = new Object();
+
+        //将表单填充的内容序列化为json
+        var data = $('#form1').form('save');
+        data.Icon2 = $('#uicon').attr('url');
+        data.Icon1 = $('#icon').attr('icon');
+        data.ParentId = $('#cboParent').combotree('getValue');
+        postData["info"] = JSON.stringify(data);
+        common.antiToken(postData);
+
+        common.showProcess();
+        $.post('@Url.Action("Save")?id=' + id, postData, function (result) {
+            common.processResult(result, function () {
+                if (isNew) {
+                    $('#form1').form('clear');
+
+                    getNextOrderNo($('#cboParent').combobox('getValue'));
+                }
+
+                id = isNew ? '' : result.data;
+                data.ModuleID = result.data;
+
+                if (isNew) {
+                    retArray.push(data);
+                    common.setReturnValue(retArray);
+                }
+                else if (retArray.length == 0) {
+                    common.setReturnValue(data);
+                }
+                else if (retArray.length == 0) {
+                    common.setReturnValue(data);
+                }
+
+                if (common.closeWhenSave && !isNew) {
+                    common.closeWindow();
+                }
+            });
+        });
+    }
+
+    function selectIcon() {
+        common.showDialog('@Url.Action("IconBrowser")', '选择图标', 700, 500, function (result) {
+            $('#icon').html('<div class="icon ' + result + '"></div>').attr('icon', result);
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <table class="form-body">
+
+        <tr>
+            <td class="addon">上级模块</td>
+            <td colspan="3">@Html.ComboTree("Parent").MarkNoClear().Style("width:444px")</td>
+        </tr>
+        <tr>
+            <td class="addon">名称</td>
+            <td colspan="3">@Html.TextBox(s => s.Name).Style("width:444px")</td>
+        </tr>
+        <tr>
+            <td class="addon">地址</td>
+            <td colspan="3">@Html.TextBox(s => s.Url).Style("width:444px")</td>
+        </tr>
+        <tr>
+            <td class="addon">参数</td>
+            <td colspan="3">@Html.TextBox(s => s.Arguments).Style("width:444px")</td>
+        </tr>
+        <tr>
+            <td class="addon">状态</td>
+            <td>@Html.ComboBox(s => s.State, typeof(StateFlags), new ComboBoxSettings { Value = "1" }).MarkNoClear()</td>
+            <td class="addon">排序</td>
+            <td>@Html.NumberBox(s => s.OrderNo)</td>
+        </tr>
+        <tr>
+            <td class="addon">预置小图标</td>
+            <td><span id="icon"></span>&nbsp;&nbsp;<a href="javascript:selectIcon()">选择图标</a></td>
+        </tr>
+        <tr>
+            <td class="addon">备注</td>
+            <td colspan="3">@Html.TextMultiBox(s => s.Remark).Style("width:444px;height:60px")</td>
+        </tr>
+    </table>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
+    <a class="easyui-linkbutton" onclick="saveInfo(true)" id="btnSaveAndNew" data-options="iconCls:'icon-save_new'">保存并新建</a>
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>

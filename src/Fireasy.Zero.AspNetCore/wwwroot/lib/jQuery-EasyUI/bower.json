@@ -1,0 +1,14 @@
+{
+  "name": "jQuery-EasyUI",
+  "version": "1.4.3",
+  "authors": [
+    "fzrain <fzrain@hotmail.com>"
+  ],
+  "description": "bower for jquery-easyui lib , update form http://www.jeasyui.com/",
+  "main": "jquery.easyui.min.js",
+  "keywords": [
+    "easyui"
+  ],
+  "license": "GPL",
+  "homepage": "https://github.com/fzrain/jQuery-EasyUI"
+}

@@ -1,0 +1,83 @@
+﻿.mn_item {
+    margin: 2px;
+    padding: 4px 6px 4px 20px;
+    border: 1px solid #ffffff;
+}
+
+.mn_item:hover {
+    border: 1px dashed #99BBE8;
+    background: #E0ECFF;
+    cursor: pointer;
+}
+
+.mn_item.selected {
+    border: 1px solid #99BBE8;
+    background: #E0ECFF;
+    cursor: default;
+}
+
+.easyui-accordion {
+    border-width: 0px;
+}
+
+.accordion .accordion-header {
+    background: linear-gradient(to bottom,#EFF5FF 0,#E0ECFF 100%);
+    padding: 8px;
+    height: 20px;
+}
+
+.accordion .accordion-header-selected .panel-title {
+    color: #777;
+}
+
+.site-header {
+    background-image: url(images/head_bg.png);
+    background-repeat: no-repeat;
+    height: 80px;
+    padding: 0px;
+}
+
+.site-title {
+    font-weight: bold;
+    font-size: 32px;
+    color: #ffffd6;
+    padding: 10px 0px 0px 20px;
+    letter-spacing: 10px;
+}
+
+.site_logo  {
+    width:500px;
+    height:80px;
+    background-image:url(images/home_logo.png);
+    background-repeat:no-repeat;
+    float:left;
+}
+
+.header-right {
+    color: #E0ECFF;
+    float: right;
+    padding-right: 20px;
+    padding-top: 20px;
+    vertical-align: top;
+    text-align: right;
+    line-height: 160%;
+}
+
+.header-right a:visited, .header-right a:link {
+    color: #b9fee0;
+}
+
+.header-right a:hover {
+    color: #ffffff;
+}
+
+.panel-title {
+    font-size: 16px;
+    font-family: 微软雅黑;
+    font-weight: normal;
+}
+
+.tree-icon {
+    width: 0px;
+    height: 0px;
+}

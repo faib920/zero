@@ -1,0 +1,344 @@
+﻿@{
+    ViewBag.Title = "模块管理";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        loadData();
+    });
+
+    //加载数据
+    function loadData() {
+        $('#dg').treegrid({
+            url: '@Url.Action("Data")',
+            fit: true,//自动填充
+            idField: 'id',
+            treeField: 'Name',
+            columns: [[
+
+                { field: 'Name', title: '名称', width: 300, halign: 'center', align: 'left', sortable: true },
+                { field: 'Url', title: '地址', width: 300, halign: 'center', align: 'left', sortable: true }
+            ]],
+            rowStyler: function (row) {
+                if (row && row.State == 0) {
+                    return 'color:#ff0000';
+                }
+            }
+        });
+    }
+
+    //工具栏按钮单击事件
+    function toolbarClick(key) {
+        switch (key) {
+            case "Add":
+                addInfo();
+                break;
+            case "Edit":
+                editInfo();
+                break;
+            case "Delete":
+                deleteInfo();
+                break;
+            case "Enable":
+                enableInfo();
+                break;
+            case "Disable":
+                disableInfo();
+                break;
+            case "MoveUp":
+                moveUp();
+                break;
+            case "MoveDown":
+                moveDown();
+                break;
+            case "Operate":
+                editOperator();
+                break;
+        }
+    }
+
+    //添加信息
+    function addInfo() {
+        var row = $('#dg').treegrid('getSelected');
+        var parentId = row == null ? '' : row.id;
+        common.showDialog('@Url.Action("Edit")?parentId=' + parentId, '添加模块', 750, 550, function (result) {
+            common.processResult(result, function () {
+                if ($.isArray(result)) {
+                    $.each(result, function (i, r) {
+                        appendNode(r);
+                    });
+                }
+                else {
+                    appendNode(result);
+                }
+            });
+        });
+    }
+
+    //修改信息
+    function editInfo() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.showDialog('@Url.Action("Edit")?id=' + row.id, '修改模块', 750, 550, function (result) {
+            common.processResult(result, function () {
+                var parent = $('#dg').treegrid('getParent', row.id);
+                var pid = parent == null ? '' : parent.id;
+                updateNode(pid, row.id, result);
+            });
+        });
+    }
+
+    //删除信息
+    function deleteInfo() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.confirm('你确认要删除[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+            var postData = new Object();
+            postData.id = row.id;
+           common.antiToken(postData);
+
+            $.post('@Url.Action("Delete")', postData, function (result) {
+                common.processResult(result, function () {
+                    $('#dg').treegrid('remove', row.id);
+                });
+            });
+        });
+    }
+
+    //启用信息
+    function enableInfo() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.confirm('你确认要启用[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+            var postData = new Object();
+            postData.id = row.id;
+            common.antiToken(postData);
+
+            $.post('@Url.Action("Enable")', postData, function (result) {
+                common.processResult(result, function () {
+                    row.State = 1;
+                    updateNode(row.ParentId, row.id, row);
+                });
+            });
+        });
+    }
+
+    //禁用信息
+    function disableInfo() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.confirm('你确认要禁用[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+            var postData = new Object();
+            postData.id = row.id;
+            common.antiToken(postData);
+
+            $.post('@Url.Action("Disable")', postData, function (result) {
+                common.processResult(result, function () {
+                    row.State = 0;
+                    updateNode(row.ParentId, row.id, row);
+                });
+            });
+        });
+    }
+
+    function editOperator() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.showDialog('@Url.Action("Index", "Operate")?id=' + row.id, '维护操作', 750, 550);
+    }
+
+    //上移
+    function moveUp() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var postData = new Object();
+        postData.id = row.id;
+        common.antiToken(postData);
+
+        $.post('@Url.Action("MoveUp")', postData, function (result) {
+            common.processResult(result, function () {
+                gotoNode(row.id);
+            });
+        });
+    }
+
+    //下移
+    function moveDown() {
+        var row = $('#dg').treegrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var postData = new Object();
+        postData.id = row.id;
+        common.antiToken(postData);
+
+        $.post('@Url.Action("MoveDown")', postData, function (result) {
+            common.processResult(result, function () {
+                gotoNode(row.id);
+            });
+        });
+    }
+
+    //查询
+    function query() {
+        var keyword = $('#txtKeyword').val();
+
+        //为空时恢复原来的状态
+        if (keyword == '') {
+            $('#dg').treegrid({
+                queryParams: { targetId: '' },
+                onLoadSuccess: function () { }
+            });
+
+            $('#win').window('close');
+            return;
+        }
+
+        //先找出匹配的模块项
+        $.getJSON('@Url.Action("Search")?keyword=' + encodeURI(keyword), function (result) {
+            if (result.length > 1) {
+                //两项以上，在左边显示导航表格
+                loadSearchResult(result);
+
+                $('#win').window('open')
+            }
+            else {
+                $('#win').window('close')
+
+                //只有一个匹配的，直接跳转
+                if (result.length == 1) {
+                    gotoNode(result[0].Id);
+                }
+                else {
+                    common.popup('没有查询到内容。');
+                }
+            }
+        });
+    }
+
+    //在左边显示查询到的条目
+    function loadSearchResult(result) {
+        $('#dgNavigate').datagrid({
+            fit: true,
+            singleSelect: true,
+            border: false,
+            columns: [[
+                { field: 'Name', title: '匹配的模块', width: 166 }
+            ]],
+            onClickRow: function (index, row) {
+                gotoNode(row.Id);
+            }
+        });
+
+        $('#dgNavigate').datagrid('loadData', result);
+    }
+
+    //跳转到指定的模块并选中
+    function gotoNode(id) {
+        $('#dg').treegrid({
+            queryParams: { targetId: id },
+            onLoadSuccess: function () {
+                var node = $('#dg').treegrid('select', id);
+            }
+        });
+    }
+
+    //添加新节点
+    function appendNode(r) {
+        if (r.ParentId) {
+            var parent = $('#dg').treegrid('find', r.ParentId);
+            if (parent == null) {
+                gotoNode(r.ModuleID);
+                return;
+            }
+        }
+
+        $('#dg').treegrid('append', {
+            parent: r.ParentId == '' || r.ParentId == null ? null : r.ParentId,
+            data: [{
+                id: r.ModuleID,
+                Name: r.Name,
+                Url: r.Url,
+                State: r.State
+            }]
+        });
+
+        $('#dg').treegrid('select', r.ModuleID);
+    }
+
+    //更新节点信息
+    function updateNode(pid, id, r) {
+        //如果父节点没有改变
+        if (pid == r.ParentId) {
+            $('#dg').treegrid('update', {
+                id: id,
+                row: {
+                    Name: r.Name,
+                    Url: r.Url,
+                    State: r.State
+                }
+            });
+        }
+        else {
+            $('#dg').treegrid('remove', r.ModuleID);
+            appendNode(r);
+        }
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+        <div data-options="region:'north',border:false">
+            <div class="datagrid-toolbar">
+                @Html.Toolbar()
+            </div>
+            <div class="query">
+                <table>
+                    <tr>
+                        <td>快速查询</td>
+                        <td>
+                            <input id="txtKeyword" type="text" class="easyui-textbox enterQuery" data-options="prompt:'名称、拼音首字母或地址'" style="width: 220px" />
+                        </td>
+                        <td>
+                            <a class="easyui-linkbutton" id="btnQuery" onclick="query()" data-options="iconCls:'icon-search'">查询</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div data-options="region:'center',border:false">
+            <table id="dg"></table>
+        </div>
+    </div>
+</div>
+<div id="win" class="easyui-window" title="查找结果" data-options="collapsible:false,minimizable:false,maximizable:false,closable:true,closed:true" style="width: 300px; height: 400px;">
+    <table id="dgNavigate"></table>
+</div>
+

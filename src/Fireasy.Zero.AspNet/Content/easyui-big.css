@@ -1,0 +1,621 @@
+﻿.panel-title {
+    font-size: 15px;
+}
+
+.panel-body {
+    font-size: 15px;
+}
+
+.query {
+    padding: 8px;
+}
+
+.form-body td {
+    padding: 10px 5px 10px 5px;
+}
+
+    .form-body td.addon {
+        padding-top: 14px;
+    }
+
+.datagrid-row {
+    height: 32px;
+}
+
+.datagrid-header td,
+.datagrid-body td,
+.datagrid-footer td {
+    border-style: solid;
+    border-color: #e8e8e8;
+}
+
+.datagrid-cell-number {
+    font-size: 15px;
+}
+
+.datagrid-cell {
+    font-size: 15px;
+    height: 22px;
+}
+
+.datagrid-header-row {
+    height: 32px;
+}
+
+.datagrid-header .datagrid-cell span {
+    font-size: 15px;
+}
+
+.panel-header {
+    height: 24px;
+    padding-top: 8px;
+    padding-left: 12px;
+    font-weight: normal;
+}
+
+.panel-title {
+    font-size: 16px;
+    font-family: 微软雅黑;
+    font-weight: normal;
+}
+
+.pagination-info {
+    font-size: 15px;
+}
+
+.pagination span {
+    font-size: 15px;
+}
+
+.l-btn {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    -moz-padding-start: npx;
+    -moz-padding-end: npx;
+    width: auto;
+    color: #000;
+    padding: 2px;
+    background: linear-gradient(rgb(255, 255, 255) 0px, rgb(242, 242, 242) 100%);
+    border-color: #cdcdcd;
+    -webkit-transition: background-color .1s linear;
+    -moz-transition: background-color .1s linear;
+    -o-transition: background-color .1s linear;
+    transition: background-color .1s linear;
+    border-radius: 2px;
+    filter: null;
+}
+
+    .l-btn:hover {
+        color: #000;
+        background: linear-gradient(rgb(255, 255, 255) 0px, rgb(250, 250, 250) 100%);
+        filter: none;
+    }
+
+.l-btn-selected {
+    background: none;
+    border: 1px solid #1c678d;
+}
+
+    .l-btn-selected, .l-btn-selected:hover {
+    }
+
+.l-btn-text {
+    font-size: 15px;
+}
+
+.l-btn-plain {
+    background-color: transparent;
+    border-color: transparent;
+    color: #000;
+    background: none;
+}
+
+a.l-btn {
+    color: #000;
+}
+
+a.l-btn-plain {
+    color: #000;
+}
+
+.l-btn-plain:hover {
+    padding: 1px;
+    color: #000;
+    background: linear-gradient(rgb(255, 255, 255) 0px, rgb(250, 250, 250) 100%);
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+}
+
+.datagrid-toolbar {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.pagination-first, .pagination-prev, .pagination-next, .pagination-last {
+    width: 8px;
+    margin-left: 5px;
+}
+
+.tree-title {
+    font-size: 15px;
+}
+
+.tree-node {
+    height: 28px;
+    padding-top: 4px;
+}
+
+.tree-checkbox1, .tree-checkbox0 {
+    margin-top: 3px;
+}
+
+.textbox {
+    border-color: #dddddd;
+    border-radius: 3px;
+}
+
+.textbox-prompt {
+    border-radius: 3px;
+}
+
+.textbox-focused {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.validatebox-invalid {
+    background-color: #fff6f6;
+    border-color: #ffcba4;
+}
+
+.textbox-invalid {
+    background-color: #fff6f6;
+    border-color: #ffcba4;
+}
+
+.textbox .textbox-prompt {
+    font-size: 15px;
+}
+
+.textbox .textbox-text {
+    font-size: 15px;
+}
+
+.validate-text {
+    font-size: 15px;
+}
+
+.tooltip-content {
+    font-size: 15px;
+}
+
+.combobox-item {
+    font-size: 15px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.combo-arrow {
+    background-color: transparent;
+}
+
+    .combo-arrow:hover {
+        background-color: transparent;
+    }
+
+.calendar table td, .calendar table th {
+    font-size: 15px;
+}
+
+.calendar-title span {
+    font-size: 15px;
+}
+
+.tabs-title {
+    font-size: 15px;
+}
+
+.tabs-selected .tabs-title {
+    font-weight: normal;
+    color: #2288cc;
+}
+
+.window {
+    background: #2288cc;
+    padding: 0px;
+    border: 1px solid #888888;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 10px rgba(80, 80, 80, .4);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 10px rgba(80, 80, 80, .4);
+}
+
+.messager-window {
+    background: #2288cc;
+    padding: 0px;
+    border: 1px solid #888888;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 10px rgba(80, 80, 80, .4);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 10px rgba(80, 80, 80, .4);
+}
+
+    .messager-window .panel-title,
+    .window-header .panel-title {
+        color: #666666;
+        height: 23px;
+        padding-top: 7px;
+        padding-left: 10px;
+        filter: null;
+        background: linear-gradient(rgb(250, 250, 250) 0px, rgb(240, 240, 240) 100%);
+    }
+
+.window-header .panel-tool {
+    margin-right: 4px;
+    padding-top: 3px;
+}
+
+.messager-body {
+    padding: 25px;
+}
+
+.messager-window .panel-tool {
+    display: none;
+}
+
+.window .window-body {
+    border-style: none;
+}
+
+.menu-text {
+    font-size: 15px;
+    height: 22px;
+}
+
+    .menu-text, .menu-text span {
+        font-size: 15px;
+    }
+
+.m-btn-downarrow {
+    font-size: 14px;
+}
+
+
+.textbox {
+    position: relative;
+    border: 1px solid #95B8E7;
+    background-color: #fff;
+    vertical-align: middle;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
+}
+
+    .textbox .textbox-text {
+        white-space: pre;
+    }
+
+.textbox-readonly .textbox-text {
+    background-color: #fcfcfc;
+}
+
+
+.datagrid-row-alt {
+    background: #fafafa;
+}
+
+.datagrid-row-selected {
+    background: #3e9ee5;
+    color: #fff;
+}
+
+.combobox-item-selected {
+    background-color: #3e9ee5;
+    color: #fff;
+}
+
+.tree-node-selected {
+    background: #3e9ee5;
+    color: #fff;
+}
+
+.l-btn-left {
+    padding: 0px 6px 0px 4px;
+}
+
+.l-btn-icon {
+    padding-left: 6px;
+}
+
+.msg_tip {
+    color: #ee751a;
+}
+
+.datagrid-editable .textbox {
+    border: 0px;
+    height: 29px !important;
+    line-height: 29px !important;
+}
+
+.datagrid-header-check,
+.datagrid-cell-check {
+    height: 22px;
+}
+
+
+.l-btn {
+    border-radius: 0px;
+}
+
+.l-btn-icon {
+    height: 20px;
+    line-height: 20px;
+    width: 20px;
+    margin-top: -10px;
+}
+
+.l-btn-icon-left .l-btn-text {
+    line-height: 26px;
+}
+
+.l-btn-icon-left .l-btn-icon {
+    left: 2px;
+}
+
+.messager-window {
+    border: 0;
+}
+
+.new_btn {
+    padding: 6px 10px;
+    overflow: hidden;
+    line-height: 20px;
+}
+
+    .new_btn span {
+        display: inline;
+        float: left;
+        line-height: 20px;
+        height: 20px;
+        margin-right: 4px;
+    }
+
+.new_search_btn {
+    background: #f3a205;
+    color: #fff;
+    border-color: #f3a205;
+}
+
+    .new_search_btn .searchnn {
+        background: url(newimage/fdj.png) no-repeat center center;
+    }
+
+    .new_search_btn .l-btn-left {
+    }
+
+    .new_search_btn:hover {
+        background: #f3a205;
+        color: #fff;
+        border-color: #f3a205;
+    }
+
+    .new_search_btn .l-btn-text {
+        color: #fff;
+        line-height: 26px;
+    }
+
+.textbox {
+    border-radius: 2px;
+    font-size: 12px;
+}
+
+    .textbox input {
+        font-size: 12px;
+    }
+
+/*table*/
+.datagrid-header-row {
+    height: 36px;
+    line-height: 36px;
+    border-bottom: 1px solid #dedede
+}
+
+    .datagrid-header-row td {
+    }
+
+.datagrid-body {
+    border-top: 1px solid #D4D4D4
+}
+
+.datagrid-btable td {
+    vertical-align: middle;
+}
+
+.datagrid-btable td {
+}
+
+
+.checkbox {
+    position: relative;
+    height: 20px;
+}
+
+    .checkbox input[type='checkbox'] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 18px;
+        height: 18px;
+        opacity: 0;
+    }
+
+    .checkbox label {
+        position: absolute;
+        left: 30px;
+        top: 0;
+        height: 20px;
+        line-height: 20px;
+    }
+
+        .checkbox label:before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+        }
+
+        .checkbox label:after {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 3px;
+            width: 6px;
+            height: 12px;
+            border: 0;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            background: #fff;
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+            -moz-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+        }
+
+    .checkbox input[type='checkbox']:checked + label:before {
+        background: #4cd764;
+        border-color: #4cd764;
+    }
+
+    .checkbox input[type='checkbox']:checked + label:after {
+        background: #4cd764;
+    }
+
+input[type=checkbox], input[type=radio] {
+    z-index: 12;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.pagination-first, .pagination-prev, .pagination-next, .pagination-last {
+    width: 8px;
+    margin-left: 5px;
+}
+
+#btnSave {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #1E9FFF;
+    color: #fff;
+}
+
+#btnSave:hover {
+    background: #1E8ADE;
+}
+
+#btnOk {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #1E9FFF;
+    color: #fff;
+}
+
+#btnOk .icon-ok {
+    background: url('themes/icons/ok1.png') no-repeat center center;
+}
+
+#btnSaveAndNew {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #3AC782;
+    color: #fff;
+}
+
+#btnSaveAndNew:hover {
+    background: #3AB762;
+}
+
+#btnClose {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #FF5722;
+    color: #fff;
+}
+
+#btnClose:hover {
+    background: #E23722;
+}
+
+#btnCancelEdit {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #f3a205;
+    color: #fff;
+}
+
+#btnCancelEdit .icon-close {
+    background: url('themes/icons/cancel1.png') no-repeat center center;
+}
+
+#btnQuery {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background:#3e9ee5;
+    color: #fff;
+}
+
+#btnQuery:hover {
+    background: #2288cc;
+}
+
+#btnQuery .icon-search {
+    background: url('themes/icons/query1.png') no-repeat center center;
+}
+
+#btnSelect {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #79b2b7;
+    color: #fff;
+}
+
+#btnSelect .icon-ok {
+    background: url('themes/icons/ok1.png') no-repeat center center;
+}

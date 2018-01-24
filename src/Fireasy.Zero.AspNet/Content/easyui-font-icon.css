@@ -1,0 +1,190 @@
+﻿/*@font-face {
+  font-family: 'FontAwesome';
+  src: url('../fonts/fontawesome-webfont.eot?v=4.3.0');
+  src: url('../fonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'), url('../fonts/fontawesome-webfont.woff?v=4.3.0') format('woff'), url('../fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'), url('../fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}*/
+
+.l-btn-icon {
+  font: normal normal normal 14px/1 FontAwesome;
+  background-image:none;
+  padding-top:1px;
+}
+
+.pagination-page-list {
+    font-size:15px;
+}
+
+.pagination-first {
+  font-size:15px;
+}
+
+.pagination-first:before {
+  content: "\f048";
+}
+
+.pagination-prev {
+  margin-left:-4px;
+  font-size:15px;
+}
+
+.pagination-prev:before {
+  content: "\f04a";
+}
+
+.pagination-next {
+  margin-left:-1px;
+  font-size:15px;
+}
+
+.pagination-next:before {
+  content: "\f04e";
+}
+
+.pagination-last {
+  margin-left:-1px;
+  font-size:15px;
+}
+
+.pagination-last:before {
+  content: "\f051";
+}
+
+.pagination-load {
+  margin-left:-1px;
+  font-size:15px;
+}
+
+.pagination-load:before {
+  content: "\f021";
+}
+
+.tree-icon {
+  background:transparent;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+  width:18px;
+  padding-left:8px;
+  padding-top:1px;
+}
+
+.tree-folder:before {
+  content: "\f114";
+}
+
+.tree-folder-open:before {
+  content: "\f115";
+}
+
+.tree-file:before {
+  content: "\f016";
+}
+
+.messager-icon {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size:50px;
+    width:50px;
+    background-image:none;
+}
+
+.messager-button {
+    padding-top:30px;
+}
+
+.messager-question:before {
+  content: "\f059";
+  color:#47cb62;
+}
+
+.messager-warning:before {
+  content: "\f071";
+  color:#fbc42b;
+}
+
+.messager-info:before {
+  content: "\f05a";
+  color:#2baffb;
+}
+
+.icon-add:before {
+  content: "\f067";
+}
+
+.icon-edit:before {
+  content: "\f040";
+}
+
+.icon-remove:before {
+  content: "\f014";
+}
+
+.icon-lock:before {
+  content: "\f023";
+}
+
+.icon-unlock:before {
+  content: "\f09c";
+}
+
+.icon-up:before {
+  content: "\f062";
+}
+
+.icon-down:before {
+  content: "\f063";
+}
+
+.icon-refresh:before {
+    content: "\f021";
+}
+
+.icon-search:before {
+    content: "\f002";
+}
+
+.icon-right:before {
+    content: "\f013";
+}
+
+.icon-setpwd:before {
+    content: "\f084";
+}
+
+.icon-ok:before {
+    content: "\f00c";
+}
+
+.icon-save:before {
+    content: "\f0c7";
+}
+
+.icon-save_new:before {
+    content: "\f0ea";
+}
+
+.icon-cancel:before {
+    content: "\f00d";
+}
+
+.icon-phone {
+    content: "\f095";
+}
+
+.icon-view:before {
+    content: "\f095";
+}
+
+.icon-clear:before {
+    content: "\f12d";
+}
+
+.icon-export:before {
+    content: "\f1c3";
+}
+

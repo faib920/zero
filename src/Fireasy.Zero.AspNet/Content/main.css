@@ -1,0 +1,169 @@
+﻿body {
+    font-size: 15px;
+    font-family: 微软雅黑;
+}
+
+input, textarea {
+    font-size: 15px;
+    font-family: 微软雅黑;
+}
+
+a:link, a:visited, a:hover {
+    color: #7d7083;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ee883c;
+    text-decoration: none;
+}
+
+.form-body {
+    border-collapse: collapse;
+    border-spacing: 2px;
+    margin-top: 20px;
+    margin-left: 30px;
+}
+
+.form-body td {
+    padding: 8px 5px 8px 5px
+}
+
+.form-body td.addon {
+    width: 100px;
+    text-align: right;
+    vertical-align: top;
+    padding-top: 10px;
+    height: 22px;
+}
+
+.form-body td.label {
+    width: 80px;
+    text-align: right;
+    vertical-align: top;
+    padding-top: 6px;
+}
+
+.form-button {
+    height: 50px;
+    padding-right: 10px;
+    padding-top: 15px;
+    text-align: right;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eeeeee;
+}
+
+.form-body .group {
+    padding-left: 32px;
+}
+
+.form-body .group div {
+    height: 24px;
+    width: 100%;
+    font-weight: bold;
+    color: #0081c2;
+    padding-left: 20px;
+    background: url(images/group.png) no-repeat 0px 2px;
+    border-bottom: 1px solid #dddddd;
+}
+
+.form-body td.label {
+    width: 80px;
+    text-align: right;
+    vertical-align: top;
+    padding-top: 6px;
+}
+
+.form-button a.l-btn {
+    margin-right: 8px;
+}
+
+.form-input {
+    width: 160px;
+}
+
+.radio-group {
+}
+
+.radio-group div {
+    float: left;
+    width: 90px;
+}
+
+fieldset {
+    border: 1px dotted #ccc;
+    width: 94%;
+    float: left;
+}
+
+fieldset legend {
+    font-size: 14px;
+    color: #5769ae;
+}
+
+.toolbar {
+    height: 33px;
+}
+
+.query {
+    padding: 2px;
+    background-color: #fcfcfc;
+    *height: 30px;
+}
+
+.query .addon {
+    text-align: right;
+}
+
+.query table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.query td {
+    padding: 5px;
+}
+
+.query_1line {
+    height: 85px;
+}
+
+.query_2line {
+    height: 105px;
+}
+
+.readonly {
+    background-color: #ffffda;
+}
+
+INPUT::-moz-placeholder {
+    color: #cccccc;
+    font-style: italic;
+    opacity: 1;
+}
+
+INPUT:-ms-input-placeholder {
+    color: #cccccc;
+    font-style: italic;
+}
+
+INPUT::-webkit-input-placeholder {
+    color: #cccccc;
+    font-style: italic;
+}
+
+.textbox .textbox-text {
+    white-space: pre;
+}
+
+.textbox-readonly .textbox-text {
+    background-color: #fcfcfc;
+}
+
+.msg_tip {
+    color: #ee751a;
+}
+
+.noscroll {
+    overflow: hidden;
+}

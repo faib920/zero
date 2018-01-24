@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - Fireasy Zero</title>
+    <script src="@Url.Content("~/scripts/jquery-1.12.4.js")"></script>
+    <script src="@Url.Content("~/scripts/jquery.easyui-1.4.3.js")"></script>
+    <script src="@Url.Content("~/scripts/locale/easyui-lang-zh_CN.js")"></script>
+    <script src="@Url.Content("~/scripts/jquery.easyui.extend.js")"></script>
+    <script src="@Url.Content("~/scripts/lhgdialog.js")"></script>
+    <script src="@Url.Content("~/scripts/common.js")"></script>
+    <link href="@Url.Content("~/content/themes/bootstrap/easyui.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/content/skins/flat.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/content/main.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/content/easyui-big.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/content/easyui-icon.css")" rel="stylesheet" />
+</head>
+<body class="easyui-layout">
+    <form id="form1">
+        @RenderBody()
+    </form>
+</body>
+</html>

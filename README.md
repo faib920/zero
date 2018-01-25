@@ -80,3 +80,12 @@ public void ConfigureServices(IServiceCollection services)
 }
 
 ```
+
+
+------------------------------------------------------------------------
+QQ号： 55570729
+QQ群： 6406277
+------------------------------------------------------------------------
+
+![](http://www.fireasy.cn/content/images/Donate_fireasy.png)
+

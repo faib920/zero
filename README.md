@@ -4,6 +4,15 @@
 
 用户名: admin   密码: admin
 
+<b>特点</b>
+
+* 数据库操作与 entity framework 的用法较相似，也是使用 linq ，降低了学习成本，然而与后者所不同的是，提供了 Insert、Update、Delete、Batch 等方法更快捷地进行操作，更贴近于 sql 原生语言。
+* 基于 easyui 构建的后台管理系统，view 层采用 ajax 进行数据交互，因此在 action 接收参数时，直接通过 json 反序列化的方式进行 model bind，这样的好处是，对于复杂的提交的数据结构，比如多个 list，嵌套的对象等，都很容易在 action 里接收。
+* action 接收的实体对象能够主动区分哪些属性被修改，这得益于 LightEntityJsonConverter 转换器，这样，新增或修改时，不必考虑原有数据被覆盖的可能。
+* 没有创建 ViewModel，而直接使用 DataModel，这样节省了很多开发时间，然而这样带来的一个问题，可能也是使用 entity framework 一样面临的问题，那就是 <b>延迟加载</b> 属性会被一概序列化。因此 json 序列化也被优化过，采用 fireasy json serializer 能够主动识别延迟加载对象。
+* 没有 ViewModel，但是可以扩展更多的属性给前端使用，在实体类_Ex 中，可以定义非 virtual 的属性，然后用 ExtendAs 扩展方法，这样避免了 new {   } 这样繁琐的赋值操作。
+* services 是基于 AOP 的实例，提供了事务处理、缓存处理等拦截器，只需要标识特性就可以实现这些功能。这也必须使用 fireasy 的 IOC 容器。
+
 <b>项目结构</b>
 
 Fireasy.Zero.Models            实体模型

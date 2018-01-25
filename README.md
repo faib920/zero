@@ -16,11 +16,15 @@
 <b>项目结构</b>
 
 Fireasy.Zero.Models            实体模型
+
 Fireasy.Zero.Infrastructure    基础设施
+
 Fireasy.Zero.Helpers           相关辅助
+
 Fireasy.Zero.Services          数据服务
 
 Fireasy.Zero.AspNet            Mvc5示例
+
 Fireasy.Zero.AspNetCore        Core示例
 
 <b>Mvc5 配置</b>
@@ -28,7 +32,9 @@ Fireasy.Zero.AspNetCore        Core示例
 有关 fireasy 的配置请参考 web.config 里的 fireasy 小节，其中: 
 
 dataInstances 为数据库实例配置，当前使用 sqlite 数据库
+
 containers    为IOC容器配置
+
 mvc/bundles   配置bundle资源文件
 
 注意 global 里对 fireasy 的配置，这些都是必要的

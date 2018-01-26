@@ -55,6 +55,9 @@
     <Reference Include="Fireasy.Data.Entity, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
       <HintPath>..\packages\Fireasy.Data.Entity.2.0.2\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
+    <Reference Include="Fireasy.Redis, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Redis.2.0.3\lib\net45\Fireasy.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="Fireasy.Web.EasyUI, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
       <HintPath>..\packages\Fireasy.Web.EasyUI.2.0.2\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
     </Reference>
@@ -66,6 +69,9 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.2.6.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.StrongName.1.2.6\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -73,6 +79,7 @@
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.106.0\lib\net451\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />

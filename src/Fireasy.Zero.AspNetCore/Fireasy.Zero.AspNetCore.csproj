@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fireasy.Redis" Version="2.0.3" />
     <PackageReference Include="Fireasy.Web.EasyUI" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.1" />
@@ -27,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Fireasy.Redis">
+      <HintPath>Fireasy.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="Fireasy.Web.EasyUI">
       <HintPath>..\..\..\framework\release\netstandard2.0\Fireasy.Web.EasyUI.dll</HintPath>
     </Reference>
@@ -34,5 +38,7 @@
       <HintPath>..\..\..\framework\release\netstandard2.0\Fireasy.Web.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

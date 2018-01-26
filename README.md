@@ -2,6 +2,8 @@
 
 该 demo 演示了如何使用 fireasy 创建一个后台的管理系统。解决方案包含 asp.net mvc5 和 asp.net core 两个示例，使用 SQLite 数据库，基于 easyui 1.4.3 构建。
 
+注: 示例中使用 redis 作为数据缓存，你可以安装 redis 2.8 或在配置中将缓存关闭（删除配置节）。
+
 用户名: admin   密码: admin
 
 <b>特点</b>
@@ -32,6 +34,8 @@ Fireasy.Zero.AspNetCore        Core示例
 有关 fireasy 的配置请参考 web.config 里的 fireasy 小节，其中: 
 
 dataInstances 为数据库实例配置，当前使用 sqlite 数据库
+
+cachings  缓存配置，当前采用 redis ，如果删除此配置，则使用内存作为缓存
 
 containers    为IOC容器配置
 

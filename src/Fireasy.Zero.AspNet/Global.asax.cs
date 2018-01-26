@@ -1,6 +1,8 @@
 ﻿using Fireasy.Common.Ioc;
 using Fireasy.Common.Serialization;
+using Fireasy.Common.Subscribe;
 using Fireasy.Data.Entity;
+using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Web.EasyUI.Binders;
 using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
@@ -35,6 +37,9 @@ namespace Fireasy.Zero.AspNet
 
             //从 Container 里反转类型反序列化
             GlobalSetting.Converters.Add(new ContainerJsonConverter(container));
+
+            //注册实体持久化的订阅通知
+            SubscribeManager.Register<EntityPersistentSubject>(new EntitySubscriber());
         }
 
         protected void Session_Start()

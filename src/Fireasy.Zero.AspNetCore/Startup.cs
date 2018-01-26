@@ -1,5 +1,8 @@
 using Fireasy.Common.Ioc;
+using Fireasy.Common.Subscribe;
 using Fireasy.Data.Entity;
+using Fireasy.Data.Entity.Subscribes;
+using Fireasy.Zero.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +41,9 @@ namespace Fireasy.Zero.AspNetCore
                     {
                         options.LoginPath = new PathString("/login");
                     });
+
+            //注册实体持久化的订阅通知
+            SubscribeManager.Register<EntityPersistentSubject>(new EntitySubscriber());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

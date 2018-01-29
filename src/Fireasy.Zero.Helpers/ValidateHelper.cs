@@ -5,10 +5,19 @@
 //   (c) Copyright Fireasy. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
-#if !NETSTANDARD2_0
+using Fireasy.Common.Caching;
 using System;
+#if !NETSTANDARD2_0
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
+#else
+using System.DrawingCore;
+using System.DrawingCore.Drawing2D;
+using System.DrawingCore.Imaging;
+using System.DrawingCore.Text;
+#endif
 using System.IO;
 using System.Text;
 
@@ -49,8 +58,8 @@ namespace Fireasy.Zero.Helpers
             using (var bmp = new Bitmap(width, height))
             using (var graphics = Graphics.FromImage(bmp))
             {
-                graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 var x = 2;
                 foreach (var c in code)
                 {
@@ -79,7 +88,8 @@ namespace Fireasy.Zero.Helpers
         /// <param name="code">验证码。</param>
         public static void Cache(string key, string code)
         {
-            System.Web.HttpContext.Current.Cache[key] = code;
+            var cacheMgr = CacheManagerFactory.CreateManager();
+            cacheMgr.Add("Validate_" + key, code);
         }
 
         /// <summary>
@@ -90,14 +100,14 @@ namespace Fireasy.Zero.Helpers
         /// <returns></returns>
         public static bool Validate(string key, string code)
         {
-            if (System.Web.HttpContext.Current.Cache[key] == null)
+            var cacheMgr = CacheManagerFactory.CreateManager();
+            var vcode = string.Empty;
+            if (cacheMgr.TryGet("Validate_" + key, out vcode))
             {
-                return false;
+                return code.Equals(vcode, StringComparison.OrdinalIgnoreCase);
             }
 
-            return string.Equals(System.Web.HttpContext.Current.Cache[key].ToString(), code, System.StringComparison.OrdinalIgnoreCase);
+            return false;
         }
     }
-
 }
-#endif

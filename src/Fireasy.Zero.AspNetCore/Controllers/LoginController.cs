@@ -45,5 +45,32 @@ namespace Fireasy.Zero.AspNetCore.Controllers
 
             return Json(Result.Fail("登录失败，用户名或密码不匹配，或帐号被停用。"));
         }
+
+        /// <summary>
+        /// 获取验证码图片。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetValidateImage(string key)
+        {
+            var code = ValidateHelper.GenerateCode();
+            ValidateHelper.Cache(key, code);
+
+            var bytes = ValidateHelper.GenerateImage(code, 80, 28);
+            return File(bytes, "image/png");
+        }
+
+        /// <summary>
+        /// 验证验证码。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult ValidateCode(string key, string code)
+        {
+            return Json(ValidateHelper.Validate(key, code));
+        }
     }
 }

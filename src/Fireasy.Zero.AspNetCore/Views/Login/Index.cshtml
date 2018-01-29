@@ -2,8 +2,9 @@
     ViewBag.Title = "Login";
 }
 
-    <link href="@Url.Content("~/content/login_default.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/content/login_default.css")" rel="stylesheet" type="text/css" />
 <script src="@Url.Content("~/scripts/cloud.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/scripts/jquery.verifycode.min.js")" type="text/javascript"></script>
 <script language="javascript">
     $(function () {
         $('.systemlogo').css({ 'position': 'absolute', 'top': (($(window).height() - 560) / 2) - 180 });
@@ -88,7 +89,6 @@
             return false;
         }
 
-        /*
         if ($('#code').val() == '') {
             common.alert('请输入验证码。', function () {
 				$('#code').focus().select();
@@ -104,7 +104,6 @@
 
             return false;
         }
-        */
 
         var postData = { account: $('#account').val(), password: $('#password').val() };
         common.antiToken(postData);

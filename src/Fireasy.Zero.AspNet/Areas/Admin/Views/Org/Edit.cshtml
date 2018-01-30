@@ -1,21 +1,20 @@
-﻿@model SysModule
+﻿@model SysOrg
 @{
-    ViewBag.Title = "模块信息";
+    ViewBag.Title = "机构信息";
     Layout = "~/Views/Shared/_EasyUILayout.cshtml";
 }
-<link href="/portal/content/base-icons.css" rel="stylesheet" />
 <script type="text/javascript">
     var id = '@Request.QueryString["id"]';
     var pid = '@Request.QueryString["parentId"]';
-    var retArray = [];
+
     $(function () {
         loadInfo();
     });
 
-    //加载模块
-    function loadModules() {
+    //加载机构
+    function loadOrgs() {
         $('#cboParent').combotree({
-            url: "@Url.Action("Data")?targetId=" + pid + '&currentId=' + id + '&flag=3',
+            url: "@Url.Action("DataDemand")?targetId=" + pid + '&currentId=' + id + '&flag=3',
             onLoadSuccess: function () {
                 if (pid != '' && pid != null) {
                     $('#cboParent').combotree('setValue', pid);
@@ -40,13 +39,9 @@
                 common.processResult(data, function () {
                     $('#form1').form('load', data);
                     pid = data.ParentId;
-                    $('#icon').html('<div class="icon ' + data.Icon1 + '"></div>').attr('icon', data.Icon1);
-
-                    if (data.Icon2 != '') {
-                        $('#uicon').attr('src', data.Icon2);
-                    }
-
-                    loadModules();
+                    sid = data.ParentSchemaId;
+                    tid = data.SchemaID;
+                    loadOrgs();
                 });
             });
 
@@ -54,7 +49,7 @@
         }
         else {
             getNextOrderNo(pid);
-            loadModules();
+            loadOrgs();
         }
     }
 
@@ -68,8 +63,6 @@
 
         //将表单填充的内容序列化为json
         var data = $('#form1').form('save');
-        data.Icon2 = $('#uicon').attr('url');
-        data.Icon1 = $('#icon').attr('icon');
         data.ParentId = $('#cboParent').combotree('getValue');
         postData["info"] = JSON.stringify(data);
         common.antiToken(postData);
@@ -83,19 +76,7 @@
                     getNextOrderNo(data.ParentId);
                 }
 
-                id = isNew ? '' : result.data;
-                data.ModuleID = result.data;
-
-                if (isNew) {
-                    retArray.push(data);
-                    common.setReturnValue(retArray);
-                }
-                else if (retArray.length == 0) {
-                    common.setReturnValue(data);
-                }
-                else if (retArray.length == 0) {
-                    common.setReturnValue(data);
-                }
+                common.setReturnValue(true);
 
                 if (common.closeWhenSave && !isNew) {
                     common.closeWindow();
@@ -104,45 +85,26 @@
         });
     }
 
-    function selectIcon() {
-        common.showDialog('@Url.Action("IconBrowser")', '选择图标', 700, 500, function (result) {
-            $('#icon').html('<div class="icon ' + result + '"></div>').attr('icon', result);
-        });
-    }
 </script>
 @Html.AntiForgeryToken()
 <div data-options="region:'center',border:false">
     <table class="form-body">
 
         <tr>
-            <td class="addon">上级模块</td>
-            <td colspan="3">@Html.ComboTree("Parent").MarkNoClear().Style("width:444px")</td>
+            <td class="addon">上级部门</td>
+            <td>@Html.ComboTree("Parent").MarkNoClear().Style("width:200px")</td>
         </tr>
         <tr>
             <td class="addon">名称</td>
-            <td colspan="3">@Html.TextBox(s => s.Name).Style("width:444px")</td>
+            <td>@Html.TextBox(s => s.Name).Style("width:200px")</td>
         </tr>
         <tr>
-            <td class="addon">地址</td>
-            <td colspan="3">@Html.TextBox(s => s.Url).Style("width:444px")</td>
+            <td class="addon">属性</td>
+            <td>@Html.RadioGroup(s => s.Attribute, typeof(OrgAttribute), new RadioGroupSettings { Value = "1" }).Style("width:200px").MarkNoClear()</td>
         </tr>
         <tr>
-            <td class="addon">参数</td>
-            <td colspan="3">@Html.TextBox(s => s.Arguments).Style("width:444px")</td>
-        </tr>
-        <tr>
-            <td class="addon">状态</td>
-            <td>@Html.ComboBox(s => s.State, typeof(StateFlags), new ComboBoxSettings { Value = "1" }).MarkNoClear()</td>
             <td class="addon">排序</td>
-            <td>@Html.NumberBox(s => s.OrderNo)</td>
-        </tr>
-        <tr>
-            <td class="addon">预置小图标</td>
-            <td><span id="icon"></span>&nbsp;&nbsp;<a href="javascript:selectIcon()">选择图标</a></td>
-        </tr>
-        <tr>
-            <td class="addon">备注</td>
-            <td colspan="3">@Html.TextMultiBox(s => s.Remark).Style("width:444px;height:60px")</td>
+            <td>@Html.NumberBox(s => s.OrderNo).Style("width:200px")</td>
         </tr>
     </table>
 </div>

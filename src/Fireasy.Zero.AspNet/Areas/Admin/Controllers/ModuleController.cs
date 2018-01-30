@@ -46,10 +46,9 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <summary>
         /// 获取下一个顺序号。
         /// </summary>
-        /// <param name="appKey"></param>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public JsonResult GetNextOrderNo(string appKey, int? parentId)
+        public JsonResult GetNextOrderNo(int? parentId)
         {
             return Json(adminService.GetModuleNextOrderNo(parentId));
         }
@@ -94,7 +93,6 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <summary>
         /// 按关键字搜索。
         /// </summary>
-        /// <param name="appKey">应用key。</param>
         /// <param name="keyword">关键字。</param>
         /// <returns></returns>
         public JsonResult Search(string keyword)

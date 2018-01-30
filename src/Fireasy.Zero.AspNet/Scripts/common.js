@@ -1,5 +1,11 @@
 ﻿var common = $.extend({}, common);
 
+common.GetQueryParam = function (url, name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = url.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); return '';
+}
+
 common.closeWhenSave = true;
 
 common.getJsPath = function (js) {
@@ -168,6 +174,7 @@ common.confirm = function (msg, fn, f2) {
 
 //处理返回值
 common.processResult = function (result, succeed, faild, _alert) {
+    common.hideProcess();
     if (result == null || typeof result == 'undefined') {
         return;
     }
@@ -185,6 +192,12 @@ common.processResult = function (result, succeed, faild, _alert) {
     else {
         if (result.succeed == true && result.msg == 'Invalid') {
             $('#form1').form('invalid', result);
+        }
+        if (result.succeed == true && result.msg == 'Repeat') {
+            if (dim != undefined) {
+                dim.markRepeatRows(result.data.Rows);
+            }
+            common.alert('第' + result.data.Rows + '行数据的' + result.data.Title + '已经存在于数据库里。');
         }
         else {
             if (result.succeed == true && _alert) {
@@ -211,7 +224,7 @@ common.getJsUrlParam = function (js, name) {
     var script = document.getElementsByTagName('script');
     for (var i = 0; i < script.length; i++) {
         me = !!document.querySelector ?
-		    script[i].src : script[i].getAttribute('src', 4);
+            script[i].src : script[i].getAttribute('src', 4);
 
         if (me.substr(me.lastIndexOf('/')).indexOf(js) !== -1) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
@@ -224,8 +237,19 @@ common.getJsUrlParam = function (js, name) {
     return null; //返回参数值
 }
 
+common.formatYesNo = function (val) {
+    if (typeof val == "undefined" || val === "" || val == null) {
+        return "";
+    }
+    return val === true || val === 1 || val === "1" || val === "true" ? "是" : "否";
+}
+
 //格式化数字
 common.formatNumber = function (num, settings1) {
+    if (typeof num == 'undefined' || num == null) {
+        return '';
+    }
+
     var regions = [];
     regions[''] = {
         symbol: '',
@@ -307,7 +331,7 @@ common.formatNumber = function (num, settings1) {
     num = String(num);
 
     if (settings.groupDigits) {
-        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3) ; i++) {
+        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++) {
             num = num.substring(0, num.length - (4 * i + 3)) + settings.digitGroupSymbol + num.substring(num.length - (4 * i + 3));
         }
     }
@@ -390,6 +414,53 @@ $.ajaxSetup({
         xhr.setRequestHeader('Pragma', 'no-cache');
     },
     error: function () {
-        alert(arguments[0].responseText);
     }
 });
+
+//check表格的行
+common.checkGridRows = function (data, field) {
+    $.each(data, function (i, r) {
+        if (r[field]) {
+            $('#dg').datagrid('checkRow', i);
+        }
+    })
+}
+
+//获取check的行ID
+common.getGridCheckedIds = function (dg, field) {
+    var rows = $(dg).datagrid('getChecked');
+    var result = [];
+    $.each(rows, function (i, r) {
+        result.push(r[field]);
+    });
+
+    return result;
+}
+
+//获取近几年的年度 dir = 1 从当前年递增， -1 从当前年递减
+common.getYears = function (dir, count) {
+    if (dir == undefined) {
+        dir = -1;
+    }
+
+    if (count == undefined) {
+        count = 40;
+    }
+
+    var curYear = new Date().getFullYear();
+    var years = [];
+    for (var i = 0; i < count; i++) {
+        years.push({ value: curYear + (i * dir) });
+    }
+
+    return { data: years, current: curYear };
+}
+
+common.formatYesNo = function (value) {
+    if (value == 'true') {
+        return '是';
+    }
+    else if (value == 'false') {
+        return '否';
+    }
+}

@@ -24,7 +24,11 @@ namespace Fireasy.Zero.AspNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddFireasy(Configuration)
+            services.AddFireasy(Configuration, options =>
+                {
+                    //注册实体持久化的订阅通知
+                    options.AddSubscribe<EntityPersistentSubject>(new EntitySubscriber());
+                })
                 .AddIoc(ContainerUnity.GetContainer());
 
             services.AddMvc()
@@ -41,9 +45,6 @@ namespace Fireasy.Zero.AspNetCore
                     {
                         options.LoginPath = new PathString("/login");
                     });
-
-            //注册实体持久化的订阅通知
-            SubscribeManager.Register<EntityPersistentSubject>(new EntitySubscriber());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -46,14 +46,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fireasy.Common, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Common.2.0.2\lib\net45\Fireasy.Common.dll</HintPath>
+    <Reference Include="Fireasy.Common, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Common.2.0.4\lib\net45\Fireasy.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.2.0.2\lib\net45\Fireasy.Data.dll</HintPath>
+    <Reference Include="Fireasy.Data, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.2.0.4\lib\net45\Fireasy.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data.Entity, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.Entity.2.0.2\lib\net45\Fireasy.Data.Entity.dll</HintPath>
+    <Reference Include="Fireasy.Data.Entity, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.Entity.2.0.4\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Redis, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
       <HintPath>..\packages\Fireasy.Redis.2.0.3\lib\net45\Fireasy.Redis.dll</HintPath>
@@ -172,8 +172,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\ModuleController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OperateController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrgController.cs" />
+    <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="DataRepeatActionFilterAttribute.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -598,10 +603,19 @@
     </Content>
     <Content Include="Scripts\cloud.js" />
     <Content Include="Scripts\common.js" />
+    <Content Include="Scripts\dim.form.js" />
     <Content Include="Scripts\easyloader.js" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\Module\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Module\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Org\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Org\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Add.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Operate\Index.cshtml" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />
@@ -660,10 +674,12 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Shared\_EasyUILayout.cshtml" />
+    <Content Include="Views\Home\Start.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\Operator\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Models\" />
   </ItemGroup>

@@ -20,7 +20,9 @@ namespace Fireasy.Zero.Models
 
     public enum OrgAttribute
     {
-        Org,
-        Dept
+        [EnumDescription("机构")]
+        Org = 1,
+        [EnumDescription("部门")]
+        Dept = 2
     }
 }

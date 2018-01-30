@@ -584,6 +584,10 @@ input[type=checkbox], input[type=radio] {
     color: #fff;
 }
 
+#btnCancelEdit:hover {
+    background: #e39205;
+}
+
 #btnCancelEdit .icon-close {
     background: url('themes/icons/cancel1.png') no-repeat center center;
 }

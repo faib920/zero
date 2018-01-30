@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using Fireasy.Web.EasyUI;
+using System.Web.Mvc;
 
 namespace Fireasy.Zero.AspNet
 {
@@ -7,7 +8,8 @@ namespace Fireasy.Zero.AspNet
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new AuthorizeAttribute());
-            filters.Add(new Fireasy.Web.Mvc.HandleErrorAttribute());
+            filters.Add(new DataRepeatActionFilterAttribute());
+            filters.Add(new ValidationActionFilterAttribute());
         }
     }
 }

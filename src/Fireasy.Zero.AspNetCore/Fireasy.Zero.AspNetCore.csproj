@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fireasy.Common" Version="2.0.4" />
+    <PackageReference Include="Fireasy.Data" Version="2.0.4" />
+    <PackageReference Include="Fireasy.Data.Entity" Version="2.0.4" />
     <PackageReference Include="Fireasy.Redis" Version="2.0.3" />
     <PackageReference Include="Fireasy.Web.EasyUI" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />

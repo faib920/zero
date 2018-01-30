@@ -214,38 +214,24 @@ namespace Fireasy.Zero.Services.Impls
         [TransactionSupport]
         public virtual bool SaveUsers(int orgId, List<SysUser> users, Func<string> pwdCreator)
         {
-            var userRoles = new List<SysUserRole>();
-
             using (var context = new DbContext())
             {
-                //var repeats = CommonService.FindRepeatRows(context.SysUsers, users, (s, t) => s.Mobile == t.Mobile);
+                var repeats = Util.FindRepeatRows(context.SysUsers, users, (s, t) => s.Mobile == t.Mobile);
 
-                //if (repeats == null || repeats.Count > 0)
-                //{
-                //    throw new DataRepeatException("手机号", repeats);
-                //}
-
-                var posts = context.SysRoles.ToList();
-
-                foreach (var info in users)
+                if (repeats == null || repeats.Count > 0)
                 {
-                    var roleIds = info.Role.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => Convert.ToInt32(s));
-                    var postName = string.Join("、", posts.Where(s => roleIds.Contains(s.RoleID)).Select(s => s.Name));
-
-                    info.PyCode = info.Name.ToPinyin();
-                    info.OrgID = orgId;
-                    info.Password = pwdCreator();
-                    info.RoleNames = postName;
-                    info.State = StateFlags.Enabled;
-
-                    context.SysUsers.Insert(info);
-
-                    userRoles.AddRange(roleIds.Select(s => new SysUserRole { RoleID = s, UserID = info.UserID }));
+                    throw new DataRepeatException("手机号", repeats);
                 }
 
-                context.SysUserRoles.Batch(userRoles, (u, s) => u.Insert(s));
+                users.ForEach(s =>
+                    {
+                        s.PyCode = s.Name.ToPinyin();
+                        s.OrgID = orgId;
+                        s.Password = pwdCreator();
+                        s.State = StateFlags.Enabled;
+                    });
 
-                return true;
+                return context.SysUsers.Batch(users, (u, s) => u.Insert(s)) > 0;
             }
         }
 
@@ -351,7 +337,7 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 获取机构下某岗位的用户列表。
+        /// 获取机构下某角色的用户列表。
         /// </summary>
         /// <param name="orgId"></param>
         /// <param name="roleId"></param>
@@ -374,7 +360,7 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 获取机构下某岗位的用户列表。
+        /// 获取机构下某角色的用户列表。
         /// </summary>
         /// <param name="orgCode"></param>
         /// <param name="roleId"></param>
@@ -405,10 +391,10 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 根据岗位代码（拼音码）获取用户列表。
+        /// 根据角色代码（拼音码）获取用户列表。
         /// </summary>
         /// <param name="orgCode">机构编码。</param>
-        /// <param name="postName">岗位名称，如果是多个岗位，用竖线分隔。</param>
+        /// <param name="postName">角色名称，如果是多个角色，用竖线分隔。</param>
         /// <param name="keyword"></param>
         /// <param name="orgCodeLength">机构编码的位数。如果指定，则在此编码范围的机构下检索。比如分公司范围，则此值传 4。</param>
         /// <returns></returns>
@@ -879,11 +865,6 @@ namespace Fireasy.Zero.Services.Impls
         {
             using (var context = new DbContext())
             {
-                //通过企业类型来限定要显示的机构
-                var corpOrgs = context.SysOrgs
-                    .Select(s => s.Code)
-                    .ToList();
-
                 //通过数据权限来限定要显示的机构
                 var purOrgs = GetPurviewOrgs(userId);
 
@@ -892,20 +873,9 @@ namespace Fireasy.Zero.Services.Impls
                 var list = context.SysOrgs
                     .Where(s => !s.Code.StartsWith("99") && s.State == StateFlags.Enabled)
                     .BatchOr(purOrgs, (o, s) => o.Code.StartsWith(s))
-                    .BatchOr(corpOrgs, (o, s) => o.Code.StartsWith(s))
                     .ToList();
 
-                //CommonService.MakeChildren(result, list, string.Empty, 2, attaches == null ? (Action<SysOrg>)null : s =>
-                //    s.Children.AddRange(attaches.Where(t => t.OrgID == s.OrgID).Select(t =>
-                //        new SysOrg
-                //        {
-                //            Name = t.AttachName,
-                //            AttachOrgID = s.OrgID,
-                //            AttachOrgCode = s.Code,
-                //            Attribute = s.Attribute,
-                //            AttachType = t.AttachType,
-                //            AttachID = t.AttachID
-                //        })), checkNull: t => t.Attribute == OrgAttribute.Org);
+                Util.MakeChildren(result, list, string.Empty, 2);
 
                 return result;
             }
@@ -1132,9 +1102,9 @@ namespace Fireasy.Zero.Services.Impls
         }
         #endregion
 
-        #region 岗位
+        #region 角色
         /// <summary>
-        /// 获取指定的岗位。
+        /// 获取指定的角色。
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
@@ -1158,7 +1128,7 @@ namespace Fireasy.Zero.Services.Impls
             {
                 if (context.SysRoles.Any(s => s.Name == info.Name && s.RoleID != roleId))
                 {
-                    throw new ClientNotificationException(string.Format("岗位{0}已经存在，名称不能重复。", info.Name));
+                    throw new ClientNotificationException(string.Format("角色{0}已经存在，名称不能重复。", info.Name));
                 }
 
                 if (roleId == null)
@@ -1178,7 +1148,7 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 保存多个岗位。
+        /// 保存多个角色。
         /// </summary>
         /// <param name="posts"></param>
         /// <returns></returns>
@@ -1190,7 +1160,7 @@ namespace Fireasy.Zero.Services.Impls
                 names = (context.SysRoles.Where(s => names.Contains(s.Name)).Select(s => s.Name)).ToArray();
                 if (names.Length > 0)
                 {
-                    throw new ClientNotificationException(string.Format("岗位{0}已经存在，不能重复添加。", string.Join("、", names)));
+                    throw new ClientNotificationException(string.Format("角色{0}已经存在，不能重复添加。", string.Join("、", names)));
                 }
 
                 var code = GetNextCode();
@@ -1228,7 +1198,7 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 设置岗位状态。
+        /// 设置角色状态。
         /// </summary>
         /// <param name="roleId"></param>
         /// <param name="state">是否启用，反之禁用。</param>
@@ -1241,7 +1211,7 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 删除岗位。
+        /// 删除角色。
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -1254,7 +1224,7 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 获取岗位列表。
+        /// 获取角色列表。
         /// </summary>
         /// <param name="state">状态。</param>
         /// <param name="keyword">关键字。</param>
@@ -1308,9 +1278,9 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 根据架构ID和岗位ID获取模块列表。
+        /// 根据架构ID和角色ID获取模块列表。
         /// </summary>
-        /// <param name="roleId">岗位ID。</param>
+        /// <param name="roleId">角色ID。</param>
         /// <returns></returns>
         public virtual List<SysModule> GetModulesByRole(int roleId)
         {
@@ -1329,7 +1299,7 @@ namespace Fireasy.Zero.Services.Impls
                 var list = context.SysModules.Where(s => s.State == StateFlags.Enabled)
                     .Select(s => s.ExtendAs<SysModule>(() => new SysModule
                     {
-                        //判断是否此模块是否给定了岗位权限
+                        //判断是否此模块是否给定了角色权限
                         Permissible = context.SysModulePermissions
                                 .Any(t => t.RoleID == roleId && t.ModuleID == s.ModuleID),
                         SysOperates = operates.Where(t => t.ModuleID == s.ModuleID).ToEntitySet()
@@ -1352,10 +1322,10 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 根据岗位ID获取机构列表。
+        /// 根据角色ID获取机构列表。
         /// </summary>
         /// <param name="orgId">机构ID。</param>
-        /// <param name="roleId">岗位ID。</param>
+        /// <param name="roleId">角色ID。</param>
         /// <returns></returns>
         public virtual List<SysOrg> GetOrgsByRole(int orgId, int roleId)
         {
@@ -1371,7 +1341,7 @@ namespace Fireasy.Zero.Services.Impls
                 var list = context.SysOrgs.Where(s => s.State == StateFlags.Enabled)
                     .Select(s => s.ExtendAs<SysOrg>(() => new SysOrg
                     {
-                        //判断是否此机构是否给定了岗位权限
+                        //判断是否此机构是否给定了角色权限
                         Permissible = context.SysOrgPermissions.Any(t => t.RoleID == roleId && t.OrgID == orgId)
                     }))
                     .ToList();

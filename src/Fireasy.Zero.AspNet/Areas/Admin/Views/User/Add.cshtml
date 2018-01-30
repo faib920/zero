@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "用户信息";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+@Fireasy.Web.Mvc.BundleManager.Render("dim")
+<script type="text/javascript">
+    var orgId = '@Request.QueryString["orgId"]';
+    var dim = new dim('#dg', [
+        { field: 'Name', title: '姓名', width: 120, align: 'left', editor: { type: 'textbox' } },
+        { field: 'Sex', title: '性别', width: 100, align: 'left', editor: { type: 'combobox', options: { data: @Url.BindEnum(typeof(Sex)), valueField: 'Value', textField: 'Name', panelHeight: 'auto' } } },
+        { field: 'Mobile', title: '手机号', width: 160, align: 'left', editor: { type: 'textbox' }  },
+        { field: 'Email', title: '电子邮件', width: 180, align: 'left', editor: { type: 'textbox' } }
+    ]);
+
+    dim.validations = @(Html.AddValidations<SysUser>());
+    dim.checkRepeatFields = ['Mobile'];
+
+    $(function () {
+        loadOrgs();
+        dim.init();
+    });
+
+    //加载机构
+    function loadOrgs() {
+        $('#cboOrg').combotree({
+            url: "@Url.Action("Data", "Org")?targetId=" + orgId + '&state=1&flag=2',
+            panelWidth: 400,
+            panelHeight: 400,
+            required: true,
+            onLoadSuccess: function () {
+                if (orgId != '') {
+                    $('#cboOrg').combotree('setValue', orgId);
+                }
+            },
+            onSelect: function (record) {
+                orgId = record.id;
+            }
+        });
+    }
+
+    function saveInfo(isNew) {
+        if ($('#cboOrg').combotree('getValue') == 0) {
+            common.alert('请选择隶属机构。');
+            return;
+        }
+
+        var rows = dim.getData();
+        if (rows.length == 0) {
+            return;
+        }
+
+        var postData = new Object();
+        postData.orgId = $('#cboOrg').combotree('getValue');
+        postData.rows = JSON.stringify(rows);
+        common.antiToken(postData);
+
+        $.post('@Url.Action("SaveRows")', postData, function (result) {
+            common.processResult(result, function () {
+                common.setReturnValue(true);
+                if (isNew) {
+                    dim.clear();
+                }
+
+                if (common.closeWhenSave && !isNew) {
+                    common.closeWindow();
+                }
+            });
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+        <div data-options="region:'north',border:false" class="query_1line">
+            <div class="query">
+                <table>
+                    <tr>
+                        <td>隶属机构</td>
+                        <td>
+                            @Html.ComboTree("Org", new ComboTreeSettings { PanelHeight = 400, PanelWidth = 260 }).MarkNoClear().Style("width:260px")
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div data-options="region:'center',border:false">
+            <table id="dg" data-options="checkOnSelect:false,selectOnCheck:false"></table>
+        </div>
+    </div>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
+    <a class="easyui-linkbutton" onclick="saveInfo(true)" id="btnSaveAndNew" data-options="iconCls:'icon-save_new'">保存并新建</a>
+    <a class="easyui-linkbutton" onclick="dim.cancelEdit()" id="btnCancelEdit" data-options="iconCls:'icon-close'">取消编辑</a>
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>
+

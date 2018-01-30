@@ -23,6 +23,11 @@ namespace Fireasy.Zero.AspNet.Controllers
             return View();
         }
 
+        public ActionResult Start()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 退出系统。
         /// </summary>

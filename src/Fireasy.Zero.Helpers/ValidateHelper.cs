@@ -89,7 +89,7 @@ namespace Fireasy.Zero.Helpers
         public static void Cache(string key, string code)
         {
             var cacheMgr = CacheManagerFactory.CreateManager();
-            cacheMgr.Add("Validate_" + key, code);
+            cacheMgr.Add("Validate_" + key, code, new RelativeTime(TimeSpan.FromMinutes(5)));
         }
 
         /// <summary>

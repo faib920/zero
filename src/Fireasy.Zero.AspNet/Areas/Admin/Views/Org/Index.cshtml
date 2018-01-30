@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "模块管理";
+    ViewBag.Title = "机构管理";
     Layout = "~/Views/Shared/_EasyUILayout.cshtml";
 }
 
@@ -11,14 +11,14 @@
     //加载数据
     function loadData() {
         $('#dg').treegrid({
-            url: '@Url.Action("Data")',
+            url: '@Url.Action("DataDemand")',
             fit: true,//自动填充
             idField: 'id',
             treeField: 'Name',
             columns: [[
 
-                { field: 'Name', title: '名称', width: 300, halign: 'center', align: 'left', sortable: false },
-                { field: 'Url', title: '地址', width: 300, halign: 'center', align: 'left', sortable: false }
+                { field: 'Name', title: '名称', width: 400, halign: 'center', align: 'left', sortable: false },
+                { field: 'AttributeName', title: '属性', width: 150, halign: 'center', align: 'center', sortable: false }
             ]],
             rowStyler: function (row) {
                 if (row && row.State == 0) {
@@ -46,15 +46,6 @@
             case "Disable":
                 disableInfo();
                 break;
-            case "MoveUp":
-                moveUp();
-                break;
-            case "MoveDown":
-                moveDown();
-                break;
-            case "Operate":
-                editOperator();
-                break;
         }
     }
 
@@ -62,17 +53,8 @@
     function addInfo() {
         var row = $('#dg').treegrid('getSelected');
         var parentId = row == null ? '' : row.id;
-        common.showDialog('@Url.Action("Edit")?parentId=' + parentId, '添加模块', 750, 550, function (result) {
-            common.processResult(result, function () {
-                if ($.isArray(result)) {
-                    $.each(result, function (i, r) {
-                        appendNode(r);
-                    });
-                }
-                else {
-                    appendNode(result);
-                }
-            });
+        common.showDialog('@Url.Action("Edit")?parentId=' + parentId, '添加机构', 550, 400, function (result) {
+            $('#dg').treegrid('reload');
         });
     }
 
@@ -84,11 +66,9 @@
             return;
         }
 
-        common.showDialog('@Url.Action("Edit")?id=' + row.id, '修改模块', 750, 550, function (result) {
+        common.showDialog('@Url.Action("Edit")?id=' + row.id, '编辑机构', 550, 400, function (result) {
             common.processResult(result, function () {
-                var parent = $('#dg').treegrid('getParent', row.id);
-                var pid = parent == null ? '' : parent.id;
-                updateNode(pid, row.id, result);
+                $('#dg').treegrid('reload');
             });
         });
     }
@@ -101,10 +81,10 @@
             return;
         }
 
-        common.confirm('你确认要删除[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+        common.confirm('你确认要删除[<span class="msg_tip">' + row.text + '</span>]吗?', function () {
             var postData = new Object();
             postData.id = row.id;
-           common.antiToken(postData);
+            common.antiToken(postData);
 
             $.post('@Url.Action("Delete")', postData, function (result) {
                 common.processResult(result, function () {
@@ -122,7 +102,7 @@
             return;
         }
 
-        common.confirm('你确认要启用[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+        common.confirm('你确认要启用[<span class="msg_tip">' + row.text + '</span>]吗?', function () {
             var postData = new Object();
             postData.id = row.id;
             common.antiToken(postData);
@@ -144,7 +124,7 @@
             return;
         }
 
-        common.confirm('你确认要禁用[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+        common.confirm('你确认要禁用[<span class="msg_tip">' + row.text + '</span>]吗?', function () {
             var postData = new Object();
             postData.id = row.id;
             common.antiToken(postData);
@@ -158,57 +138,9 @@
         });
     }
 
-    function editOperator() {
-        var row = $('#dg').treegrid('getSelected');
-        if (row == null) {
-            common.alert('请先选择一条记录。');
-            return;
-        }
-
-        common.showDialog('@Url.Action("Index", "Operate")?id=' + row.id, '维护操作', 750, 550);
-    }
-
-    //上移
-    function moveUp() {
-        var row = $('#dg').treegrid('getSelected');
-        if (row == null) {
-            common.alert('请先选择一条记录。');
-            return;
-        }
-
-        var postData = new Object();
-        postData.id = row.id;
-        common.antiToken(postData);
-
-        $.post('@Url.Action("MoveUp")', postData, function (result) {
-            common.processResult(result, function () {
-                gotoNode(row.id);
-            });
-        });
-    }
-
-    //下移
-    function moveDown() {
-        var row = $('#dg').treegrid('getSelected');
-        if (row == null) {
-            common.alert('请先选择一条记录。');
-            return;
-        }
-
-        var postData = new Object();
-        postData.id = row.id;
-        common.antiToken(postData);
-
-        $.post('@Url.Action("MoveDown")', postData, function (result) {
-            common.processResult(result, function () {
-                gotoNode(row.id);
-            });
-        });
-    }
-
     //查询
     function query() {
-        var keyword = $('#txtKeyword').val();
+        var keyword = $('#txtKeyword').textbox('getValue');
 
         //为空时恢复原来的状态
         if (keyword == '') {
@@ -250,10 +182,10 @@
             singleSelect: true,
             border: false,
             columns: [[
-                { field: 'Name', title: '匹配的模块', width: 166 }
+                { field: 'Name', title: '匹配的机构', width: 166 }
             ]],
             onClickRow: function (index, row) {
-                gotoNode(row.Id);
+                gotoNode(row.OrgID);
             }
         });
 
@@ -270,12 +202,13 @@
         });
     }
 
+
     //添加新节点
     function appendNode(r) {
         if (r.ParentId) {
             var parent = $('#dg').treegrid('find', r.ParentId);
             if (parent == null) {
-                gotoNode(r.ModuleID);
+                gotoNode(r.OrgID);
                 return;
             }
         }
@@ -283,14 +216,13 @@
         $('#dg').treegrid('append', {
             parent: r.ParentId == '' || r.ParentId == null ? null : r.ParentId,
             data: [{
-                id: r.ModuleID,
+                id: r.OrgID,
                 Name: r.Name,
-                Url: r.Url,
                 State: r.State
             }]
         });
 
-        $('#dg').treegrid('select', r.ModuleID);
+        $('#dg').treegrid('select', r.OrgID);
     }
 
     //更新节点信息
@@ -301,13 +233,12 @@
                 id: id,
                 row: {
                     Name: r.Name,
-                    Url: r.Url,
                     State: r.State
                 }
             });
         }
         else {
-            $('#dg').treegrid('remove', r.ModuleID);
+            $('#dg').treegrid('remove', r.OrgID);
             appendNode(r);
         }
     }
@@ -324,7 +255,7 @@
                     <tr>
                         <td>快速查询</td>
                         <td>
-                            <input id="txtKeyword" type="text" class="easyui-textbox enterQuery" data-options="prompt:'名称、拼音首字母或地址'" style="width: 220px" />
+                            <input id="txtKeyword" type="text" class="easyui-textbox enterQuery" data-options="prompt:'编码、名称或全称'" style="width: 220px" />
                         </td>
                         <td>
                             <a class="easyui-linkbutton" id="btnQuery" onclick="query()" data-options="iconCls:'icon-search'">查询</a>
@@ -341,4 +272,3 @@
 <div id="win" class="easyui-window" title="查找结果" data-options="collapsible:false,minimizable:false,maximizable:false,closable:true,closed:true" style="width: 300px; height: 400px;">
     <table id="dgNavigate"></table>
 </div>
-

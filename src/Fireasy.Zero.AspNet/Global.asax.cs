@@ -7,9 +7,11 @@ using Fireasy.Web.EasyUI.Binders;
 using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
+using Fireasy.Zero.Services;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 
 namespace Fireasy.Zero.AspNet
 {
@@ -25,7 +27,7 @@ namespace Fireasy.Zero.AspNet
             BundleManager.Config();
 
             //MVC控制器工厂添加IOC容器
-            var container = ContainerUnity.GetContainer();
+            var container = GetContainer();
             ControllerBuilder.Current.SetControllerFactory(new ControllerFactory(container));
 
             //easyui验证绑定
@@ -42,14 +44,28 @@ namespace Fireasy.Zero.AspNet
             SubscribeManager.Register<EntityPersistentSubject>(new EntitySubscriber());
         }
 
+        private Container GetContainer()
+        {
+            return ContainerUnity.GetContainer();
+        }
+
         protected void Session_Start()
         {
             var id = HttpContext.Current.GetIdentity();
 
             if (id != 0)
             {
-                var session = new SessionContext { UserID = id };
-                HttpContext.Current.SetSession(session);
+                var service = GetContainer().Resolve<IAdminService>();
+                var user = service.GetUser(id);
+                if (user != null)
+                {
+                    var session = new SessionContext { UserID = id, UserName = user.Name, OrgID = user.OrgID };
+                    HttpContext.Current.SetSession(session);
+                }
+                else
+                {
+                    HttpContext.Current.Response.Redirect(FormsAuthentication.LoginUrl);
+                }
             }
         }
     }

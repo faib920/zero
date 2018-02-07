@@ -13,10 +13,11 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 #else
-using System.DrawingCore;
-using System.DrawingCore.Drawing2D;
-using System.DrawingCore.Imaging;
-using System.DrawingCore.Text;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Processing;
+using System.Numerics;
 #endif
 using System.IO;
 using System.Text;
@@ -55,6 +56,8 @@ namespace Fireasy.Zero.Helpers
         public static byte[] GenerateImage(string code, int width, int height)
         {
             var ran = new Random();
+
+#if !NETSTANDARD2_0
             using (var bmp = new Bitmap(width, height))
             using (var graphics = Graphics.FromImage(bmp))
             {
@@ -64,7 +67,6 @@ namespace Fireasy.Zero.Helpers
                 foreach (var c in code)
                 {
                     graphics.RotateTransform(ran.Next(-5, 5));
-                    //var color = Color.FromArgb(ran.Next(0, 128), ran.Next(0, 128), ran.Next(0, 128));
                     var color = Color.FromArgb(255, 255, 255);
                     var bursh = new SolidBrush(color);
                     graphics.DrawString(c.ToString(), new Font("Consolas", 18), bursh, x, 0);
@@ -79,6 +81,31 @@ namespace Fireasy.Zero.Helpers
                     return memory.ToArray();
                 }
             }
+#else
+            using (var img = new Image<Rgba32>(width, height))   //画布大小
+            {
+                var fontFamily = new FontCollection().Install(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/fonts", "CONSOLA.TTF"));
+
+                img.Mutate(p =>
+                    {
+                        var x = 2;
+                        foreach (var c in code)
+                        {
+                            var color = Rgba32.White;
+                            p.Rotate(ran.Next(-5, 5));
+                            p.DrawText(c.ToString(), new Font(fontFamily, 22), color, new Vector2(x, 0), TextGraphicsOptions.Default);
+                            p.Rotate(RotateType.None);
+                            x += 18;
+                        }
+                    });
+
+                using (var memory = new MemoryStream())
+                {
+                    img.SaveAsPng(memory);
+                    return memory.ToArray();
+                }
+            }
+#endif
         }
 
         /// <summary>

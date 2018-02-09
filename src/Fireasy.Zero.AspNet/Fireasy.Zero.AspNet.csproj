@@ -46,23 +46,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fireasy.Common, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Common.2.0.4\lib\net45\Fireasy.Common.dll</HintPath>
+    <Reference Include="Fireasy.Common, Version=2.0.0.46086, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Common.2.0.5\lib\net45\Fireasy.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.2.0.4\lib\net45\Fireasy.Data.dll</HintPath>
+    <Reference Include="Fireasy.Data, Version=2.0.0.46086, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.2.0.5\lib\net45\Fireasy.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data.Entity, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.Entity.2.0.4\lib\net45\Fireasy.Data.Entity.dll</HintPath>
+    <Reference Include="Fireasy.Data.Entity, Version=2.0.0.46086, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.Entity.2.0.5\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Redis, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
       <HintPath>..\packages\Fireasy.Redis.2.0.3\lib\net45\Fireasy.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Web.EasyUI, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.EasyUI.2.0.2\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
+    <Reference Include="Fireasy.Web.EasyUI, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Web.EasyUI.2.0.4\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Web.Mvc, Version=2.0.0.46082, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.Mvc.2.0.2\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
+    <Reference Include="Fireasy.Web.Mvc, Version=2.0.0.46084, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Web.Mvc.2.0.4\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>

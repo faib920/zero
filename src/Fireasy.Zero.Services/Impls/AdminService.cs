@@ -146,7 +146,7 @@ namespace Fireasy.Zero.Services.Impls
 
                 if (context.SysUsers.Any(s => s.Mobile == info.Mobile && s.UserID != userId))
                 {
-                    throw new ClientNotificationException(string.Format("手机号为{0}的用户已经存在。", info.Name));
+                    throw new ClientNotificationException(string.Format("手机号为{0}的用户已经存在。", info.Mobile));
                 }
 
                 var userRoles = new List<SysUserRole>();
@@ -313,7 +313,7 @@ namespace Fireasy.Zero.Services.Impls
                             OrgName = s.SysOrg.FullName,
                             SexName = s.Sex.GetDescription()
                         })
-                    .OrderBy(sorting)
+                    .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
                     .ToList();
             }
         }

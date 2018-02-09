@@ -7,8 +7,7 @@
 	<Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fireasy.Common" Version="2.0.4" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />
+    <PackageReference Include="Fireasy.Common" Version="2.0.5" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Authentication">
@@ -20,6 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions">
       <Version>2.0.1</Version>
     </PackageReference>
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fireasy.Zero.Infrastructure\Fireasy.Zero.Infrastructure.csproj" />

@@ -9,6 +9,7 @@ using System;
 using Fireasy.Data.Entity;
 using System.ComponentModel.DataAnnotations;
 using Fireasy.Data.Entity.Validation;
+using Fireasy.Data;
 
 namespace Fireasy.Zero.Models
 {
@@ -61,6 +62,13 @@ namespace Fireasy.Zero.Models
 
         [PropertyMapping(ColumnName = "Password", Description = "密码", Length = 50, IsNullable = true)]
         public virtual string Password { get; set; }
+
+        /// <summary>
+        /// 获取或设置身份证号。
+        /// </summary>
+
+        [PropertyMapping(ColumnName = "IDCard", Description = "身份证号", Length = 150, IsNullable = true, DataType = System.Data.DbType.String)]
+        public virtual CodedData IDCard { get; set; }
 
         /// <summary>
         /// 获取或设置手机号。
@@ -162,6 +170,13 @@ namespace Fireasy.Zero.Models
         /// </summary>
         [StringLength(50)]
         public object Password { get; set; }
+
+        /// <summary>
+        /// 属性 IDCard 的验证特性。
+        /// </summary>
+        [StringLength(18)]
+        [IDCard]
+        public object IDCard { get; set; }
 
         /// <summary>
         /// 属性 Mobile 的验证特性。

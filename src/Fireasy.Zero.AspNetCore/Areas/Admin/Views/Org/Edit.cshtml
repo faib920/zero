@@ -1,0 +1,115 @@
+﻿@model SysOrg
+@{
+    ViewBag.Title = "机构信息";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+<script type="text/javascript">
+    var id = '@Context.Request.Query["id"]';
+    var pid = '@Context.Request.Query["parentId"]';
+
+    $(function () {
+        loadInfo();
+    });
+
+    //加载机构
+    function loadOrgs() {
+        $('#cboParent').combotree({
+            url: "@Url.Action("DataDemand")?targetId=" + pid + '&currentId=' + id + '&flag=3',
+            onLoadSuccess: function () {
+                if (pid != '' && pid != null) {
+                    $('#cboParent').combotree('setValue', pid);
+                }
+            },
+            onSelect: function (row) {
+                getNextOrderNo(row.id);
+            }
+        });
+    }
+
+    function getNextOrderNo(parentId) {
+        $.getJSON('@Url.Action("GetNextOrderNo")?parentId=' + parentId, function (data) {
+            $('#txtOrderNo').numberbox('setValue', data);
+        });
+    }
+
+    //加载信息
+    function loadInfo() {
+        if (id !== '') {
+            $.getJSON('@Url.Action("Get")?id=' + id, function (data) {
+                common.processResult(data, function () {
+                    $('#form1').form('load', data);
+                    pid = data.ParentId;
+                    sid = data.ParentSchemaId;
+                    tid = data.SchemaID;
+                    loadOrgs();
+                });
+            });
+
+            $('#btnSaveAndNew').remove();
+        }
+        else {
+            getNextOrderNo(pid);
+            loadOrgs();
+        }
+    }
+
+    //保存信息
+    function saveInfo(isNew) {
+        if (!$('#form1').form('validate')) {
+            return;
+        }
+
+        var postData = new Object();
+
+        //将表单填充的内容序列化为json
+        var data = $('#form1').form('save');
+        data.ParentId = $('#cboParent').combotree('getValue');
+        postData["info"] = JSON.stringify(data);
+        common.antiToken(postData);
+
+        common.showProcess();
+        $.post('@Url.Action("Save")?id=' + id, postData, function (result) {
+            common.processResult(result, function () {
+                if (isNew) {
+                    $('#form1').form('clear');
+
+                    getNextOrderNo(data.ParentId);
+                }
+
+                common.setReturnValue(true);
+
+                if (common.closeWhenSave && !isNew) {
+                    common.closeWindow();
+                }
+            });
+        });
+    }
+
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <table class="form-body">
+
+        <tr>
+            <td class="addon">上级部门</td>
+            <td>@Html.ComboTree("Parent").MarkNoClear().Style("width:200px")</td>
+        </tr>
+        <tr>
+            <td class="addon">名称</td>
+            <td>@Html.TextBox(s => s.Name).Style("width:200px")</td>
+        </tr>
+        <tr>
+            <td class="addon">属性</td>
+            <td>@Html.RadioGroup(s => s.Attribute, typeof(OrgAttribute), new RadioGroupSettings { Value = "1" }).Style("width:200px").MarkNoClear()</td>
+        </tr>
+        <tr>
+            <td class="addon">排序</td>
+            <td>@Html.NumberBox(s => s.OrderNo).Style("width:200px")</td>
+        </tr>
+    </table>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
+    <a class="easyui-linkbutton" onclick="saveInfo(true)" id="btnSaveAndNew" data-options="iconCls:'icon-save_new'">保存并新建</a>
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>

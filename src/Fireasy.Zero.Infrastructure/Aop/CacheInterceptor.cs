@@ -105,7 +105,7 @@ namespace Fireasy.Zero.Infrastructure.Aop
                 sb.AppendFormat("&{0}=", parameters[i].Name);
                 if (info.Arguments[i] != null)
                 {
-                    if (typeof(IEnumerable).IsAssignableFrom(parameters[i].ParameterType))
+                    if (typeof(IEnumerable).IsAssignableFrom(parameters[i].ParameterType) && typeof(string) != parameters[i].ParameterType)
                     {
                         sb.Append("[");
 

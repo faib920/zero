@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_EasyUILayout.cshtml";
 }
 <script type="text/javascript">
-    var id = '@Request.QueryString["id"]';
+    var id = '@Context.Request.Query["id"]';
     var orgId = '';
     var post = '';
 

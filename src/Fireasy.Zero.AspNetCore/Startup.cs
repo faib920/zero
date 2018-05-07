@@ -1,8 +1,10 @@
 using Fireasy.Common.Ioc;
-using Fireasy.Common.Subscribe;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Subscribes;
+using Fireasy.Web.Mvc;
+using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
+using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,13 +34,15 @@ namespace Fireasy.Zero.AspNetCore
                 .AddIoc(ContainerUnity.GetContainer());
 
             services.AddMvc()
+                .AddSessionStateTempDataProvider()
                 .ConfigureFireasyMvc(options =>
                     {
                         options.Converters.Add(new LightEntityJsonConverter());
                     })
                 .ConfigureEasyUI();
 
-            services.AddSession();
+            services.AddSession()
+                .AddSessionRevive<SessionReviveNotification>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -63,6 +67,7 @@ namespace Fireasy.Zero.AspNetCore
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseSession();
+            app.UseSessionRevive();
 
             app.UseMvc(routes =>
                 {
@@ -73,6 +78,33 @@ namespace Fireasy.Zero.AspNetCore
                         name: "default",
                         template: "{controller=Home}/{action=Index}/{id?}");
                 });
+        }
+
+        /// <summary>
+        /// Session 复活时自动设置 <see cref="SessionContext"/> 对象。
+        /// </summary>
+        class SessionReviveNotification : ISessionReviveNotification
+        {
+            private IAdminService adminService;
+
+            public SessionReviveNotification(IAdminService adminService)
+            {
+                this.adminService = adminService;
+            }
+
+            public void Invoke(HttpContext context)
+            {
+                var userId = context.GetIdentity();
+                if (userId != 0)
+                {
+                    var user = adminService.GetUser(userId);
+                    if (user != null)
+                    {
+                        var session = new SessionContext { UserID = userId, UserName = user.Name, OrgID = user.OrgID };
+                        context.SetSession(session);
+                    }
+                }
+            }
         }
     }
 }

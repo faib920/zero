@@ -182,7 +182,7 @@
             singleSelect: true,
             border: false,
             columns: [[
-                { field: 'Name', title: '匹配的机构', width: 166 }
+                { field: 'FullName', title: '匹配的机构', width: 400 }
             ]],
             onClickRow: function (index, row) {
                 gotoNode(row.OrgID);
@@ -269,6 +269,6 @@
         </div>
     </div>
 </div>
-<div id="win" class="easyui-window" title="查找结果" data-options="collapsible:false,minimizable:false,maximizable:false,closable:true,closed:true" style="width: 300px; height: 400px;">
+<div id="win" class="easyui-window" title="查找结果" data-options="collapsible:false,minimizable:false,maximizable:false,closable:true,closed:true" style="width: 450px; height: 400px;">
     <table id="dgNavigate"></table>
 </div>

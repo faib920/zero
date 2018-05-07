@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+
+<script type="text/javascript">
+    var id = '@Context.Request.Query["id"]';
+    var editIndex = -1;
+
+    var icons = @Html.Raw(ViewBag.Icons);
+
+    $(function () {
+        loadUsers();
+    });
+
+    //加载数据
+    function loadUsers() {
+        $('#dg').datagrid({
+            url: '@Url.Action("Data")?moduleId=' + id,
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: false,//分页信息
+            rownumbers: true,//显示行号
+            pageNumber: 1,//默认显示第一页
+            pageSize:20,//每页的行数
+            idField: 'OperID',
+            border: false,
+            columns: [[
+
+                { field: 'Code', title: '编码', width: 150, halign: 'center', align: 'left', editor: { type: 'textbox', options: { required: true } } },
+                { field: 'Name', title: '名称', width: 150, halign: 'center', align: 'left', editor: { type: 'textbox', options: { required: true } } },
+                { field: 'Icon', title: '图标', width: 120, halign: 'center', align: 'center', editor: { type: 'combobox', options: { data: icons, valueField: 'Name', textField: 'Name', formatter: function(r) { return formatIcon(r.Name); } } }, formatter: formatIcon }
+            ]],
+            onClickRow: function (rowIndex) {
+                if (editIndex != -1) {
+                    $('#dg').datagrid('endEdit', editIndex);
+                }
+                $('#dg').datagrid('beginEdit', rowIndex);
+                editIndex = rowIndex;
+            }
+        });
+    }
+
+    function formatIcon(value) {
+        return '<div style="margin-left:45%;width:20px;height:20px" class="' + value + '"></div>';
+    }
+
+    //添加信息
+    function addInfo() {
+        if (editIndex != -1) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = -1;
+        }
+
+        var index = $('#dg').datagrid('getRows').length;
+        $('#dg').datagrid('appendRow', { Code: '', Name: '' });
+        $('#dg').datagrid('beginEdit', index);
+        editIndex = index;
+    }
+
+    function addStandard() {
+        var operators = [
+            { Code: 'Add', Name: '添加', Icon: 'icon-add' },
+            { Code: 'Edit', Name: '修改', Icon: 'icon-edit' },
+            { Code: 'Delete', Name: '删除', Icon: 'icon-delete' },
+            { Code: 'Enable', Name: '启用', Icon: 'icon-enable' },
+            { Code: 'Disable', Name: '禁用', Icon: 'icon-disable' }
+        ];
+
+        if (editIndex != -1) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = -1;
+        }
+
+        for (var i = 0; i < operators.length; i++) {
+            $('#dg').datagrid('appendRow', operators[i]);
+        }
+    }
+
+    //删除信息
+    function deleteInfo() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        if (editIndex != -1) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = -1;
+        }
+
+        var index = $('#dg').datagrid('getRowIndex', row);
+        $('#dg').datagrid('deleteRow', index);
+    }
+
+    function moveUp() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var rowIndex = $('#dg').datagrid('getRowIndex', row);
+        if (rowIndex == 0) {
+            common.alert('已经移到第一行。');
+            return;
+        }
+
+        if (editIndex != -1) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = -1;
+        }
+
+        var prev = $('#dg').datagrid('getRows')[rowIndex - 1];
+        var svaed = { Code: row.Code, Name: row.Name, Icon: row.Icon };
+        $('#dg').datagrid('updateRow', { index: rowIndex, row: prev });
+        $('#dg').datagrid('updateRow', { index: rowIndex - 1, row: svaed });
+
+        $('#dg').datagrid('selectRow', rowIndex - 1)
+    }
+
+    function moveDown() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var rows = $('#dg').datagrid('getRows');
+        var rowIndex = $('#dg').datagrid('getRowIndex', row);
+        if (rowIndex == rows.length - 1) {
+            common.alert('已经移到最后一行。');
+            return;
+        }
+
+        if (editIndex != -1) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = -1;
+        }
+
+        var prev = rows[rowIndex + 1];
+        var svaed = { Code: row.Code, Name: row.Name, Icon: row.Icon };
+        $('#dg').datagrid('updateRow', { index: rowIndex, row: prev });
+        $('#dg').datagrid('updateRow', { index: rowIndex + 1, row: svaed });
+
+        $('#dg').datagrid('selectRow', rowIndex + 1)
+    }
+
+    function saveInfo() {
+        if (editIndex != -1) {
+            $('#dg').datagrid('endEdit', editIndex);
+            editIndex = -1;
+        }
+
+        var added = $('#dg').datagrid('getChanges', 'inserted');
+        var updated = $('#dg').datagrid('getChanges', 'updated');
+        var deleted = $('#dg').datagrid('getChanges', 'deleted');
+        var postData = new Object();
+        postData.added = JSON.stringify(added);
+        postData.updated = JSON.stringify(updated);
+        postData.deleted = JSON.stringify(deleted);
+
+        common.showProcess();
+        $.post('@Url.Action("SaveRows")?moduleId=' + id, postData, function (result) {
+            common.processResult(result, function () {
+                common.closeWindow();
+            })
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+        <div data-options="region:'north',border:false" style="height:37px">
+            <div class="datagrid-toolbar">
+                <a class="easyui-linkbutton" onclick="addInfo()" data-options="iconCls:'icon-add',plain:true">添加</a>
+                <a class="easyui-linkbutton" onclick="addStandard()" data-options="iconCls:'icon-add',plain:true">添加标准按钮</a>
+                <a class="easyui-linkbutton" onclick="deleteInfo()" data-options="iconCls:'icon-delete',plain:true">删除</a>
+                <a class="easyui-linkbutton" onclick="moveUp()" data-options="iconCls:'icon-up',plain:true">上移</a>
+                <a class="easyui-linkbutton" onclick="moveDown()" data-options="iconCls:'icon-down',plain:true">下移</a>
+            </div>
+        </div>
+        <div data-options="region:'center',border:false">
+            <table id="dg"></table>
+        </div>
+    </div>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>

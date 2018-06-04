@@ -5,11 +5,15 @@
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
 	<Reference Include="System.Web" />
+    <PackageReference Include="NPOI" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fireasy.Common" Version="2.0.10" />
+    <PackageReference Include="Fireasy.Common" Version="2.0.12" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="DotNetCore.NPOI">
+      <Version>1.0.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication">
       <Version>2.0.1</Version>
     </PackageReference>
@@ -19,7 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions">
       <Version>2.0.1</Version>
     </PackageReference>
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0004" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fireasy.Zero.Infrastructure\Fireasy.Zero.Infrastructure.csproj" />

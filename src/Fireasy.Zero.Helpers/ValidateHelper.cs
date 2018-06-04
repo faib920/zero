@@ -15,8 +15,10 @@ using System.Drawing.Text;
 #else
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing.Transforms;
+using SixLabors.ImageSharp.Processing.Text;
 using System.Numerics;
 #endif
 using System.IO;
@@ -85,6 +87,7 @@ namespace Fireasy.Zero.Helpers
             using (var img = new Image<Rgba32>(width, height))   //画布大小
             {
                 var fontFamily = new FontCollection().Install(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/fonts", "CONSOLA.TTF"));
+                var option = new TextGraphicsOptions() { Antialias = true };
 
                 img.Mutate(p =>
                     {
@@ -93,8 +96,8 @@ namespace Fireasy.Zero.Helpers
                         {
                             var color = Rgba32.White;
                             p.Rotate(ran.Next(-5, 5));
-                            p.DrawText(c.ToString(), new Font(fontFamily, 22), color, new Vector2(x, 0), TextGraphicsOptions.Default);
-                            p.Rotate(RotateType.None);
+                            p.DrawText(option, c.ToString(), new Font(fontFamily, 22), color, new Vector2(x, 0));
+                            p.Rotate(RotateMode.None);
                             x += 18;
                         }
                     });

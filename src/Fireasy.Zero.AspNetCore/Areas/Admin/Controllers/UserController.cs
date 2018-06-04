@@ -146,6 +146,24 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         }
 
         /// <summary>
+        /// 导出数据。
+        /// </summary>
+        /// <param name="orgCode">机构编码</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="state">启用状态</param>
+        /// <returns></returns>
+        public FileResult Export(string orgCode, string keyword, StateFlags? state)
+        {
+            var userId = HttpContext.GetSession().UserID;
+
+            var list = adminService.GetUsers(userId, orgCode, state, keyword, null, null);
+
+            var bytes = ExcelHelper.Export("\\templates\\user.xlsx", list, null);
+
+            return File(bytes, "application/vnd.ms-excel", "企业用户.xlsx");
+        }
+
+        /// <summary>
         /// 删除用户。
         /// </summary>
         /// <param name="id">id</param>

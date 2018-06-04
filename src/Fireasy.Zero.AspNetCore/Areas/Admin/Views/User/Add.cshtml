@@ -8,6 +8,7 @@
     var dim = new dim('#dg', [
         { field: 'Name', title: '姓名', width: 120, align: 'left', editor: { type: 'textbox' } },
         { field: 'Sex', title: '性别', width: 100, align: 'left', editor: { type: 'combobox', options: { data: @Html.BindEnum(typeof(Sex)), valueField: 'Value', textField: 'Name', panelHeight: 'auto' } } },
+        { field: 'IDCard', title: '身份证号', width: 200, align: 'left', editor: { type: 'textbox' }  },
         { field: 'Mobile', title: '手机号', width: 160, align: 'left', editor: { type: 'textbox' }  },
         { field: 'Email', title: '电子邮件', width: 180, align: 'left', editor: { type: 'textbox' } }
     ]);

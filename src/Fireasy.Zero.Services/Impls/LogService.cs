@@ -1,4 +1,5 @@
 ﻿using Fireasy.Common;
+using Fireasy.Common.Logging;
 using Fireasy.Zero.Models;
 using System;
 
@@ -8,6 +9,7 @@ namespace Fireasy.Zero.Services.Impls
     {
         public void Debug(object message, Exception exception = null)
         {
+            DefaultLogger.Instance.Debug(message, exception);
         }
 
         public void Error(object message, Exception exception = null)
@@ -31,6 +33,7 @@ namespace Fireasy.Zero.Services.Impls
 
         public void Fatal(object message, Exception exception = null)
         {
+            Error(message, exception);
         }
 
         public void Info(object message, Exception exception = null)
@@ -49,6 +52,7 @@ namespace Fireasy.Zero.Services.Impls
 
         public void Warn(object message, Exception exception = null)
         {
+            Error(message, exception);
         }
     }
 }

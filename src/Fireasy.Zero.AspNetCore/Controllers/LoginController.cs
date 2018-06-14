@@ -40,6 +40,7 @@ namespace Fireasy.Zero.AspNetCore.Controllers
                 HttpContext.SetSession(session);
                 HttpContext.SignIn(session);
 
+                LogHelper.Info("dfafafsadf");
                 return Json(Result.Success("登录成功"));
             }
 

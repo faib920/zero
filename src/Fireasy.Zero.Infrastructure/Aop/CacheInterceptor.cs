@@ -51,17 +51,23 @@ namespace Fireasy.Zero.Infrastructure.Aop
                 var cacheMgr = CacheManagerFactory.CreateManager();
                 var cacheKey = GetCacheKey(info);
 
-                //检查缓存管理器里有没有对应的缓存项，如果有的话直接取出来赋给 ReturnValue，然后设置 Cancel 忽略方法调用
-                if (cacheMgr.Contains(cacheKey))
+                try
                 {
-                    var returnType = (info.Member as MethodInfo).ReturnType;
-                    var method = MthCacheTryGet.MakeGenericMethod(returnType);
-                    info.ReturnValue = method.FastInvoke(cacheMgr, new object[] { cacheKey, null, null });
-
-                    if (info.ReturnValue != null)
+                    //检查缓存管理器里有没有对应的缓存项，如果有的话直接取出来赋给 ReturnValue，然后设置 Cancel 忽略方法调用
+                    if (cacheMgr.Contains(cacheKey))
                     {
-                        info.Cancel = true;
+                        var returnType = (info.Member as MethodInfo).ReturnType;
+                        var method = MthCacheTryGet.MakeGenericMethod(returnType);
+                        info.ReturnValue = method.FastInvoke(cacheMgr, new object[] { cacheKey, null, null });
+
+                        if (info.ReturnValue != null)
+                        {
+                            info.Cancel = true;
+                        }
                     }
+                }
+                catch (Exception exp)
+                {
                 }
             }
         }
@@ -82,13 +88,19 @@ namespace Fireasy.Zero.Infrastructure.Aop
                 var cacheMgr = CacheManagerFactory.CreateManager();
                 var cacheKey = GetCacheKey(info);
 
-                CacheKeyManager.AddKeys(returnType, cacheKey);
-                if (relationTypes.Count > 0)
+                try
                 {
-                    CacheKeyManager.AddKeys(relationTypes, cacheKey);
-                }
+                    cacheMgr.Add(cacheKey, info.ReturnValue, TimeSpan.FromSeconds(attr.Expired));
 
-                cacheMgr.Add(cacheKey, info.ReturnValue, TimeSpan.FromSeconds(attr.Expired));
+                    CacheKeyManager.AddKeys(returnType, cacheKey);
+                    if (relationTypes.Count > 0)
+                    {
+                        CacheKeyManager.AddKeys(relationTypes, cacheKey);
+                    }
+                }
+                catch (Exception exp)
+                {
+                }
             }
         }
         private static string GetCacheKey(InterceptCallInfo info)

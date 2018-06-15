@@ -118,7 +118,7 @@ namespace Fireasy.Zero.Helpers
         /// <param name="code">验证码。</param>
         public static void Cache(string key, string code)
         {
-            var cacheMgr = CacheManagerFactory.CreateManager();
+            var cacheMgr = MemoryCacheManager.Instance;
             cacheMgr.Add("Validate_" + key, code, new RelativeTime(TimeSpan.FromMinutes(5)));
         }
 
@@ -130,7 +130,7 @@ namespace Fireasy.Zero.Helpers
         /// <returns></returns>
         public static bool Validate(string key, string code)
         {
-            var cacheMgr = CacheManagerFactory.CreateManager();
+            var cacheMgr = MemoryCacheManager.Instance;
             var vcode = string.Empty;
             if (cacheMgr.TryGet("Validate_" + key, out vcode))
             {

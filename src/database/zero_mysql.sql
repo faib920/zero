@@ -808,7 +808,7 @@ CREATE TABLE `sysuser` (
 -- ----------------------------
 -- Records of sysuser
 -- ----------------------------
-INSERT INTO `sysuser` VALUES ('2', '437', '管理员', 'admin', 'AF1840C63B15707358491367647927F4', null, null, '13888384677', null, '1', 'GLY', '1', '2018-06-27 09:19:05.2455399', 'bhjeDo39yxchVf/2ZScTiNVKJaqv6vrY7sW3HNNo3N40FNfGtzp2ofG9CFyjL47tCdlIjkFTz9AGM+O5bdYK2CFH9RIGhuadmNdjtRV7fyWTT+pCrFtXEwt9eEWqULd6oIGsLyrXC+HQQgA2dGf6iHMVjXjX4+ez', '924dffc872998bc904283e3dfbce82fc394af17a', null);
+INSERT INTO `sysuser` VALUES ('2', '437', '管理员', 'admin', 'AF1840C63B15707358491367647927F4', null, null, '', null, '1', 'GLY', '1', '2018-06-27 09:19:05.2455399', 'bhjeDo39yxchVf/2ZScTiNVKJaqv6vrY7sW3HNNo3N40FNfGtzp2ofG9CFyjL47tCdlIjkFTz9AGM+O5bdYK2CFH9RIGhuadmNdjtRV7fyWTT+pCrFtXEwt9eEWqULd6oIGsLyrXC+HQQgA2dGf6iHMVjXjX4+ez', '924dffc872998bc904283e3dfbce82fc394af17a', null);
 INSERT INTO `sysuser` VALUES ('3', '718', '黄春海', null, '83EF12684CAE1AA9DE450CB741586C3B', null, null, null, null, '2', 'HCH', '1', null, null, null, null);
 INSERT INTO `sysuser` VALUES ('4', '685', '黄芳洲', null, '83EF12684CAE1AA9DE450CB741586C3B', null, null, null, null, '2', 'HFZ', '1', null, null, null, null);
 INSERT INTO `sysuser` VALUES ('5', '666', '黄涵梅', null, '83EF12684CAE1AA9DE450CB741586C3B', null, null, null, null, '2', 'HHM', '1', null, null, null, null);

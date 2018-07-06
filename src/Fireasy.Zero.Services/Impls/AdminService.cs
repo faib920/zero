@@ -298,6 +298,9 @@ namespace Fireasy.Zero.Services.Impls
         {
             using (var context = new DbContext())
             {
+                var dictDegree = context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToList();
+                var dictTitle = context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToList();
+
                 return context.SysUsers
                     .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                     //.AssertRight(userId, orgCode)
@@ -311,7 +314,9 @@ namespace Fireasy.Zero.Services.Impls
                     .ExtendSelect(s => new SysUser
                         {
                             OrgName = s.SysOrg.FullName,
-                            SexName = s.Sex.GetDescription()
+                            SexName = s.Sex.GetDescription(),
+                            DegreeName = dictDegree.FirstOrDefault(t => t.Value == s.DegreeNo).AssertNotNull(t => t.Name),
+                            TitleName = dictTitle.FirstOrDefault(t => t.Value == s.TitleNo).AssertNotNull(t => t.Name),
                         })
                     .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
                     .ToList();
@@ -1505,5 +1510,24 @@ UNION ALL
             }
         }
         #endregion
+
+        #region 字典
+        /// <summary>
+        /// 根据类别编码获取字典项。
+        /// </summary>
+        /// <param name="typeCode"></param>
+        /// <returns></returns>
+        public virtual List<SysDictItem> GetDictItems(string typeCode)
+        {
+            using (var context = new DbContext())
+            {
+                return context.SysDictItems
+                    .Where(s => s.SysDictType.Code == typeCode)
+                    .OrderBy(s => s.OrderNo)
+                    .ToList();
+            }
+        }
+        #endregion
+
     }
 }

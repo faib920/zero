@@ -448,5 +448,14 @@ namespace Fireasy.Zero.Services
         /// <returns></returns>
         List<string> GetPurviewOrgs(int userId);
         #endregion
+
+        #region 字典
+        /// <summary>
+        /// 根据类别编码获取字典项。
+        /// </summary>
+        /// <param name="typeCode"></param>
+        /// <returns></returns>
+        List<SysDictItem> GetDictItems(string typeCode);
+        #endregion
     }
 }

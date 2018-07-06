@@ -115,14 +115,14 @@
             <td class="addon">性别</td>
             <td>@Html.ComboBox(s => s.Sex, typeof(Sex), new ComboBoxSettings { Value = "0" }).Style("width:200px").MarkNoClear()</td>
         </tr>
-        @*<tr>
+        <tr>
             <td class="addon">学历</td>
-            <td>@Html.ComboBox(s => s.DegreeNo, new ComboBoxSettings { Url = Url.BindDict(DicName.Degree, flag: ItemFlag.Select).ToString(), ValueField = "id", TextField = "text" }).Style("width:200px")</td>
+            <td>@Html.ComboBox(s => s.DegreeNo, new ComboBoxSettings { Url = Url.Action("GetDictItems", "DictItem") + "?typeCode=Degree", ValueField = "Value", TextField = "Name" }).Style("width:200px")</td>
         </tr>
         <tr>
             <td class="addon">职称</td>
-            <td>@Html.ComboBox(s => s.TitleNo, new ComboBoxSettings { Url = Url.BindDict(DicName.Title, flag: ItemFlag.Select).ToString(), ValueField = "id", TextField = "text" }).Style("width:200px")</td>
-        </tr>*@
+            <td>@Html.ComboBox(s => s.TitleNo, new ComboBoxSettings { Url = Url.Action("GetDictItems", "DictItem") + "?typeCode=Title", ValueField = "Value", TextField = "Name" }).Style("width:200px")</td>
+        </tr>
         <tr>
             <td class="addon">手机号</td>
             <td>@Html.TextBox(s => s.Mobile).Style("width:200px")</td>

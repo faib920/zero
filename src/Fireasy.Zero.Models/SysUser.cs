@@ -127,6 +127,20 @@ namespace Fireasy.Zero.Models
         public virtual string DeviceNo { get; set; }
 
         /// <summary>
+        /// 获取或设置学历。
+        /// </summary>
+
+        [PropertyMapping(ColumnName = "DegreeNo", Description = "学历", IsNullable = true)]
+        public virtual int? DegreeNo { get; set; }
+
+        /// <summary>
+        /// 获取或设置职称。
+        /// </summary>
+
+        [PropertyMapping(ColumnName = "TitleNo", Description = "职称", IsNullable = true)]
+        public virtual int? TitleNo { get; set; }
+
+        /// <summary>
         /// 获取或设置关联 <see cref="SysOrg"/> 对象。
         /// </summary>
         public virtual SysOrg SysOrg { get; set; }

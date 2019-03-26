@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{FB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fireasy.Zero.Helpers", "Fireasy.Zero.Helpers\Fireasy.Zero.Helpers.csproj", "{E8B3D0B1-6D36-460F-B207-B1E20DB3F189}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fireasy.Zero.React", "Fireasy.Zero.React\Fireasy.Zero.React.csproj", "{C2C93A50-3131-4552-887C-4BDD3E2A04C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fireasy.Zero.WebSockets", "Fireasy.Zero.WebSockets\Fireasy.Zero.WebSockets.csproj", "{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{E8B3D0B1-6D36-460F-B207-B1E20DB3F189}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8B3D0B1-6D36-460F-B207-B1E20DB3F189}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8B3D0B1-6D36-460F-B207-B1E20DB3F189}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2C93A50-3131-4552-887C-4BDD3E2A04C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2C93A50-3131-4552-887C-4BDD3E2A04C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2C93A50-3131-4552-887C-4BDD3E2A04C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2C93A50-3131-4552-887C-4BDD3E2A04C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

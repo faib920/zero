@@ -8,7 +8,7 @@
     <PackageReference Include="NPOI" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fireasy.Common" Version="2.0.14" />
+    <PackageReference Include="Fireasy.Common" Version="2.0.19" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="DotNetCore.NPOI">
@@ -23,7 +23,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions">
       <Version>2.0.1</Version>
     </PackageReference>
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0004" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fireasy.Zero.Infrastructure\Fireasy.Zero.Infrastructure.csproj" />

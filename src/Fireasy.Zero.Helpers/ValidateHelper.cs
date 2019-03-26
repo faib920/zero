@@ -7,20 +7,10 @@
 // -----------------------------------------------------------------------
 using Fireasy.Common.Caching;
 using System;
-#if !NETSTANDARD2_0
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
-#else
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing.Transforms;
-using SixLabors.ImageSharp.Processing.Text;
-using System.Numerics;
-#endif
 using System.IO;
 using System.Text;
 
@@ -59,7 +49,6 @@ namespace Fireasy.Zero.Helpers
         {
             var ran = new Random();
 
-#if !NETSTANDARD2_0
             using (var bmp = new Bitmap(width, height))
             using (var graphics = Graphics.FromImage(bmp))
             {
@@ -83,32 +72,6 @@ namespace Fireasy.Zero.Helpers
                     return memory.ToArray();
                 }
             }
-#else
-            using (var img = new Image<Rgba32>(width, height))   //画布大小
-            {
-                var fontFamily = new FontCollection().Install(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/fonts", "CONSOLA.TTF"));
-                var option = new TextGraphicsOptions() { Antialias = true };
-
-                img.Mutate(p =>
-                    {
-                        var x = 2;
-                        foreach (var c in code)
-                        {
-                            var color = Rgba32.White;
-                            p.Rotate(ran.Next(-5, 5));
-                            p.DrawText(option, c.ToString(), new Font(fontFamily, 22), color, new Vector2(x, 0));
-                            p.Rotate(RotateMode.None);
-                            x += 18;
-                        }
-                    });
-
-                using (var memory = new MemoryStream())
-                {
-                    img.SaveAsPng(memory);
-                    return memory.ToArray();
-                }
-            }
-#endif
         }
 
         /// <summary>

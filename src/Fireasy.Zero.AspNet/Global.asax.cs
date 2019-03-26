@@ -1,6 +1,6 @@
 ﻿using Fireasy.Common.Ioc;
 using Fireasy.Common.Serialization;
-using Fireasy.Common.Subscribe;
+using Fireasy.Common.Subscribes;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Web.EasyUI.Binders;

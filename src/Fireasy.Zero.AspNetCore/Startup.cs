@@ -29,7 +29,7 @@ namespace Fireasy.Zero.AspNetCore
             services.AddFireasy(Configuration, options =>
                 {
                     //注册实体持久化的订阅通知
-                    options.AddSubscribe<EntityPersistentSubject>(new EntitySubscriber());
+                    options.AddSubscriber<EntityPersistentSubject>(string.Empty, subject => new EntitySubscriber().Accept(subject));
                 })
                 .AddIoc(ContainerUnity.GetContainer());
 
@@ -37,7 +37,7 @@ namespace Fireasy.Zero.AspNetCore
                 .AddSessionStateTempDataProvider()
                 .ConfigureFireasyMvc(options =>
                     {
-                        options.Converters.Add(new LightEntityJsonConverter());
+                        options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
                     })
                 .ConfigureEasyUI();
 

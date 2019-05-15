@@ -1,3 +1,4 @@
+using Fireasy.Common;
 using Fireasy.Common.Ioc;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Subscribes;
@@ -5,6 +6,7 @@ using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
+using Fireasy.Zero.Services.Impls;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,7 +33,12 @@ namespace Fireasy.Zero.AspNetCore
                     //注册实体持久化的订阅通知
                     options.AddSubscriber<EntityPersistentSubject>(string.Empty, subject => new EntitySubscriber().Accept(subject));
                 })
-                .AddIoc(ContainerUnity.GetContainer());
+                .AddIoc(ContainerUnity.GetContainer()) //添加 appsettings.json 里的 ioc 配置
+                .AddEntityContext<DbContext>(options =>
+                    {
+                        options.AutoCreateTables = true; //此项为 true 时, 采用 codefirst 模式维护数据库表
+                        options.NotifyEvents = true; //此项设为 true 时, 上面的实体持久化订阅通知才会触发
+                    });
 
             services.AddMvc()
                 .AddSessionStateTempDataProvider()
@@ -84,15 +91,9 @@ namespace Fireasy.Zero.AspNetCore
         /// </summary>
         class SessionReviveNotification : ISessionReviveNotification
         {
-            private IAdminService adminService;
-
-            public SessionReviveNotification(IAdminService adminService)
-            {
-                this.adminService = adminService;
-            }
-
             public void Invoke(HttpContext context)
             {
+                var adminService = context.RequestServices.GetRequiredService<IAdminService>();
                 var userId = context.GetIdentity();
                 if (userId != 0)
                 {

@@ -1,6 +1,7 @@
 ﻿using Fireasy.Common.ComponentModel;
 using Fireasy.Common.Extensions;
 using Fireasy.Web.EasyUI;
+using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
@@ -74,23 +75,26 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <summary>
         /// 根据查询条件获取模块。
         /// </summary>
+        /// <param name="hosting">用来往 <see cref="JsonSerializeOption"/> 里加自定义的转换器。</param>
         /// <param name="id"></param>
         /// <param name="targetId"></param>
         /// <param name="currentId"></param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public JsonResult Data(int? id, int? targetId, int? currentId, ItemFlag? flag = null)
+        public JsonResult Data([FromServices]JsonSerializeOptionHosting hosting, int? id, int? targetId, int? currentId, ItemFlag? flag = null)
         {
             var converter = new DynamicTreeNodeJsonConverter<SysModule>(s => s.Name, s => s.Url, s => s.State);
+            hosting.Option.Converters.Add(converter);
+
             var list = adminService.GetModules(id, targetId, currentId, null);
 
             if (id != null)
             {
-                return this.Json(list, converter);
+                return Json(list);
             }
             else
             {
-                return this.Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }), converter);
+                return Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }));
             }
         }
 

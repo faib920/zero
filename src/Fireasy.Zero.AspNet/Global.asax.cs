@@ -41,7 +41,7 @@ namespace Fireasy.Zero.AspNet
             GlobalSetting.Converters.Add(new ContainerJsonConverter(container));
 
             //注册实体持久化的订阅通知
-            SubscribeManager.Register<EntityPersistentSubject>(new EntitySubscriber());
+            DefaultSubscribeManager.Instance.AddSubscriber<EntityPersistentSubject>(subject => new EntitySubscriber().Accept(subject));
         }
 
         private Container GetContainer()

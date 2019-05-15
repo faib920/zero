@@ -1,14 +1,12 @@
 ﻿using Fireasy.Common.Extensions;
-using Fireasy.Common.Ioc;
 using Fireasy.Common.Serialization;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Validation;
-using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,27 +18,14 @@ namespace Fireasy.Zero.AspNetCore
     public static class Extensions
     {
         /// <summary>
-        /// 包装 Json 数据。
+        /// 输出页面的工具栏按钮。
         /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="value"></param>
-        /// <param name="converters"></param>
+        /// <param name="html"></param>
         /// <returns></returns>
-        public static JsonResult Json(this Controller controller, object value, params JsonConverter[] converters)
-        {
-            var option = new JsonSerializeOption();
-            if (converters != null)
-            {
-                option.Converters.AddRange(converters);
-            }
-
-            return new JsonResultWrapper(value, option);
-        }
-
         public static IHtmlContent Toolbar(this IHtmlHelper html)
         {
             var session = html.ViewContext.HttpContext.GetSession();
-            var adminSvr = ContainerUnity.GetContainer().Resolve<IAdminService>();
+            var adminSvr = html.ViewContext.HttpContext.RequestServices.GetService<IAdminService>();
             var operates = adminSvr.GetPurviewOperates(session.UserID, html.ViewContext.HttpContext.Request.Path);
             var sb = new StringBuilder();
 

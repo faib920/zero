@@ -10,6 +10,9 @@ using System;
 
 namespace Fireasy.Zero.Infrastructure
 {
+    /// <summary>
+    /// 实体的事件订阅器。用于在维护实体时，移除相关的缓存键。
+    /// </summary>
     public class EntitySubscriber : Fireasy.Data.Entity.Subscribes.EntityPersistentSubscriber
     {
         protected override void OnCreate(Type entityType)

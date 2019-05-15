@@ -10,8 +10,18 @@ using Fireasy.Zero.Models;
 
 namespace Fireasy.Zero.Services.Impls
 {
-    internal class DbContext : EntityContext
+    public class DbContext : EntityContext
     {
+        public DbContext(EntityContextOptions options)
+            : base (options)
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
+
         /// <summary>
         /// 获取或设置 数据权限 实体仓储。
         /// </summary> 

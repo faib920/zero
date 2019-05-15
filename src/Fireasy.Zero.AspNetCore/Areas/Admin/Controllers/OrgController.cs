@@ -1,6 +1,7 @@
 ﻿using Fireasy.Common.ComponentModel;
 using Fireasy.Common.Extensions;
 using Fireasy.Web.EasyUI;
+using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
@@ -81,6 +82,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <summary>
         /// 根据查询条件获取机构。
         /// </summary>
+        /// <param name="hosting">用来往 <see cref="JsonSerializeOption"/> 里加自定义的转换器。</param>
         /// <param name="id"></param>
         /// <param name="targetId"></param>
         /// <param name="currentId"></param>
@@ -89,27 +91,30 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="attType">附加的信息。</param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public JsonResult DataDemand(int? id, int? targetId, int? currentId, OrgAttribute? attribute = null, StateFlags? state = null, ItemFlag? flag = null)
+        public JsonResult DataDemand([FromServices]JsonSerializeOptionHosting hosting, int? id, int? targetId, int? currentId, OrgAttribute? attribute = null, StateFlags? state = null, ItemFlag? flag = null)
         {
             var converter = new DynamicTreeNodeJsonConverter<SysOrg>(s => s.Name, s => s.Code, s => s.AttributeName, s => s.State);
+            hosting.Option.Converters.Add(converter);
 
             var list = adminService.GetOrgs(id, targetId, currentId, state, null, attribute);
 
-            return this.Json(id != null ? list : ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }), converter);
+            return Json(id != null ? list : ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }));
         }
 
         /// <summary>
         /// 根据查询条件获取机构。
         /// </summary>
+        /// <param name="hosting">用来往 <see cref="JsonSerializeOption"/> 里加自定义的转换器。</param>
         /// <param name="targetId"></param>
         /// <param name="attribute"></param>
         /// <param name="attType">附加的信息。</param>
         /// <param name="corpType">企业类别。</param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public JsonResult Data(int? targetId, OrgAttribute? attribute = null, ItemFlag? flag = null)
+        public JsonResult Data([FromServices]JsonSerializeOptionHosting hosting, int? targetId, OrgAttribute? attribute = null, ItemFlag? flag = null)
         {
             var converter = new DynamicTreeNodeJsonConverter<SysOrg>(s => s.Name, s => s.Code, s => s.AttributeName, s => s.State);
+            hosting.Option.Converters.Add(converter);
 
             var session = HttpContext.GetSession();
 
@@ -119,7 +124,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
                 ExpandTarget(list, (int)targetId);
             }
 
-            return this.Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }), converter);
+            return Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }));
         }
 
         /// <summary>

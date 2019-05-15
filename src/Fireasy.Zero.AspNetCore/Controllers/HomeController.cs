@@ -27,6 +27,12 @@ namespace Fireasy.Zero.AspNetCore.Controllers
             return View();
         }
 
+        [HttpGet]
+        public JsonResult TT()
+        {
+            throw new System.Exception("dfas");
+        }
+
         [AllowAnonymous]
         public IActionResult Error()
         {

@@ -7,6 +7,13 @@ namespace Fireasy.Zero.Services.Impls
 {
     public class LogService : ILogService
     {
+        private DbContext context;
+
+        public LogService(DbContext context)
+        {
+            this.context = context;
+        }
+
         public void Debug(object message, Exception exception = null)
         {
             DefaultLogger.Instance.Debug(message, exception);
@@ -19,16 +26,13 @@ namespace Fireasy.Zero.Services.Impls
                 return;
             }
 
-            using (var context = new DbContext())
+            context.SysLogs.Insert(new SysLog
             {
-                context.SysLogs.Insert(new SysLog
-                {
-                    LogTime = DateTime.Now,
-                    LogType = 2,
-                    Title = message.ToString(),
-                    Content = exception == null ? string.Empty : exception.Message
-                });
-            }
+                LogTime = DateTime.Now,
+                LogType = 2,
+                Title = message.ToString(),
+                Content = exception == null ? string.Empty : exception.Message
+            });
         }
 
         public void Fatal(object message, Exception exception = null)
@@ -38,16 +42,13 @@ namespace Fireasy.Zero.Services.Impls
 
         public void Info(object message, Exception exception = null)
         {
-            using (var context = new DbContext())
+            context.SysLogs.Insert(new SysLog
             {
-                context.SysLogs.Insert(new SysLog
-                {
-                    LogTime = DateTime.Now,
-                    LogType = 1,
-                    Title = message.ToString(),
-                    Content = exception == null ? string.Empty : exception.Message
-                });
-            }
+                LogTime = DateTime.Now,
+                LogType = 1,
+                Title = message.ToString(),
+                Content = exception == null ? string.Empty : exception.Message
+            });
         }
 
         public void Warn(object message, Exception exception = null)

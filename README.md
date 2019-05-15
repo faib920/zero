@@ -1,4 +1,4 @@
-# fireasy zero sample
+﻿# fireasy zero sample
 
 该 demo 演示了如何使用 fireasy 创建一个后台的管理系统。解决方案包含 asp.net mvc5 和 asp.net core 两个示例，使用 SQLite 数据库，基于 easyui 1.4.3 构建。
 
@@ -72,15 +72,28 @@ Startup 类文件里的配置
 ```C#
 public void ConfigureServices(IServiceCollection services)
 {
-	services.AddFireasy(Configuration)
-		.AddIoc(ContainerUnity.GetContainer()); //添加IOC容器
+	services.AddFireasy(Configuration, options =>
+		{
+			//注册实体持久化的订阅通知
+			options.AddSubscriber<EntityPersistentSubject>(string.Empty, subject => new EntitySubscriber().Accept(subject));
+		})
+		.AddIoc(ContainerUnity.GetContainer()) //添加 appsettings.json 里的 ioc 配置
+		.AddEntityContext<DbContext>(options =>
+		{
+			options.AutoCreateTables = true; //此项为 true 时, 采用 codefirst 模式维护数据库表
+			options.NotifyEvents = true; //此项设为 true 时, 上面的实体持久化订阅通知才会触发
+		});
 
 	services.AddMvc()
+		.AddSessionStateTempDataProvider()
 		.ConfigureFireasyMvc(options =>
-			{
-				options.Converters.Add(new LightEntityJsonConverter()); //action接收的实体对象，是经过 fireasy 底层处理过的
-			})
+		{
+			options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter()); //action接收的实体对象，是经过 fireasy 底层处理过的
+		})
 		.ConfigureEasyUI();
+
+	services.AddSession()
+		.AddSessionRevive<SessionReviveNotification>(); //session 复活
 
 }
 

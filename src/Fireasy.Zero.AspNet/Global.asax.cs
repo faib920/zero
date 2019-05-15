@@ -8,6 +8,7 @@ using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
+using Fireasy.Zero.Services.Impls;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -29,6 +30,8 @@ namespace Fireasy.Zero.AspNet
             //MVC控制器工厂添加IOC容器
             var container = GetContainer();
             ControllerBuilder.Current.SetControllerFactory(new ControllerFactory(container));
+
+            container.Register(() => new DbContext(new EntityContextOptions { AutoCreateTables = true, NotifyEvents = true }));
 
             //easyui验证绑定
             SettingsBindManager.RegisterBinder("validatebox", new ValidateBoxSettingBinder());

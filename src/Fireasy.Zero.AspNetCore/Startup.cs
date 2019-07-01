@@ -1,5 +1,8 @@
 using Fireasy.Common;
+using Fireasy.Common.Configuration;
 using Fireasy.Common.Ioc;
+using Fireasy.Common.Logging;
+using Fireasy.Common.Logging.Configuration;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Web.Mvc;

@@ -81,20 +81,20 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="currentId"></param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public JsonResult Data([FromServices]JsonSerializeOptionHosting hosting, int? id, int? targetId, int? currentId, ItemFlag? flag = null)
+        public JsonResult Data(int? id, int? targetId, int? currentId, ItemFlag? flag = null)
         {
             var converter = new DynamicTreeNodeJsonConverter<SysModule>(s => s.Name, s => s.Url, s => s.State);
-            hosting.Option.Converters.Add(converter);
+            //hosting.Option.Converters.Add(converter);
 
             var list = adminService.GetModules(id, targetId, currentId, null);
 
             if (id != null)
             {
-                return Json(list);
+                return this.Json(list, converter);
             }
             else
             {
-                return Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }));
+                return this.Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }), converter);
             }
         }
 

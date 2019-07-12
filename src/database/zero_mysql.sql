@@ -36,9 +36,9 @@ DROP TABLE IF EXISTS `sysdictitem`;
 CREATE TABLE `sysdictitem` (
   `ItemID` int(11) NOT NULL,
   `TypeID` int(11) NOT NULL,
-  `Code` longtext,
-  `Name` longtext,
-  `PyCode` longtext,
+  `Code` varchar(20),
+  `Name` varchar(100),
+  `PyCode` varchar(100),
   `Value` int(11) DEFAULT NULL,
   `OrderNo` int(11) DEFAULT NULL,
   `State` int(11) NOT NULL,
@@ -80,8 +80,8 @@ INSERT INTO `sysdictitem` VALUES ('3630', '1085', '003', '初级职称', 'CJZC',
 DROP TABLE IF EXISTS `sysdicttype`;
 CREATE TABLE `sysdicttype` (
   `TypeID` int(11) NOT NULL,
-  `Code` longtext,
-  `Name` longtext,
+  `Code` varchar(50),
+  `Name` varchar(100),
   `IsTree` int(11) NOT NULL,
   `CodeLength` int(11) DEFAULT NULL,
   `State` int(11) NOT NULL,
@@ -103,224 +103,14 @@ DROP TABLE IF EXISTS `syslog`;
 CREATE TABLE `syslog` (
   `LogID` int(11) NOT NULL,
   `LogType` int(11) NOT NULL,
-  `Title` longtext,
+  `Title` varchar(200),
   `Content` longtext,
   `OrgID` int(11) NOT NULL,
   `OperateUserID` int(11) NOT NULL,
-  `OperateUserName` longtext,
+  `OperateUserName` varchar(20),
   `LogTime` longtext,
   PRIMARY KEY (`LogID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of syslog
--- ----------------------------
-INSERT INTO `syslog` VALUES ('1', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:46:21.0459846');
-INSERT INTO `syslog` VALUES ('2', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:49:11.1440963');
-INSERT INTO `syslog` VALUES ('3', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:49:11.2012396');
-INSERT INTO `syslog` VALUES ('4', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:51:58.4470479');
-INSERT INTO `syslog` VALUES ('5', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:51:58.4600802');
-INSERT INTO `syslog` VALUES ('6', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:52:02.6545569');
-INSERT INTO `syslog` VALUES ('7', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:52:02.6655863');
-INSERT INTO `syslog` VALUES ('8', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:52:08.7929846');
-INSERT INTO `syslog` VALUES ('9', '2', '执行控制器 User 的方法 SaveRows 时发生错误。', null, '0', '0', null, '2018-01-30 10:52:08.8029714');
-INSERT INTO `syslog` VALUES ('10', '2', '执行控制器 Role 的方法 Edit 时发生错误。', 'D:\\FAIB\\组件\\zero\\src\\Fireasy.Zero.AspNet\\Areas\\Admin\\Views\\Role\\Edit.cshtml(73): error CS1061: \'SysRole\' does not contain a definition for \'Description\' and no extension method \'Description\' accepting a first argument of type \'SysRole\' could be found (are you missing a using directive or an assembly reference?)', '0', '0', null, '2018-02-01 00:14:13.4017308');
-INSERT INTO `syslog` VALUES ('11', '2', '执行控制器 Role 的方法 Edit 时发生错误。', 'D:\\FAIB\\组件\\zero\\src\\Fireasy.Zero.AspNet\\Areas\\Admin\\Views\\Role\\Edit.cshtml(73): error CS1061: \'SysRole\' does not contain a definition for \'Description\' and no extension method \'Description\' accepting a first argument of type \'SysRole\' could be found (are you missing a using directive or an assembly reference?)', '0', '0', null, '2018-02-01 00:14:13.4598855');
-INSERT INTO `syslog` VALUES ('12', '2', '执行控制器 Role 的方法 Get 时发生错误。', '对于“Fireasy.Zero.AspNet.Areas.Admin.Controllers.RoleController”中方法“System.Web.Mvc.JsonResult Get(Int32)”的不可以为 null 的类型“System.Int32”的参数“id”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。\r\n参数名: parameters', '0', '0', null, '2018-02-01 00:14:53.3671451');
-INSERT INTO `syslog` VALUES ('13', '2', '执行控制器 Role 的方法 Get 时发生错误。', '对于“Fireasy.Zero.AspNet.Areas.Admin.Controllers.RoleController”中方法“System.Web.Mvc.JsonResult Get(Int32)”的不可以为 null 的类型“System.Int32”的参数“id”，参数字典包含一个 null 项。可选参数必须为引用类型、可以为 null 的类型或声明为可选参数。\r\n参数名: parameters', '0', '0', null, '2018-02-01 00:14:53.3776711');
-INSERT INTO `syslog` VALUES ('14', '2', '执行控制器 Login 的方法 Index 时发生错误。', 'None of the specified endpoints were reachable', '0', '0', null, '2018-02-08 14:22:46.4637063');
-INSERT INTO `syslog` VALUES ('15', '2', '执行控制器 Login 的方法 Index 时发生错误。', 'None of the specified endpoints were reachable', '0', '0', null, '2018-02-08 14:22:46.5970705');
-INSERT INTO `syslog` VALUES ('16', '2', '执行控制器 Login 的方法 Index 时发生错误。', 'None of the specified endpoints were reachable', '0', '0', null, '2018-02-08 14:26:49.7582146');
-INSERT INTO `syslog` VALUES ('17', '2', '执行控制器 Login 的方法 Index 时发生错误。', 'None of the specified endpoints were reachable', '0', '0', null, '2018-02-08 14:26:49.888593');
-INSERT INTO `syslog` VALUES ('18', '2', '执行控制器 Login 的方法 Index 时发生错误。', 'None of the specified endpoints were reachable', '0', '0', null, '2018-02-08 14:31:12.4407236');
-INSERT INTO `syslog` VALUES ('19', '2', '执行控制器 Login 的方法 Index 时发生错误。', 'None of the specified endpoints were reachable', '0', '0', null, '2018-02-08 14:31:12.5700803');
-INSERT INTO `syslog` VALUES ('20', '2', '执行控制器 Org 的方法 Save 时发生错误。', '无法执行实体的插入操作。', '0', '0', null, '2018-02-08 14:45:24.0435848');
-INSERT INTO `syslog` VALUES ('21', '2', '执行控制器 Org 的方法 Save 时发生错误。', '无法执行实体的插入操作。', '0', '0', null, '2018-02-08 14:45:24.0576234');
-INSERT INTO `syslog` VALUES ('22', '2', '执行控制器 Org 的方法 Save 时发生错误。', '无法执行实体的插入操作。', '0', '0', null, '2018-02-08 14:45:29.263193');
-INSERT INTO `syslog` VALUES ('23', '2', '执行控制器 Org 的方法 Save 时发生错误。', '无法执行实体的插入操作。', '0', '0', null, '2018-02-08 14:45:29.2732197');
-INSERT INTO `syslog` VALUES ('24', '2', '执行控制器 Org 的方法 Save 时发生错误。', '无法执行实体的插入操作。', '0', '0', null, '2018-02-08 14:47:16.4927279');
-INSERT INTO `syslog` VALUES ('25', '2', '执行控制器 Org 的方法 Save 时发生错误。', '无法执行实体的插入操作。', '0', '0', null, '2018-02-08 14:47:17.513697');
-INSERT INTO `syslog` VALUES ('26', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:00:54.2522304');
-INSERT INTO `syslog` VALUES ('27', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:00:57.0493903');
-INSERT INTO `syslog` VALUES ('28', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:01:14.3150034');
-INSERT INTO `syslog` VALUES ('29', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:01:14.3270366');
-INSERT INTO `syslog` VALUES ('30', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:05:18.6631067');
-INSERT INTO `syslog` VALUES ('31', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:05:18.6741352');
-INSERT INTO `syslog` VALUES ('32', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:08:52.7106915');
-INSERT INTO `syslog` VALUES ('33', '2', '执行控制器 user 的方法 generate 时发生错误。', '索引和长度必须引用该字符串内的位置。\r\n参数名: length', '0', '0', null, '2018-02-08 16:08:52.7979231');
-INSERT INTO `syslog` VALUES ('34', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Operation is not supported on this platform.', '0', '0', null, '2018-02-09 09:58:43.5925114');
-INSERT INTO `syslog` VALUES ('35', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Operation is not supported on this platform.', '0', '0', null, '2018-02-09 09:59:38.8498686');
-INSERT INTO `syslog` VALUES ('36', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Operation is not supported on this platform.', '0', '0', null, '2018-02-09 10:00:04.6846559');
-INSERT INTO `syslog` VALUES ('37', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Operation is not supported on this platform.', '0', '0', null, '2018-02-09 10:01:45.9017113');
-INSERT INTO `syslog` VALUES ('38', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Could not load file or assembly \'Microsoft.CodeAnalysis.CSharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35\'. 系统找不到指定的文件。', '0', '0', null, '2018-03-02 11:32:01.4438352');
-INSERT INTO `syslog` VALUES ('39', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Could not load file or assembly \'Microsoft.CodeAnalysis.CSharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35\'. 系统找不到指定的文件。', '0', '0', null, '2018-03-02 11:34:09.7915684');
-INSERT INTO `syslog` VALUES ('40', '2', '执行控制器 login 的方法 Index 时发生错误。', 'CS0518: Predefined type \'System.Object\' is not defined or importedCS0518: Predefined type \'System.Int32\' is not defined or importedCS0518: Predefined type \'System.Int32\' is not defined or importedCS1729: \'object\' does not contain a constructor that takes 0 arguments', '0', '0', null, '2018-03-02 11:35:25.2263254');
-INSERT INTO `syslog` VALUES ('41', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Could not find file \'D:\\FAIB\\组件\\zero\\src\\Fireasy.Zero.AspNetCore\\mscorlib.dll\'.', '0', '0', null, '2018-03-02 11:37:00.5321216');
-INSERT INTO `syslog` VALUES ('42', '2', '执行控制器 login 的方法 Index 时发生错误。', 'CS0246: The type or namespace name \'System\' could not be found (are you missing a using directive or an assembly reference?)CS0518: Predefined type \'System.Object\' is not defined or importedCS0518: Predefined type \'System.Int32\' is not defined or importedCS0518: Predefined type \'System.Int32\' is not defined or importedCS1729: \'object\' does not contain a constructor that takes 0 arguments', '0', '0', null, '2018-03-02 11:42:04.262769');
-INSERT INTO `syslog` VALUES ('43', '2', '执行控制器 login 的方法 Index 时发生错误。', 'CS0246: The type or namespace name \'System\' could not be found (are you missing a using directive or an assembly reference?)CS0518: Predefined type \'System.Object\' is not defined or importedCS0518: Predefined type \'System.Int32\' is not defined or importedCS0518: Predefined type \'System.Int32\' is not defined or importedCS1729: \'object\' does not contain a constructor that takes 0 arguments', '0', '0', null, '2018-03-02 11:43:57.0220486');
-INSERT INTO `syslog` VALUES ('44', '2', '执行控制器 Role 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 11:56:50.610132');
-INSERT INTO `syslog` VALUES ('45', '2', '执行控制器 Role 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 11:56:50.6331546');
-INSERT INTO `syslog` VALUES ('46', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 11:57:30.494259');
-INSERT INTO `syslog` VALUES ('47', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 11:57:30.5062586');
-INSERT INTO `syslog` VALUES ('48', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 11:57:57.3509711');
-INSERT INTO `syslog` VALUES ('49', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 11:57:57.360035');
-INSERT INTO `syslog` VALUES ('50', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 12:00:52.7810951');
-INSERT INTO `syslog` VALUES ('51', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-26 12:00:52.8071648');
-INSERT INTO `syslog` VALUES ('52', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 09:56:09.5570429');
-INSERT INTO `syslog` VALUES ('53', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 09:56:09.5801054');
-INSERT INTO `syslog` VALUES ('54', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 09:56:30.6822061');
-INSERT INTO `syslog` VALUES ('55', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 09:56:30.6911954');
-INSERT INTO `syslog` VALUES ('56', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 09:57:47.6021186');
-INSERT INTO `syslog` VALUES ('57', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 09:57:47.6121452');
-INSERT INTO `syslog` VALUES ('58', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:10:30.1774199');
-INSERT INTO `syslog` VALUES ('59', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:10:30.211518');
-INSERT INTO `syslog` VALUES ('60', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:10:59.7656592');
-INSERT INTO `syslog` VALUES ('61', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:10:59.7776888');
-INSERT INTO `syslog` VALUES ('62', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:15:09.9405614');
-INSERT INTO `syslog` VALUES ('63', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:15:09.9497612');
-INSERT INTO `syslog` VALUES ('64', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:21:58.1341876');
-INSERT INTO `syslog` VALUES ('65', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:21:58.1662709');
-INSERT INTO `syslog` VALUES ('66', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:23:36.3515786');
-INSERT INTO `syslog` VALUES ('67', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:23:36.3616049');
-INSERT INTO `syslog` VALUES ('68', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:24:25.4574748');
-INSERT INTO `syslog` VALUES ('69', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:24:25.4695048');
-INSERT INTO `syslog` VALUES ('70', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:26:35.2823912');
-INSERT INTO `syslog` VALUES ('71', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:26:35.303448');
-INSERT INTO `syslog` VALUES ('72', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:06.6398042');
-INSERT INTO `syslog` VALUES ('73', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:06.6829267');
-INSERT INTO `syslog` VALUES ('74', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:28.0226867');
-INSERT INTO `syslog` VALUES ('75', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:28.0326802');
-INSERT INTO `syslog` VALUES ('76', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:29.4629851');
-INSERT INTO `syslog` VALUES ('77', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:29.4850698');
-INSERT INTO `syslog` VALUES ('78', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:30.2947957');
-INSERT INTO `syslog` VALUES ('79', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:53:30.3038561');
-INSERT INTO `syslog` VALUES ('80', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:54:16.86625');
-INSERT INTO `syslog` VALUES ('81', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:54:16.914342');
-INSERT INTO `syslog` VALUES ('82', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:54:57.163556');
-INSERT INTO `syslog` VALUES ('83', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:54:57.1725812');
-INSERT INTO `syslog` VALUES ('84', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:57:57.0170176');
-INSERT INTO `syslog` VALUES ('85', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 10:57:57.0651819');
-INSERT INTO `syslog` VALUES ('86', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:00:40.09429');
-INSERT INTO `syslog` VALUES ('87', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:00:40.1384076');
-INSERT INTO `syslog` VALUES ('88', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:01:57.913145');
-INSERT INTO `syslog` VALUES ('89', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:01:57.9552925');
-INSERT INTO `syslog` VALUES ('90', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:09.9035027');
-INSERT INTO `syslog` VALUES ('91', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:09.9275805');
-INSERT INTO `syslog` VALUES ('92', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:11.5681982');
-INSERT INTO `syslog` VALUES ('93', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:11.5782236');
-INSERT INTO `syslog` VALUES ('94', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:12.846636');
-INSERT INTO `syslog` VALUES ('95', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:12.8566702');
-INSERT INTO `syslog` VALUES ('96', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:13.9009518');
-INSERT INTO `syslog` VALUES ('97', '2', '执行控制器 Home 的方法 Index 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:02:13.9230116');
-INSERT INTO `syslog` VALUES ('98', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:09:13.7200632');
-INSERT INTO `syslog` VALUES ('99', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:09:13.7501021');
-INSERT INTO `syslog` VALUES ('100', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:09:15.6279069');
-INSERT INTO `syslog` VALUES ('101', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:09:15.6369313');
-INSERT INTO `syslog` VALUES ('102', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:09:20.8969178');
-INSERT INTO `syslog` VALUES ('103', '2', '执行控制器 User 的方法 Add 时发生错误。', '操作可能会破坏运行时稳定性。', '0', '0', null, '2018-03-30 11:09:20.9079626');
-INSERT INTO `syslog` VALUES ('104', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:09:30.6411596');
-INSERT INTO `syslog` VALUES ('105', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:09:30.6541935');
-INSERT INTO `syslog` VALUES ('106', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:09:42.0003709');
-INSERT INTO `syslog` VALUES ('107', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:09:42.0154073');
-INSERT INTO `syslog` VALUES ('108', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:11:24.0380862');
-INSERT INTO `syslog` VALUES ('109', '2', '执行控制器 User 的方法 Data 时发生错误。', '序列化时检查到对象 System.Object[] 被循环引用。', '0', '0', null, '2018-03-30 11:11:24.0671643');
-INSERT INTO `syslog` VALUES ('110', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Operation is not supported on this platform.', '0', '0', null, '2018-03-30 11:41:26.3383804');
-INSERT INTO `syslog` VALUES ('111', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Value cannot be null.\r\nParameter name: meth', '0', '0', null, '2018-04-24 11:14:14.3506547');
-INSERT INTO `syslog` VALUES ('112', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Value cannot be null.\r\nParameter name: meth', '0', '0', null, '2018-04-24 11:15:16.7093504');
-INSERT INTO `syslog` VALUES ('113', '2', '执行控制器 login 的方法 Index 时发生错误。', 'Value cannot be null.\r\nParameter name: meth', '0', '0', null, '2018-04-24 11:15:18.1060817');
-INSERT INTO `syslog` VALUES ('114', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:18.2992317');
-INSERT INTO `syslog` VALUES ('115', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:18.7071963');
-INSERT INTO `syslog` VALUES ('116', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:19.7287169');
-INSERT INTO `syslog` VALUES ('117', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:19.7447588');
-INSERT INTO `syslog` VALUES ('118', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:20.1007029');
-INSERT INTO `syslog` VALUES ('119', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:20.1127558');
-INSERT INTO `syslog` VALUES ('120', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:20.2601826');
-INSERT INTO `syslog` VALUES ('121', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:20.2787292');
-INSERT INTO `syslog` VALUES ('122', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:45.5616911');
-INSERT INTO `syslog` VALUES ('123', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:45.5797818');
-INSERT INTO `syslog` VALUES ('124', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:45.7360086');
-INSERT INTO `syslog` VALUES ('125', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:02:45.7486877');
-INSERT INTO `syslog` VALUES ('126', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:14.4680389');
-INSERT INTO `syslog` VALUES ('127', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:14.4795692');
-INSERT INTO `syslog` VALUES ('128', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:14.6155993');
-INSERT INTO `syslog` VALUES ('129', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:14.6286343');
-INSERT INTO `syslog` VALUES ('130', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:16.2579213');
-INSERT INTO `syslog` VALUES ('131', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:16.2840392');
-INSERT INTO `syslog` VALUES ('132', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:16.4613102');
-INSERT INTO `syslog` VALUES ('133', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:16.4798659');
-INSERT INTO `syslog` VALUES ('134', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:16.6317838');
-INSERT INTO `syslog` VALUES ('135', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:16.6498302');
-INSERT INTO `syslog` VALUES ('136', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:25.7446612');
-INSERT INTO `syslog` VALUES ('137', '2', '执行控制器 Login 的方法 Demo 时发生错误。', '值不能为 null。\r\n参数名: value', '0', '0', null, '2018-05-02 12:03:25.7778034');
-INSERT INTO `syslog` VALUES ('138', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 15:09:59.3241086');
-INSERT INTO `syslog` VALUES ('139', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 15:10:31.0387731');
-INSERT INTO `syslog` VALUES ('140', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 15:13:22.4429681');
-INSERT INTO `syslog` VALUES ('141', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 15:13:26.5795876');
-INSERT INTO `syslog` VALUES ('142', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 15:13:29.0945441');
-INSERT INTO `syslog` VALUES ('143', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:03:45.1821509');
-INSERT INTO `syslog` VALUES ('144', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:19:44.1610491');
-INSERT INTO `syslog` VALUES ('145', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:29:17.2768267');
-INSERT INTO `syslog` VALUES ('146', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:43:21.635872');
-INSERT INTO `syslog` VALUES ('147', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:43:23.4446131');
-INSERT INTO `syslog` VALUES ('148', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:45:17.3390324');
-INSERT INTO `syslog` VALUES ('149', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 17:45:18.551744');
-INSERT INTO `syslog` VALUES ('150', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 23:40:13.2703008');
-INSERT INTO `syslog` VALUES ('151', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 23:40:22.9361823');
-INSERT INTO `syslog` VALUES ('152', '2', '执行控制器 Operate 的方法 Index 时发生错误。', 'Could not find a part of the path \'D:\\FAIB\\组件\\zero\\src\\Fireasy.Zero.AspNetCore\\bin\\Debug\\netcoreapp2.0\\content\\easyui-icon.css\'.', '0', '0', null, '2018-05-04 23:41:05.7820785');
-INSERT INTO `syslog` VALUES ('153', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 23:45:05.0216464');
-INSERT INTO `syslog` VALUES ('154', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 23:46:02.8863188');
-INSERT INTO `syslog` VALUES ('155', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-04 23:53:50.8310654');
-INSERT INTO `syslog` VALUES ('156', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-05 23:34:14.9088986');
-INSERT INTO `syslog` VALUES ('157', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-05 23:34:44.0967106');
-INSERT INTO `syslog` VALUES ('158', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-05 23:35:06.9449156');
-INSERT INTO `syslog` VALUES ('159', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-05 23:35:43.5667382');
-INSERT INTO `syslog` VALUES ('160', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-05 23:35:49.4690078');
-INSERT INTO `syslog` VALUES ('161', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-05 23:37:05.4342859');
-INSERT INTO `syslog` VALUES ('162', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-07 09:42:19.1187055');
-INSERT INTO `syslog` VALUES ('163', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-07 09:51:07.9258355');
-INSERT INTO `syslog` VALUES ('164', '2', '执行控制器 Home 的方法 Index 时发生错误。', 'Object reference not set to an instance of an object.', '0', '0', null, '2018-05-07 10:11:57.3816551');
-INSERT INTO `syslog` VALUES ('165', '2', '执行控制器 login 的方法 CheckLogin 时发生错误。', 'Value cannot be null.\r\nParameter name: Object', '0', '0', null, '2018-05-07 16:46:03.2617412');
-INSERT INTO `syslog` VALUES ('166', '2', '执行控制器 login 的方法 CheckLogin 时发生错误。', 'Value cannot be null.\r\nParameter name: Object', '0', '0', null, '2018-05-07 16:46:42.8286024');
-INSERT INTO `syslog` VALUES ('167', '2', '执行控制器 login 的方法 CheckLogin 时发生错误。', 'Value cannot be null.\r\nParameter name: Object', '0', '0', null, '2018-05-07 16:47:12.9821894');
-INSERT INTO `syslog` VALUES ('168', '2', '执行控制器 login 的方法 CheckLogin 时发生错误。', 'Value cannot be null.\r\nParameter name: Object', '0', '0', null, '2018-05-07 16:48:53.7108443');
-INSERT INTO `syslog` VALUES ('169', '2', '执行控制器 login 的方法 CheckLogin 时发生错误。', 'Value cannot be null.\r\nParameter name: Object', '0', '0', null, '2018-05-07 16:49:06.8092807');
-INSERT INTO `syslog` VALUES ('170', '2', '执行控制器 login 的方法 CheckLogin 时发生错误。', 'Value cannot be null.\r\nParameter name: Object', '0', '0', null, '2018-05-07 16:49:08.1598231');
-INSERT INTO `syslog` VALUES ('171', '2', '执行控制器 User 的方法 Save 时发生错误。', '无法将类型为“System.Byte[]”的对象强制转换为类型“System.Object[]”。', '0', '0', null, '2018-05-07 17:25:13.8531733');
-INSERT INTO `syslog` VALUES ('172', '2', '执行控制器 User 的方法 Save 时发生错误。', '无法将类型为“System.Byte[]”的对象强制转换为类型“System.Object[]”。', '0', '0', null, '2018-05-07 17:25:13.8972911');
-INSERT INTO `syslog` VALUES ('173', '2', '执行控制器 User 的方法 Save 时发生错误。', '无法将类型为“System.Byte[]”的对象强制转换为类型“System.Object[]”。', '0', '0', null, '2018-05-07 17:26:40.7227662');
-INSERT INTO `syslog` VALUES ('174', '2', '执行控制器 User 的方法 Save 时发生错误。', '无法将类型为“System.Byte[]”的对象强制转换为类型“System.Object[]”。', '0', '0', null, '2018-05-07 17:26:40.7347986');
-INSERT INTO `syslog` VALUES ('175', '2', '执行控制器 Org 的方法 Save 时发生错误。', 'Exception has been thrown by the target of an invocation.', '0', '0', null, '2018-05-17 15:49:39.4428697');
-INSERT INTO `syslog` VALUES ('176', '2', '执行控制器 Org 的方法 Save 时发生错误。', 'Exception has been thrown by the target of an invocation.', '0', '0', null, '2018-05-17 15:49:51.4955195');
-INSERT INTO `syslog` VALUES ('177', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:54:50.5584884');
-INSERT INTO `syslog` VALUES ('178', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:54:54.9209566');
-INSERT INTO `syslog` VALUES ('179', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:54:56.4305766');
-INSERT INTO `syslog` VALUES ('180', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:54:59.5925404');
-INSERT INTO `syslog` VALUES ('181', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:55:37.9044252');
-INSERT INTO `syslog` VALUES ('182', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:58:49.6912568');
-INSERT INTO `syslog` VALUES ('183', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:59:03.6115389');
-INSERT INTO `syslog` VALUES ('184', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 11:59:39.0465001');
-INSERT INTO `syslog` VALUES ('185', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 12:10:25.4132125');
-INSERT INTO `syslog` VALUES ('186', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-05-31 12:10:35.2369782');
-INSERT INTO `syslog` VALUES ('187', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 00:08:31.8296291');
-INSERT INTO `syslog` VALUES ('188', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 00:29:15.0929957');
-INSERT INTO `syslog` VALUES ('189', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 00:40:53.8311694');
-INSERT INTO `syslog` VALUES ('190', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 11:54:46.8785862');
-INSERT INTO `syslog` VALUES ('191', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 11:55:57.3849101');
-INSERT INTO `syslog` VALUES ('192', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 11:56:17.1454752');
-INSERT INTO `syslog` VALUES ('193', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 12:07:13.724342');
-INSERT INTO `syslog` VALUES ('194', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 16:43:37.9171288');
-INSERT INTO `syslog` VALUES ('195', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-01 16:47:23.4964894');
-INSERT INTO `syslog` VALUES ('196', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-04 14:35:05.289165');
-INSERT INTO `syslog` VALUES ('197', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-04 14:35:57.1201024');
-INSERT INTO `syslog` VALUES ('198', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-04 14:36:17.4841026');
-INSERT INTO `syslog` VALUES ('199', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-04 15:58:35.1925168');
-INSERT INTO `syslog` VALUES ('200', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-04 15:58:45.9940023');
-INSERT INTO `syslog` VALUES ('201', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'An error occured when processing the image using FillRegionProcessor`1. See the inner exception for more detail.', '0', '0', null, '2018-06-04 15:59:05.9264306');
-INSERT INTO `syslog` VALUES ('202', '1', 'dfafafsadf', null, '0', '0', null, '2018-06-14 15:44:40.9073394');
-INSERT INTO `syslog` VALUES ('203', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'It was not possible to connect to the redis server(s); to create a disconnected multiplexer, disable AbortOnConnectFail. SocketFailure on PING', '0', '0', null, '2018-06-15 09:41:05.2742051');
-INSERT INTO `syslog` VALUES ('204', '2', '执行控制器 login 的方法 GetValidateImage 时发生错误。', 'It was not possible to connect to the redis server(s); to create a disconnected multiplexer, disable AbortOnConnectFail. SocketFailure on PING', '0', '0', null, '2018-06-15 09:41:12.3940227');
-INSERT INTO `syslog` VALUES ('205', '1', 'dfafafsadf', null, '0', '0', null, '2018-06-15 09:41:34.2839479');
-INSERT INTO `syslog` VALUES ('206', '1', 'dfafafsadf', null, '0', '0', null, '2018-06-15 10:31:03.8029648');
 
 -- ----------------------------
 -- Table structure for sysmodule
@@ -328,17 +118,17 @@ INSERT INTO `syslog` VALUES ('206', '1', 'dfafafsadf', null, '0', '0', null, '20
 DROP TABLE IF EXISTS `sysmodule`;
 CREATE TABLE `sysmodule` (
   `ModuleID` int(11) NOT NULL,
-  `Name` longtext,
-  `Code` longtext,
-  `Url` longtext,
-  `Arguments` longtext,
-  `Icon1` longtext,
-  `Icon2` longtext,
-  `Icon3` longtext,
-  `PyCode` longtext,
+  `Name` varchar(100),
+  `Code` varchar(50),
+  `Url` varchar(100),
+  `Arguments` varchar(50),
+  `Icon1` varchar(50),
+  `Icon2` varchar(50),
+  `Icon3` varchar(50),
+  `PyCode` varchar(50),
   `State` int(11) NOT NULL,
   `OrderNo` int(11) DEFAULT NULL,
-  `Remark` longtext,
+  `Remark` varchar(500),
   PRIMARY KEY (`ModuleID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -377,9 +167,9 @@ DROP TABLE IF EXISTS `sysoperate`;
 CREATE TABLE `sysoperate` (
   `OperID` int(11) NOT NULL,
   `ModuleID` int(11) NOT NULL,
-  `Code` longtext,
-  `Name` longtext,
-  `Icon` longtext,
+  `Code` varchar(20),
+  `Name` varchar(20),
+  `Icon` varchar(50),
   `State` int(11) NOT NULL,
   `OrderNo` int(11) DEFAULT NULL
   PRIMARY KEY (`OperID`)
@@ -434,12 +224,12 @@ CREATE TABLE `sysoperatepermission` (
 DROP TABLE IF EXISTS `sysorg`;
 CREATE TABLE `sysorg` (
   `OrgID` int(11) NOT NULL,
-  `Code` longtext,
-  `Name` longtext,
-  `FullName` longtext,
+  `Code` varchar(50),
+  `Name` varchar(100),
+  `FullName` varchar(60),
   `State` int(11) NOT NULL,
   `OrderNo` int(11) DEFAULT NULL,
-  `PyCode` longtext,
+  `PyCode` varchar(100),
   `Attribute` int(11) NOT NULL,
   PRIMARY KEY (`OrgID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -759,11 +549,11 @@ CREATE TABLE `sysorgpermission` (
 DROP TABLE IF EXISTS `sysrole`;
 CREATE TABLE `sysrole` (
   `RoleID` int(11) NOT NULL,
-  `Code` longtext,
-  `Name` longtext,
+  `Code` varchar(20),
+  `Name` varchar(40),
   `State` int(11) NOT NULL,
-  `PyCode` longtext,
-  `Remark` longtext,
+  `PyCode` varchar(40),
+  `Remark` varchar(500),
   `Attribute` int(11) DEFAULT NULL,
   PRIMARY KEY (`RoleID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -788,22 +578,23 @@ DROP TABLE IF EXISTS `sysuser`;
 CREATE TABLE `sysuser` (
   `UserID` int(11) NOT NULL,
   `OrgID` int(11) NOT NULL,
-  `Name` longtext,
-  `Account` longtext,
-  `Password` longtext,
-  `IDCard` longtext,
+  `Name` varchar(20),
+  `Account` varchar(50),
+  `Password` varchar(50),
+  `IDCard` varchar(18),
   `HeadImage` longblob,
-  `Mobile` longtext,
-  `Email` longtext,
+  `Mobile` varchar(20),
+  `Email` varchar(50),
   `Sex` int(11) DEFAULT NULL,
-  `PyCode` longtext,
+  `PyCode` varchar(20),
   `State` int(11) DEFAULT NULL,
-  `LastLoginTime` longtext,
-  `Token` longtext,
-  `DeviceNo` longtext,
-  `RoleNames` longtext,
+  `LastLoginTime` varchar(50),
+  `Token` varchar(200),
+  `DeviceNo` varchar(100),
+  `RoleNames` varchar(100),
   `DegreeNo` int(11) DEFAULT NULL,
-  `TitleNo` int(11) DEFAULT NULL
+  `TitleNo` int(11) DEFAULT NULL,
+  `Photo` varchar(50)
   PRIMARY KEY (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

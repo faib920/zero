@@ -141,6 +141,13 @@ namespace Fireasy.Zero.Models
         public virtual int? TitleNo { get; set; }
 
         /// <summary>
+        /// 获取或设置照片。
+        /// </summary>
+
+        [PropertyMapping(ColumnName = "Photo", Description = "照片", IsNullable = true)]
+        public virtual string Photo { get; set; }
+
+        /// <summary>
         /// 获取或设置关联 <see cref="SysOrg"/> 对象。
         /// </summary>
         public virtual SysOrg SysOrg { get; set; }

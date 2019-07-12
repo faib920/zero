@@ -421,6 +421,16 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
+        /// 更新用户照片。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="photo">照片路径。</param>
+        public virtual bool UpdateUserPhoto(int userId, string photo)
+        {
+            return context.SysUsers.Update(() => new SysUser { Photo = photo }, s => s.UserID == userId) > 0;
+        }
+
+        /// <summary>
         /// 在机构列表中从下级往上找匹配 <paramref name="orgCode"/> 的机构。
         /// </summary>
         /// <param name="orgs"></param>

@@ -158,6 +158,13 @@ namespace Fireasy.Zero.Services
         /// <returns></returns>
         bool DeleteUser(int userId);
 
+        /// <summary>
+        /// 更新用户照片。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="photo">照片路径。</param>
+        bool UpdateUserPhoto(int userId, string photo);
+
         #endregion
 
         #region 模块

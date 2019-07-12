@@ -5,80 +5,32 @@
 }
 <script src="~/scripts/jquery.uploader.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-    var id = '@Context.Request.Query["id"]';
-    var orgId = '';
-    var post = '';
-
     $(function () {
         loadInfo();
         initUploader();
     });
 
-    //加载机构
-    function loadOrgs() {
-        $('#cboOrgID').combotree({
-            url: "@Url.Action("Data", "Org")?targetId=" + orgId + '&flag=3',
-            onLoadSuccess: function () {
-                if (orgId != '' && orgId != null) {
-                    $('#cboOrgID').combotree('setValue', orgId);
-                }
-            },
-            onSelect: function (row) {
-                orgId = row.id;
-                loadPost();
-            }
-        });
-    }
-
-    function loadPost() {
-        $('#cboPost').combobox({
-            url: "@Url.Action("DataByAssign", "OrgPost")?orgId=" + orgId + '&flag=3',
-            valueField: 'PostID',
-            textField: 'Name',
-            onLoadSuccess: function () {
-                if (post != '' && post != null) {
-                    $('#cboPost').combobox('setValues', post);
-                }
-            }
-        });
-    }
-
     //加载信息
     function loadInfo() {
-        if (id !== '') {
-            $.getJSON('@Url.Action("Get")?id=' + id, function (data) {
-                common.processResult(data, function () {
-                    $('#form1').form('load', data);
-                    orgId = data.OrgID;
-                    post = data.Post;
-                    if (data.Photo != '') {
-                        $('#photo').attr('src', '../../' + data.Photo);
-                        $('#photo').attr('file', data.Photo);
-                    }
-                    loadOrgs();
-                    loadPost();
-                });
+        $.getJSON('@Url.Action("GetMyInfo")', function (data) {
+            common.processResult(data, function () {
+                $('#form1').form('load', data);
+                $('#photo').attr('src', "../../" + data.Photo);
             });
-
-            $('#btnSaveAndNew').remove();
-        }
-        else {
-            loadOrgs();
-        }
+        });
     }
-    
+
     //初始化上传插件
     function initUploader() {
         $('.uploader').upload({
             extFilter: 'png;jpg;jpeg;gif',
-            action: '@Url.Action("UploadPhoto")?userId=' + id,
+            action: '@Url.Action("UploadPhoto")?userId=@SessionHelper.GetSession(Context).UserID',
             useHttpModule: false,
             onFileExtError: function () {
                 common.alert('只允许上传png、jpg、jpeg、gif类型的文件。');
             },
             onComplete: function (result, index, ele) {
                 $('#photo').attr('src', "../../" + result);
-                $('#photo').attr('file', result);
             }
         });
     }
@@ -93,7 +45,6 @@
 
         //将表单填充的内容序列化为json
         var data = $('#form1').form('save');
-        data.Photo = $('#photo').attr('file');
         postData["info"] = JSON.stringify(data);
         common.antiToken(postData);
 
@@ -121,10 +72,8 @@
         <tr>
             <td class="addon">帐号</td>
             <td>@Html.TextBox(s => s.Account, new TextBoxSettings { Readonly = true, Editable = false }).Style("width:200px")</td>
-            <td rowspan="4" style="padding-left:20px;vertical-align:top;text-align:center">
-                <img id="photo" src="~/content/images/photo.png" style="width:120px;height:140px" /><br />
-                <a class="uploader">上传头像</a>
-            </td>
+            <td rowspan="4" style="padding-left:20px;vertical-align:top;text-align:center"><img id="photo" src="~/content/images/photo.png" style="width:120px;height:140px" /><br />
+                                                                         <a class="uploader">上传头像</a></td>
         </tr>
         <tr>
             <td class="addon">姓名</td>
@@ -133,10 +82,6 @@
         <tr>
             <td class="addon">身份证号</td>
             <td>@Html.TextBox(s => s.IDCard).Style("width:200px")</td>
-        </tr>
-        <tr>
-            <td class="addon">所属部门</td>
-            <td>@Html.ComboTree(s => s.OrgID, new ComboTreeSettings { PanelHeight = 400, PanelWidth = 300 }).MarkNoClear().Style("width:200px")</td>
         </tr>
         <tr>
             <td class="addon">性别</td>
@@ -162,6 +107,5 @@
 </div>
 <div data-options="region:'south',border:false" class="form-button">
     <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
-    <a class="easyui-linkbutton" onclick="saveInfo(true)" id="btnSaveAndNew" data-options="iconCls:'icon-save_new'">保存并新建</a>
     <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
 </div>

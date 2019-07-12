@@ -1,13 +1,17 @@
-﻿using Fireasy.Common.ComponentModel;
+﻿using Fireasy.Common;
+using Fireasy.Common.ComponentModel;
 using Fireasy.Web.EasyUI;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 {
@@ -39,6 +43,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return View();
         }
 
+        public ActionResult EditMyInfo()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 根据ID获取用户信息。
         /// </summary>
@@ -47,6 +56,13 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         public JsonResult Get(int id)
         {
             var info = adminService.GetUser(id);
+            return Json(info);
+        }
+
+        public JsonResult GetMyInfo()
+        {
+            var session = HttpContext.GetSession();
+            var info = adminService.GetUser(session.UserID);
             return Json(info);
         }
 
@@ -213,6 +229,53 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         {
             adminService.ResetUserPassword(id, "123456", () => encryptProvider.Create("123456"));
             return Json(Result.Success("成功重设了用户的密码。"));
+        }
+
+        /// <summary>
+        /// 上传照片
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public Result<string> UploadPhoto([FromServices]IHostingEnvironment env, int? userId)
+        {
+            if (Request.Form.Files.Count == 0)
+            {
+                Result.Fail<object>("请选择文件");
+            }
+
+            var file = Request.Form.Files[0];
+
+            //存放到 wwwroot 目录下
+            var path = Path.Combine(env.WebRootPath, "photo");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            //取扩展名
+            var ext = file.FileName.Substring(file.FileName.LastIndexOf("."));
+
+            //新文件以guid+扩展名
+            var fileName = Guid.NewGuid().ToString() + ext;
+
+            //完整的路径
+            var filePath = Path.Combine(path, fileName);
+
+            //保存文件
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                file.CopyTo(fileStream);
+            }
+
+            //存放到库里的路径
+            var virPath = Path.Combine("photo", fileName).Replace("\\", "/");
+
+            if (userId != null)
+            {
+                adminService.UpdateUserPhoto((int)userId, virPath);
+            }
+
+            return virPath;
         }
     }
 }

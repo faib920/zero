@@ -19,11 +19,6 @@ namespace Fireasy.Zero.Models
         public string Role { get; set; }
 
         /// <summary>
-        /// 照片。
-        /// </summary>
-        public string Photo { get; set; }
-
-        /// <summary>
         /// 学历。
         /// </summary>
         public string DegreeName { get; set; }

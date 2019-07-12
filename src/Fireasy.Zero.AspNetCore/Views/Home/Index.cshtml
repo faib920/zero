@@ -109,7 +109,7 @@
     };
 
     function modifyInfo() {
-        common.showDialog('@Url.Action("EditMyInfo", "User", new { area = "Admin" })', '修改个人资料', 799, 500, function (result) {
+        common.showDialog('@Url.Action("EditMyInfo", "User", new { area = "Admin" })', '修改个人资料',600, 500, function (result) {
             $('#lblName').text(result);
         });
     }

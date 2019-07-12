@@ -6,6 +6,7 @@ using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Web.Mvc;
 
 namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
@@ -36,6 +37,11 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
             return View();
         }
 
+        public ActionResult EditMyInfo()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 根据ID获取用户信息。
         /// </summary>
@@ -44,6 +50,13 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         public JsonResult Get(int id)
         {
             var info = adminService.GetUser(id);
+            return Json(info);
+        }
+
+        public JsonResult GetMyInfo()
+        {
+            var session = HttpContext.GetSession();
+            var info = adminService.GetUser(session.UserID);
             return Json(info);
         }
 
@@ -210,6 +223,50 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         {
             adminService.ResetUserPassword(id, "123456", () => encryptProvider.Create("123456"));
             return Json(Result.Success("成功重设了用户的密码。"));
+        }
+
+
+        /// <summary>
+        /// 上传照片
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public Result<string> UploadPhoto(int? userId)
+        {
+            if (Request.Files.Count == 0)
+            {
+                Result.Fail<object>("请选择文件");
+            }
+
+            var file = Request.Files[0];
+
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "photo");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            //取扩展名
+            var ext = file.FileName.Substring(file.FileName.LastIndexOf("."));
+
+            //新文件以guid+扩展名
+            var fileName = Guid.NewGuid().ToString() + ext;
+
+            //完整的路径
+            var filePath = Path.Combine(path, fileName);
+
+            //保存文件
+            file.SaveAs(filePath);
+
+            //存放到库里的路径
+            var virPath = Path.Combine("photo", fileName).Replace("\\", "/");
+
+            if (userId != null)
+            {
+                adminService.UpdateUserPhoto((int)userId, virPath);
+            }
+
+            return virPath;
         }
     }
 }

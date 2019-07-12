@@ -98,7 +98,7 @@
             return;
         }
 
-        common.showDialog('@Url.Action("Edit")?id=' + row.UserID, '修改用户', 500, 500, function () {
+        common.showDialog('@Url.Action("Edit")?id=' + row.UserID, '修改用户', 600, 500, function () {
             $('#dg').datagrid('reload');
         });
     }

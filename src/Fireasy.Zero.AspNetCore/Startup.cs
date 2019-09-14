@@ -43,7 +43,6 @@ namespace Fireasy.Zero.AspNetCore
                 .AddIoc(ContainerUnity.GetContainer()) //添加 appsettings.json 里的 ioc 配置
                 .AddEntityContext<DbContext>(options =>
                     {
-                        options.AutoCreateTables = true; //此项为 true 时, 采用 codefirst 模式维护数据库表
                         options.NotifyEvents = true; //此项设为 true 时, 上面的实体持久化订阅通知才会触发
                     });
 

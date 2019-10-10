@@ -17,6 +17,7 @@ using Fireasy.Zero.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.Services.Impls
 {
@@ -127,7 +128,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
         [TransactionSupport]
-        public virtual int SaveUser(int? userId, SysUser info, Func<string> pwdCreator)
+        public virtual async Task<int> SaveUserAsync(int? userId, SysUser info, Func<string> pwdCreator)
         {
             if (context.SysUsers.Any(s => s.Account == info.Account && userId != s.UserID))
             {
@@ -161,19 +162,19 @@ namespace Fireasy.Zero.Services.Impls
 
             if (userId == null)
             {
-                context.SysUsers.Insert(info);
+                await context.SysUsers.InsertAsync(info);
                 userId = info.UserID;
             }
             else
             {
-                context.SysUsers.Update(info, s => s.UserID == userId);
-                context.SysUserRoles.Delete(s => s.UserID == userId);
+                await context.SysUsers.UpdateAsync(info, s => s.UserID == userId);
+                await context.SysUserRoles.DeleteAsync(s => s.UserID == userId);
             }
 
             if (roleIds != null)
             {
                 userRoles.AddRange(roleIds.Select(s => new SysUserRole { RoleID = s, UserID = (int)userId }));
-                context.SysUserRoles.Batch(userRoles, (u, s) => u.Insert(s));
+                await context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
             }
 
             return (int)userId;
@@ -184,9 +185,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId">主键值。</param>
         /// <param name="info"></param>
-        public virtual bool SaveUser(int userId, SysUser info)
+        public virtual async Task<bool> SaveUserAsync(int userId, SysUser info)
         {
-            context.SysUsers.Update(info, s => s.UserID == userId);
+            await context.SysUsers.UpdateAsync(info, s => s.UserID == userId);
             return true;
         }
 

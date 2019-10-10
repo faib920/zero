@@ -10,6 +10,7 @@ using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.Services
 {
@@ -56,7 +57,7 @@ namespace Fireasy.Zero.Services
         /// <param name="info"></param>
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
-        int SaveUser(int? userId, SysUser info, Func<string> pwdCreator);
+        Task<int> SaveUserAsync(int? userId, SysUser info, Func<string> pwdCreator);
 
         /// <summary>
         /// 保存用户信息。
@@ -64,7 +65,7 @@ namespace Fireasy.Zero.Services
         /// <param name="userId">主键值。</param>
         /// <param name="info"></param>
         /// <returns></returns>
-        bool SaveUser(int userId, SysUser info);
+        Task<bool> SaveUserAsync(int userId, SysUser info);
 
         /// <summary>
         /// 保存多个用户。

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 {
@@ -75,7 +76,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns>id</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Save(int? id, SysUser info, string password)
+        public async Task<JsonResult> Save(int? id, SysUser info, string password)
         {
             Func<string> creator = null;
 
@@ -90,7 +91,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
                 creator = () => encryptProvider.Create(password);
             }
 
-            id = adminService.SaveUser(id, info, creator);
+            id = await adminService.SaveUserAsync(id, info, creator);
 
             var session = HttpContext.GetSession();
             if (session.UserID == (int)id)
@@ -111,11 +112,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns>id</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult SaveMyInfo(SysUser info, string oldPwd, string newPwd)
+        public async Task<JsonResult> SaveMyInfo(SysUser info, string oldPwd, string newPwd)
         {
             var session = HttpContext.GetSession();
 
-            adminService.SaveUser(session.UserID, info, null);
+            await adminService.SaveUserAsync(session.UserID, info, null);
 
             if (!string.IsNullOrEmpty(oldPwd))
             {

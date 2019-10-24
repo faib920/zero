@@ -5,10 +5,10 @@ using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 {
@@ -33,15 +33,15 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return View();
         }
 
-        public JsonResult Data(int moduleId)
+        public async Task<JsonResult> Data(int moduleId)
         {
-            var list = adminService.GetOperates(moduleId);
+            var list = await adminService.GetOperatesAsync(moduleId);
             return Json(list);
         }
 
-        public JsonResult SaveRows(int moduleId, List<SysOperate> added, List<SysOperate> updated, List<SysOperate> deleted)
+        public async Task<JsonResult> SaveRows(int moduleId, List<SysOperate> added, List<SysOperate> updated, List<SysOperate> deleted)
         {
-            adminService.SaveOperates(moduleId, added, updated, deleted);
+            await adminService.SaveOperatesAsync(moduleId, added, updated, deleted);
 
             return Json(Result.Success("保存成功"));
         }

@@ -1,4 +1,5 @@
-﻿using Fireasy.Common.Ioc;
+﻿using Fireasy.Common.Extensions;
+using Fireasy.Common.Ioc;
 using Fireasy.Common.Serialization;
 using Fireasy.Common.Subscribes;
 using Fireasy.Data.Entity;
@@ -9,6 +10,7 @@ using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
 using Fireasy.Zero.Services.Impls;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -31,7 +33,7 @@ namespace Fireasy.Zero.AspNet
             var container = GetContainer();
             ControllerBuilder.Current.SetControllerFactory(new ControllerFactory(container));
 
-            container.Register(() => new DbContext(new EntityContextOptions { AutoCreateTables = true, NotifyEvents = true }));
+            container.Register(() => new DbContext(new EntityContextOptions { NotifyEvents = true }));
 
             //easyui验证绑定
             SettingsBindManager.RegisterBinder("validatebox", new ValidateBoxSettingBinder());
@@ -59,7 +61,7 @@ namespace Fireasy.Zero.AspNet
             if (id != 0)
             {
                 var service = GetContainer().Resolve<IAdminService>();
-                var user = service.GetUser(id);
+                var user = service.GetUserAsync(id).AsSync();
                 if (user != null)
                 {
                     var session = new SessionContext { UserID = id, UserName = user.Name, OrgID = user.OrgID };

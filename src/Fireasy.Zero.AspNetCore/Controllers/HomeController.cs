@@ -1,9 +1,11 @@
 ﻿using Fireasy.Zero.AspNetCore.Models;
 using Fireasy.Zero.Helpers;
+using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore.Controllers
 {
@@ -17,20 +19,14 @@ namespace Fireasy.Zero.AspNetCore.Controllers
             this.adminService = adminService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var session = HttpContext.GetSession();
 
-            ViewBag.Modules = adminService.GetPurviewModules(session.UserID);
+            ViewBag.Modules = await adminService.GetPurviewModulesAsync(session.UserID);
             ViewBag.UserName = session.UserName;
 
             return View();
-        }
-
-        [HttpGet]
-        public JsonResult TT()
-        {
-            throw new System.Exception("dfas");
         }
 
         [AllowAnonymous]

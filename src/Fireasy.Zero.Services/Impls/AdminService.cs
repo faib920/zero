@@ -17,6 +17,8 @@ using Fireasy.Zero.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fireasy.Zero.Services.Impls
@@ -38,11 +40,11 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="validator">密码验证器。</param>
         /// <param name="tokenCreator">token生成器。</param>
         /// <returns></returns>
-        public virtual SessionContext CheckLogin(string account, Func<string, bool> validator, Func<SysUser, string> tokenCreator)
+        public virtual async Task<SessionContext> CheckLoginAsync(string account, Func<string, bool> validator, Func<SysUser, string> tokenCreator)
         {
-            var user = context.SysUsers
+            var user = await context.SysUsers
                 .Include(s => s.SysOrg)
-                .FirstOrDefault(s => s.Account == account || s.Mobile == account);
+                .FirstOrDefaultAsync(s => s.Account == account || s.Mobile == account, CancellationToken.None);
 
             if (user == null || !validator(user.Password))
             {
@@ -65,7 +67,7 @@ namespace Fireasy.Zero.Services.Impls
             }
 
             user.LastLoginTime = DateTime.Now;
-            context.SysUsers.Update(user);
+            await context.SysUsers.UpdateAsync(user);
 
             return new SessionContext { UserID = user.UserID, UserName = user.Name, OrgID = user.OrgID };
         }
@@ -76,9 +78,9 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="userId"></param>
         /// <param name="deviceNo"></param>
         /// <returns></returns>
-        public virtual bool UpdateDeviceNo(int userId, string deviceNo)
+        public virtual async Task<bool> UpdateDeviceNo(int userId, string deviceNo)
         {
-            return context.SysUsers.Update(() => new SysUser { DeviceNo = deviceNo }, s => s.UserID == userId) > 0;
+            return await context.SysUsers.UpdateAsync(() => new SysUser { DeviceNo = deviceNo }, s => s.UserID == userId) > 0;
         }
 
         /// <summary>
@@ -86,9 +88,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual SysUser GetUser(int userId)
+        public virtual async Task<SysUser> GetUserAsync(int userId)
         {
-            var user = context.SysUsers.Get(userId);
+            var user = await context.SysUsers.GetAsync(userId);
             if (user != null)
             {
                 user.Role = string.Join(",", context.SysUserRoles.Where(s => s.UserID == userId).Select(s => s.RoleID));
@@ -104,9 +106,9 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         [CacheSupport]
         [CacheRelation(typeof(SysUser))]
-        public virtual string GetUserName(int userId)
+        public virtual async Task<string> GetUserNameAsync(int userId)
         {
-            var user = context.SysUsers.Get(userId);
+            var user = await context.SysUsers.GetAsync(userId);
             return user == null ? string.Empty : user.Name;
         }
 
@@ -115,9 +117,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        public virtual SysUser GetUserByAccount(string account)
+        public virtual async Task<SysUser> GetUserByAccountAsync(string account)
         {
-            return context.SysUsers.FirstOrDefault(s => s.Account == account);
+            return await context.SysUsers.FirstOrDefaultAsync(s => s.Account == account, CancellationToken.None);
         }
 
         /// <summary>
@@ -130,12 +132,12 @@ namespace Fireasy.Zero.Services.Impls
         [TransactionSupport]
         public virtual async Task<int> SaveUserAsync(int? userId, SysUser info, Func<string> pwdCreator)
         {
-            if (context.SysUsers.Any(s => s.Account == info.Account && userId != s.UserID))
+            if (await context.SysUsers.AnyAsync(s => s.Account == info.Account && userId != s.UserID))
             {
                 throw new ClientNotificationException("帐号重复，不能重复添加。");
             }
 
-            if (context.SysUsers.Any(s => s.Mobile == info.Mobile && s.UserID != userId))
+            if (await context.SysUsers.AnyAsync(s => s.Mobile == info.Mobile && s.UserID != userId))
             {
                 throw new ClientNotificationException(string.Format("手机号为{0}的用户已经存在。", info.Mobile));
             }
@@ -146,7 +148,7 @@ namespace Fireasy.Zero.Services.Impls
 
             if (!string.IsNullOrEmpty(info.Role))
             {
-                var posts = context.SysRoles.ToList();
+                var posts = await context.SysRoles.ToListAsync();
                 var array = new JsonSerializer().Deserialize<string[]>(info.Role);
                 roleIds = array.Select(s => Convert.ToInt32(s));
                 roleNames = string.Join("、", posts.Where(s => roleIds.Contains(s.RoleID)).Select(s => s.Name));
@@ -199,7 +201,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
         [TransactionSupport]
-        public virtual bool SaveUsers(int orgId, List<SysUser> users, Func<string> pwdCreator)
+        public virtual async Task<bool> SaveUsersAsync(int orgId, List<SysUser> users, Func<string> pwdCreator)
         {
             var repeats = Util.FindRepeatRows(context.SysUsers, users, (s, t) => s.Mobile == t.Mobile);
 
@@ -216,7 +218,7 @@ namespace Fireasy.Zero.Services.Impls
                     s.State = StateFlags.Enabled;
                 });
 
-            return context.SysUsers.Batch(users, (u, s) => u.Insert(s)) > 0;
+            return await context.SysUsers.BatchAsync(users, (u, s) => u.Insert(s)) > 0;
         }
 
         /// <summary>
@@ -224,9 +226,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="state">是否启用，反之禁用。</param>
-        public virtual void SetUserState(int userId, StateFlags state)
+        public virtual async Task SetUserStateAsync(int userId, StateFlags state)
         {
-            context.SysUsers.Update(() => new SysUser { State = state }, s => s.UserID == userId);
+            await context.SysUsers.UpdateAsync(() => new SysUser { State = state }, s => s.UserID == userId);
         }
 
         /// <summary>
@@ -235,9 +237,9 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="userId"></param>
         /// <param name="password"></param>
         /// <param name="pwdCreator">密码生成器。</param>
-        public virtual void ResetUserPassword(int userId, string password, Func<string> pwdCreator)
+        public virtual async Task ResetUserPasswordAsync(int userId, string password, Func<string> pwdCreator)
         {
-            context.SysUsers.Update(() => new SysUser { Password = pwdCreator() }, s => s.UserID == userId);
+            await context.SysUsers.UpdateAsync(() => new SysUser { Password = pwdCreator() }, s => s.UserID == userId);
         }
 
         /// <summary>
@@ -246,16 +248,16 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="userId"></param>
         /// <param name="validator">密码比较器。</param>
         /// <param name="pwdCreator">密码生成器。</param>
-        public virtual bool ModifyUserPassword(int userId, Func<string, bool> validator, Func<string> pwdCreator)
+        public virtual async Task<bool> ModifyUserPasswordAsync(int userId, Func<string, bool> validator, Func<string> pwdCreator)
         {
-            var user = context.SysUsers.Get(userId);
+            var user = await context.SysUsers.GetAsync(userId);
             if (user == null || !validator(user.Password))
             {
                 throw new ClientNotificationException("输入的密码有误。");
             }
 
             user.Password = pwdCreator();
-            context.SysUsers.Update(user);
+            await context.SysUsers.UpdateAsync(user);
             return true;
         }
 
@@ -269,12 +271,12 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="pager"></param>
         /// <param name="sorting"></param>
         /// <returns></returns>
-        public virtual List<SysUser> GetUsers(int userId, string orgCode, StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
+        public virtual async Task<List<SysUser>> GetUsersAsync(int userId, string orgCode, StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
         {
-            var dictDegree = context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToList();
-            var dictTitle = context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToList();
+            var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
+            var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
 
-            return context.SysUsers
+            return await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                 //.AssertRight(userId, orgCode)
                 .AssertWhere(state != null, s => s.State == state)
@@ -292,7 +294,7 @@ namespace Fireasy.Zero.Services.Impls
                     TitleName = dictTitle.FirstOrDefault(t => t.Value == s.TitleNo).AssertNotNull(t => t.Name),
                 })
                 .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -301,13 +303,13 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="orgId"></param>
         /// <returns></returns>
         [CacheSupport]
-        public virtual List<SysUser> GetUsers(int orgId)
+        public virtual async Task<List<SysUser>> GetUsersAsync(int orgId)
         {
-            return context.SysUsers
+            return await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                 .Where(s => s.State == StateFlags.Enabled && s.OrgID == orgId)
                 .Select(s => new SysUser { UserID = s.UserID, Name = s.Name })
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -317,17 +319,17 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="roleId"></param>
         /// <returns></returns>
         [CacheSupport]
-        public virtual List<SysUser> GetUsers(int orgId, int roleId)
+        public virtual async Task<List<SysUser>> GetUsersAsync(int orgId, int roleId)
         {
             var userIds = context.SysUserRoles
                 .Where(s => s.RoleID == roleId && s.SysUser.OrgID == orgId)
                 .Select(s => s.UserID);
 
-            return context.SysUsers
+            return await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                 .Where(s => s.State == StateFlags.Enabled && userIds.Contains(s.UserID))
                 .Select(s => new SysUser { UserID = s.UserID, Name = s.Name })
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -337,15 +339,16 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="roleId"></param>
         /// <returns></returns>
         [CacheSupport]
-        public virtual List<SysUser> GetUsers(string orgCode, int roleId)
+        public virtual async Task<List<SysUser>> GetUsersAsync(string orgCode, int roleId)
         {
             while (orgCode.Length > 0)
             {
-                var list = context.SysUsers
+                var list = await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                     .Where(s => s.State == StateFlags.Enabled && s.SysOrg.Code == orgCode)
                     .Select(s => new SysUser { UserID = s.UserID, Name = s.Name })
-                    .ToList();
+                    .CacheParsing(false)
+                    .ToListAsync();
 
                 if (list.Count > 0)
                 {
@@ -368,7 +371,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         [CacheSupport]
         [CacheRelation(typeof(SysUserRole))]
-        public virtual List<SysUser> GetUsers(string orgCode, string postName, string keyword, int? orgCodeLength)
+        public virtual async Task<List<SysUser>> GetUsersAsync(string orgCode, string postName, string keyword, int? orgCodeLength)
         {
             IQueryable<int> userIds = null;
 
@@ -382,7 +385,7 @@ namespace Fireasy.Zero.Services.Impls
                     .Select(s => s.UserID);
             }
 
-            return context.SysUsers
+            return await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                 .Where(s => s.State == StateFlags.Enabled)
                 .AssertWhere(userIds != null, s => userIds.Contains(s.UserID))
@@ -392,7 +395,7 @@ namespace Fireasy.Zero.Services.Impls
                                                                   s.Name.Contains(keyword) ||
                                                                   s.PyCode.Contains(keyword))
                 .Select(s => new SysUser { UserID = s.UserID, Name = s.Name, DeviceNo = s.DeviceNo })
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -403,12 +406,12 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         [CacheSupport]
         [CacheRelation(typeof(SysOrg))]
-        public virtual List<SysUser> GetUsersByCode(string orgCode, StateFlags? state)
+        public virtual async Task<List<SysUser>> GetUsersByCodeAsync(string orgCode, StateFlags? state)
         {
-            return context.SysUsers
+            return await context.SysUsers
                 .AssertWhere(!string.IsNullOrEmpty(orgCode), s => s.SysOrg.Code.StartsWith(orgCode))
                 .AssertWhere(state != null, s => s.State == state)
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -416,9 +419,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual bool DeleteUser(int userId)
+        public virtual async Task<bool> DeleteUserAsync(int userId)
         {
-            return context.SysUsers.Delete(userId) > 0;
+            return await context.SysUsers.DeleteAsync(userId) > 0;
         }
 
         /// <summary>
@@ -426,9 +429,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="photo">照片路径。</param>
-        public virtual bool UpdateUserPhoto(int userId, string photo)
+        public virtual async Task<bool> UpdateUserPhotoAsync(int userId, string photo)
         {
-            return context.SysUsers.Update(() => new SysUser { Photo = photo }, s => s.UserID == userId) > 0;
+            return await context.SysUsers.UpdateAsync(() => new SysUser { Photo = photo }, s => s.UserID == userId) > 0;
         }
 
         /// <summary>
@@ -465,15 +468,15 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        public virtual SysModule GetModule(int moduleId)
+        public virtual async Task<SysModule> GetModuleAsync(int moduleId)
         {
-            var info = context.SysModules.Get(moduleId);
+            var info = await context.SysModules.GetAsync(moduleId);
             if (info != null)
             {
                 var treeOper = context.CreateTreeRepository<SysModule>();
 
                 //找以它的上一个模块
-                var parent = treeOper.RecurrenceParent(info).FirstOrDefault();
+                var parent = await treeOper.RecurrenceParent(info).FirstOrDefaultAsync();
                 if (parent != null)
                 {
                     info.ParentId = parent.ModuleID;
@@ -490,14 +493,14 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        public virtual int GetModuleNextOrderNo(int? moduleId)
+        public virtual async Task<int> GetModuleNextOrderNoAsync(int? moduleId)
         {
             var signLength = EntityMetadataUnity.GetEntityMetadata(typeof(SysModule)).EntityTree.SignLength;
-            var parent = moduleId == null ? null : context.SysModules.Get(moduleId);
+            var parent = moduleId == null ? null : await context.SysModules.GetAsync(moduleId);
             var parentCode = parent == null ? string.Empty : parent.Code;
             var likeMatch = new string('_', signLength);
 
-            return context.SysModules.Where(s => s.Code.Like(parentCode + likeMatch)).Max(s => s.OrderNo) + 1;
+            return await context.SysModules.Where(s => s.Code.Like(parentCode + likeMatch)).MaxAsync(s => s.OrderNo) + 1;
         }
 
         /// <summary>
@@ -506,7 +509,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="moduleId"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        public virtual int SaveModule(int? moduleId, SysModule info)
+        public virtual async Task<int> SaveModuleAsync(int? moduleId, SysModule info)
         {
             info.PyCode = info.Name.ToPinyin();
 
@@ -516,12 +519,12 @@ namespace Fireasy.Zero.Services.Impls
             {
                 if (info.ParentId == null)
                 {
-                    treeOper.Insert(info, null);
+                    await treeOper.InsertAsync(info, null);
                 }
                 else
                 {
                     //插入为parent的孩子
-                    treeOper.Insert(info, context.SysModules.Get(info.ParentId), EntityTreePosition.Children);
+                    await treeOper.InsertAsync(info, context.SysModules.Get(info.ParentId), EntityTreePosition.Children);
                 }
 
                 moduleId = info.ModuleID;
@@ -529,7 +532,7 @@ namespace Fireasy.Zero.Services.Impls
             else
             {
                 //移动到parent下
-                treeOper.Move(info.Normalize(moduleId), context.SysModules.Get(info.ParentId), EntityTreePosition.Children);
+                await treeOper.MoveAsync(info.Normalize(moduleId), await context.SysModules.GetAsync(info.ParentId), EntityTreePosition.Children);
             }
 
             return (int)moduleId;
@@ -543,16 +546,16 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="currentId">当前节点，在添加节点的时候要把当前节点排除。</param>
         /// <param name="state">状态。</param>
         /// <returns></returns>
-        public virtual List<SysModule> GetModules(int? parentId, int? targetId, int? currentId, StateFlags? state)
+        public virtual async Task<List<SysModule>> GetModulesAsync(int? parentId, int? targetId, int? currentId, StateFlags? state)
         {
             SysModule parent = null;
             if (parentId != null)
             {
-                parent = context.SysModules.FirstOrDefault(s => s.ModuleID == parentId);
+                parent = await context.SysModules.FirstOrDefaultAsync(s => s.ModuleID == parentId);
             }
 
             var treeOper = context.CreateTreeRepository<SysModule>();
-            var result = treeOper.QueryChildren(parent)
+            var result = await treeOper.QueryChildren(parent)
                 //如果指定currentId，则需要排除
                 .AssertWhere(currentId != null, s => s.ModuleID != currentId)
                 .OrderBy(s => s.OrderNo)
@@ -561,15 +564,15 @@ namespace Fireasy.Zero.Services.Impls
                 {
                     HasChildren = treeOper.HasChildren(s, null),
                 }))
-                .ToList();
+                .ToListAsync();
 
             //如果要定位到指定的节点，则递归处理
             if (targetId != null && !TreeNodeExpandChecker.IsExpanded())
             {
-                var target = context.SysModules.Get(targetId);
-                var parents = treeOper.RecurrenceParent(target).Select(s => s.ModuleID).ToList();
+                var target = await context.SysModules.GetAsync(targetId);
+                var parents = await treeOper.RecurrenceParent(target).Select(s => s.ModuleID).ToListAsync();
 
-                result.Expand(parents, childId => GetModules(childId, targetId, currentId, state),
+                await result.ExpandAsync(parents, async childId => await GetModulesAsync(childId, targetId, currentId, state),
                     parents.Count - 1);
             }
 
@@ -581,10 +584,10 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
-        public virtual List<SysModule> SearchModules(string keyword)
+        public virtual async Task<List<SysModule>> SearchModulesAsync(string keyword)
         {
-            return context.SysModules.Where(s => (s.Name.Contains(keyword) || s.PyCode.Contains(keyword) || s.Url.Contains(keyword)))
-                .ToList();
+            return await context.SysModules.Where(s => (s.Name.Contains(keyword) || s.PyCode.Contains(keyword) || s.Url.Contains(keyword)))
+                .ToListAsync();
         }
 
         /// <summary>
@@ -592,9 +595,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        public virtual bool DeleteModule(int moduleId)
+        public virtual async Task<bool> DeleteModuleAsync(int moduleId)
         {
-            return context.SysModules.Delete(moduleId) > 0;
+            return await context.SysModules.DeleteAsync(moduleId) > 0;
         }
 
         /// <summary>
@@ -602,22 +605,22 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        public virtual bool MoveModuleUp(int moduleId)
+        public virtual async Task<bool> MoveModuleUpAsync(int moduleId)
         {
             var signLength = EntityMetadataUnity.GetEntityMetadata(typeof(SysModule)).EntityTree.SignLength;
-            var info = context.SysModules.Get(moduleId);
+            var info = await context.SysModules.GetAsync(moduleId);
             var parentCode = info.Code.Left(info.Code.Length - signLength);
             var likeMatch = new string('_', signLength);
 
-            var prev = context.SysModules.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo < info.OrderNo).OrderByDescending(s => s.OrderNo).FirstOrDefault();
+            var prev = await context.SysModules.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo < info.OrderNo).OrderByDescending(s => s.OrderNo).FirstOrDefaultAsync();
             if (prev != null)
             {
                 var orderNo = prev.OrderNo;
                 prev.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                context.SysModules.Update(info);
-                context.SysModules.Update(prev);
+                await context.SysModules.UpdateAsync(info);
+                await context.SysModules.UpdateAsync(prev);
                 return true;
             }
 
@@ -629,22 +632,22 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        public virtual bool MoveModuleDown(int moduleId)
+        public virtual async Task<bool> MoveModuleDownAsync(int moduleId)
         {
             var signLength = EntityMetadataUnity.GetEntityMetadata(typeof(SysModule)).EntityTree.SignLength;
-            var info = context.SysModules.Get(moduleId);
+            var info = await context.SysModules.GetAsync(moduleId);
             var parentCode = info.Code.Left(info.Code.Length - signLength);
             var likeMatch = new string('_', signLength);
 
-            var next = context.SysModules.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo > info.OrderNo).OrderBy(s => s.OrderNo).FirstOrDefault();
+            var next = await context.SysModules.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo > info.OrderNo).OrderBy(s => s.OrderNo).FirstOrDefaultAsync();
             if (next != null)
             {
                 var orderNo = next.OrderNo;
                 next.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                context.SysModules.Update(info);
-                context.SysModules.Update(next);
+                await context.SysModules.UpdateAsync(info);
+                await context.SysModules.UpdateAsync(next);
                 return true;
             }
 
@@ -656,9 +659,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <param name="state">是否启用，反之禁用。</param>
-        public virtual void SetModuleState(int moduleId, StateFlags state)
+        public virtual async Task SetModuleStateAsync(int moduleId, StateFlags state)
         {
-            context.SysModules.Update(() => new SysModule { State = state }, s => s.ModuleID == moduleId);
+            await context.SysModules.UpdateAsync(() => new SysModule { State = state }, s => s.ModuleID == moduleId);
         }
         #endregion
 
@@ -668,12 +671,12 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        public virtual List<SysOperate> GetOperates(int moduleId)
+        public virtual async Task<List<SysOperate>> GetOperatesAsync(int moduleId)
         {
-            return context.SysOperates
+            return await context.SysOperates
                 .Where(s => s.ModuleID == moduleId)
                 .OrderBy(s => s.OrderNo)
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -682,19 +685,19 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="moduleId"></param>
         /// <param name="rows"></param>
         [TransactionSupport]
-        public virtual void SaveOperates(int moduleId, List<SysOperate> rows)
+        public virtual async Task SaveOperatesAsync(int moduleId, List<SysOperate> rows)
         {
             var index = 1;
             rows.ForEach(s =>
-            {
-                s.ModuleID = moduleId;
-                s.State = StateFlags.Enabled;
-                s.OrderNo = index++;
-            });
+                {
+                    s.ModuleID = moduleId;
+                    s.State = StateFlags.Enabled;
+                    s.OrderNo = index++;
+                });
 
-            context.SysOperates.Delete(s => s.ModuleID == moduleId);
+            await context.SysOperates.DeleteAsync(s => s.ModuleID == moduleId);
 
-            context.SysOperates.Batch(rows, (u, s) => u.Insert(s));
+            await context.SysOperates.BatchAsync(rows, (u, s) => u.Insert(s));
         }
 
         /// <summary>
@@ -705,20 +708,20 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="updated"></param>
         /// <param name="deleted"></param>
         [TransactionSupport]
-        public virtual void SaveOperates(int moduleId, List<SysOperate> added, List<SysOperate> updated, List<SysOperate> deleted)
+        public virtual async Task SaveOperatesAsync(int moduleId, List<SysOperate> added, List<SysOperate> updated, List<SysOperate> deleted)
         {
-            var index = context.SysOperates.Where(s => s.ModuleID == moduleId).Max(s => s.OrderNo) + 1;
+            var index = await context.SysOperates.Where(s => s.ModuleID == moduleId).MaxAsync(s => s.OrderNo) + 1;
 
             added.ForEach(s =>
-            {
-                s.ModuleID = moduleId;
-                s.State = StateFlags.Enabled;
-                s.OrderNo = index++;
-            });
+                {
+                    s.ModuleID = moduleId;
+                    s.State = StateFlags.Enabled;
+                    s.OrderNo = index++;
+                });
 
-            context.SysOperates.Batch(added, (u, s) => u.Insert(s));
-            context.SysOperates.Batch(updated, (u, s) => u.Update(s));
-            context.SysOperates.Batch(deleted, (u, s) => u.Delete(s, true));
+            await context.SysOperates.BatchAsync(added, (u, s) => u.Insert(s));
+            await context.SysOperates.BatchAsync(updated, (u, s) => u.Update(s));
+            await context.SysOperates.BatchAsync(deleted, (u, s) => u.Delete(s, true));
         }
         #endregion
 
@@ -733,25 +736,25 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="keyword"></param>
         /// <param name="attribute"></param>
         /// <returns></returns>
-        public virtual List<SysOrg> GetOrgs(int? parentId, int? targetId, int? currentId, StateFlags? state, string keyword, OrgAttribute? attribute)
+        public virtual async Task<List<SysOrg>> GetOrgsAsync(int? parentId, int? targetId, int? currentId, StateFlags? state, string keyword, OrgAttribute? attribute)
         {
             if (!string.IsNullOrEmpty(keyword))
             {
-                return context.SysOrgs
+                return await context.SysOrgs
                     .Where(s => (s.Name.Contains(keyword)) && !s.Code.StartsWith("99"))
                     .AssertWhere(attribute != null, s => s.Attribute <= attribute && s.Attribute != 0)
                     .AssertWhere(state != null, s => s.State == state)
-                    .ToList();
+                    .ToListAsync();
             }
 
             SysOrg parent = null;
             if (parentId != null)
             {
-                parent = context.SysOrgs.FirstOrDefault(s => s.OrgID == parentId);
+                parent = await context.SysOrgs.FirstOrDefaultAsync(s => s.OrgID == parentId);
             }
 
             var treeOper = context.CreateTreeRepository<SysOrg>();
-            var result = treeOper.QueryChildren(parent)
+            var result = await treeOper.QueryChildren(parent)
                 .AssertWhere(attribute != null, s => s.Attribute <= attribute && s.Attribute != 0)
                 //如果指定currentId，则需要排除
                 .AssertWhere(currentId != null, s => s.OrgID != currentId)
@@ -764,14 +767,14 @@ namespace Fireasy.Zero.Services.Impls
                     HasChildren = treeOper.HasChildren(s, t => attribute == null || (attribute != null && t.Attribute <= attribute && t.Attribute != 0)),
                     AttributeName = s.Attribute.GetDescription()
                 }))
-                .ToList();
+                .ToListAsync();
 
             if (targetId != null && !TreeNodeExpandChecker.IsExpanded())
             {
-                var target = context.SysOrgs.Get(targetId);
-                var parents = treeOper.RecurrenceParent(target).Select(s => s.OrgID).ToList();
+                var target = await context.SysOrgs.GetAsync(targetId);
+                var parents = await treeOper.RecurrenceParent(target).Select(s => s.OrgID).ToListAsync();
 
-                result.Expand(parents, childId => GetOrgs(childId, targetId, currentId, state, string.Empty, attribute),
+                await result.ExpandAsync(parents, async childId => await GetOrgsAsync(childId, targetId, currentId, state, string.Empty, attribute),
                     parents.Count - 1);
             }
 
@@ -790,17 +793,17 @@ namespace Fireasy.Zero.Services.Impls
         [CacheSupport]
         [CacheRelation(typeof(SysRole))]
         [CacheRelation(typeof(SysUser))]
-        public virtual List<SysOrg> GetOrgs(int userId, string keyword, OrgAttribute? attribute)
+        public virtual async Task<List<SysOrg>> GetOrgsAsync(int userId, string keyword, OrgAttribute? attribute)
         {
             //通过数据权限来限定要显示的机构
             var purOrgs = GetPurviewOrgs(userId);
 
             var result = new List<SysOrg>();
 
-            var list = context.SysOrgs
+            var list = await context.SysOrgs
                 .Where(s => !s.Code.StartsWith("99") && s.State == StateFlags.Enabled)
                 .BatchOr(purOrgs, (o, s) => o.Code.StartsWith(s))
-                .ToList();
+                .ToListAsync();
 
             Util.MakeChildren(result, list, string.Empty, 2);
 
@@ -812,15 +815,15 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="orgId"></param>
         /// <returns></returns>
-        public virtual SysOrg GetOrg(int orgId)
+        public virtual async Task<SysOrg> GetOrgAsync(int orgId)
         {
-            var info = context.SysOrgs.Get(orgId);
+            var info = await context.SysOrgs.GetAsync(orgId);
             if (info != null)
             {
                 var treeOper = context.CreateTreeRepository<SysOrg>();
 
                 //找以它的上一个机构
-                var parent = treeOper.RecurrenceParent(info).FirstOrDefault();
+                var parent = await treeOper.RecurrenceParent(info).FirstOrDefaultAsync();
                 if (parent != null)
                 {
                     info.ParentId = parent.OrgID;
@@ -837,14 +840,14 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public virtual int GetOrgNextOrderNo(int? parentId)
+        public virtual async Task<int> GetOrgNextOrderNoAsync(int? parentId)
         {
             var signLength = EntityMetadataUnity.GetEntityMetadata(typeof(SysOrg)).EntityTree.SignLength;
-            var parent = parentId == null ? null : context.SysOrgs.Get(parentId);
+            var parent = parentId == null ? null : await context.SysOrgs.GetAsync(parentId);
             var parentCode = parent == null ? string.Empty : parent.Code;
             var likeMatch = new string('_', signLength);
 
-            return context.SysOrgs.Where(s => s.Code.Like(parentCode + likeMatch)).Max(s => s.OrderNo) + 1;
+            return await context.SysOrgs.Where(s => s.Code.Like(parentCode + likeMatch)).MaxAsync(s => s.OrderNo) + 1;
         }
 
         /// <summary>
@@ -853,7 +856,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="orgId"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        public virtual int SaveOrg(int? orgId, SysOrg info)
+        public virtual async Task<int> SaveOrgAsync(int? orgId, SysOrg info)
         {
             info.PyCode = info.Name.ToPinyin();
 
@@ -863,12 +866,12 @@ namespace Fireasy.Zero.Services.Impls
             {
                 if (info.ParentId == null)
                 {
-                    treeOper.Insert(info, null);
+                    await treeOper.InsertAsync(info, null);
                 }
                 else
                 {
                     //插入为parent的孩子
-                    treeOper.Insert(info, context.SysOrgs.Get(info.ParentId), EntityTreePosition.Children);
+                    await treeOper.InsertAsync(info, context.SysOrgs.Get(info.ParentId), EntityTreePosition.Children);
                 }
 
                 orgId = info.OrgID;
@@ -876,7 +879,7 @@ namespace Fireasy.Zero.Services.Impls
             else
             {
                 //移动到parent下
-                treeOper.Move(info.Normalize(orgId), context.SysOrgs.Get(info.ParentId), EntityTreePosition.Children);
+                await treeOper.MoveAsync(info.Normalize(orgId), await context.SysOrgs.GetAsync(info.ParentId), EntityTreePosition.Children);
             }
 
             return (int)orgId;
@@ -889,21 +892,21 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="orgs"></param>
         /// <returns></returns>
         [TransactionSupport]
-        public virtual bool SaveOrgs(int? parentId, List<SysOrg> orgs)
+        public virtual async Task<bool> SaveOrgsAsync(int? parentId, List<SysOrg> orgs)
         {
-            var orderNo = GetOrgNextOrderNo(parentId);
+            var orderNo = await GetOrgNextOrderNoAsync(parentId);
 
             orgs.ForEach(s =>
-            {
-                s.State = StateFlags.Enabled;
-                s.PyCode = s.Name.ToPinyin();
-                s.OrderNo = (++orderNo);
-            });
+                {
+                    s.State = StateFlags.Enabled;
+                    s.PyCode = s.Name.ToPinyin();
+                    s.OrderNo = (++orderNo);
+                });
 
             var treeOper = context.CreateTreeRepository<SysOrg>();
-            var parent = parentId == null ? null : context.SysOrgs.Get(parentId);
+            var parent = parentId == null ? null : await context.SysOrgs.GetAsync(parentId);
 
-            treeOper.BatchInsert(orgs, parent, EntityTreePosition.Children);
+            await treeOper.BatchInsertAsync(orgs, parent, EntityTreePosition.Children);
 
             return true;
         }
@@ -913,10 +916,10 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="keyword">关键字。</param>
         /// <returns></returns>
-        public virtual List<SysOrg> SearchOrgs(string keyword)
+        public virtual async Task<List<SysOrg>> SearchOrgsAsync(string keyword)
         {
-            return context.SysOrgs.Where(s => (s.Name.Contains(keyword)))
-                .ToList();
+            return await context.SysOrgs.Where(s => (s.Name.Contains(keyword)))
+                .ToListAsync();
         }
 
         /// <summary>
@@ -924,22 +927,22 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="orgId"></param>
         /// <returns></returns>
-        public virtual bool MoveOrgUp(int orgId)
+        public virtual async Task<bool> MoveOrgUpAsync(int orgId)
         {
             var signLength = EntityMetadataUnity.GetEntityMetadata(typeof(SysOrg)).EntityTree.SignLength;
-            var info = context.SysOrgs.Get(orgId);
+            var info = await context.SysOrgs.GetAsync(orgId);
             var parentCode = info.Code.Left(info.Code.Length - signLength);
             var likeMatch = new string('_', signLength);
 
-            var prev = context.SysOrgs.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo < info.OrderNo).OrderByDescending(s => s.OrderNo).FirstOrDefault();
+            var prev = await context.SysOrgs.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo < info.OrderNo).OrderByDescending(s => s.OrderNo).FirstOrDefaultAsync();
             if (prev != null)
             {
                 var orderNo = prev.OrderNo;
                 prev.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                context.SysOrgs.Update(info);
-                context.SysOrgs.Update(prev);
+                await context.SysOrgs.UpdateAsync(info);
+                await context.SysOrgs.UpdateAsync(prev);
                 return true;
             }
 
@@ -951,22 +954,22 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="orgId"></param>
         /// <returns></returns>
-        public virtual bool MoveOrgDown(int orgId)
+        public virtual async Task<bool> MoveOrgDownAsync(int orgId)
         {
             var signLength = EntityMetadataUnity.GetEntityMetadata(typeof(SysOrg)).EntityTree.SignLength;
-            var info = context.SysOrgs.Get(orgId);
+            var info = await context.SysOrgs.GetAsync(orgId);
             var parentCode = info.Code.Left(info.Code.Length - signLength);
             var likeMatch = new string('_', signLength);
 
-            var next = context.SysOrgs.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo > info.OrderNo).OrderBy(s => s.OrderNo).FirstOrDefault();
+            var next = await context.SysOrgs.Where(s => s.Code.Like(parentCode + likeMatch) && s.OrderNo > info.OrderNo).OrderBy(s => s.OrderNo).FirstOrDefaultAsync();
             if (next != null)
             {
                 var orderNo = next.OrderNo;
                 next.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                context.SysOrgs.Update(info);
-                context.SysOrgs.Update(next);
+                await context.SysOrgs.UpdateAsync(info);
+                await context.SysOrgs.UpdateAsync(next);
                 return true;
             }
 
@@ -978,9 +981,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="orgId"></param>
         /// <param name="state">是否启用，反之禁用。</param>
-        public virtual void SetOrgState(int orgId, StateFlags state)
+        public virtual async Task SetOrgStateAsync(int orgId, StateFlags state)
         {
-            context.SysOrgs.Update(() => new SysOrg { State = state }, s => s.OrgID == orgId);
+            await context.SysOrgs.UpdateAsync(() => new SysOrg { State = state }, s => s.OrgID == orgId);
         }
 
         /// <summary>
@@ -988,15 +991,15 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="orgId"></param>
         /// <returns></returns>
-        public virtual bool DeleteOrg(int orgId)
+        public virtual async Task<bool> DeleteOrgAsync(int orgId)
         {
-            var org = context.SysOrgs.Get(orgId);
+            var org = await context.SysOrgs.GetAsync(orgId);
             if (org.Code.Length == 2)
             {
                 throw new ClientNotificationException("不能删除顶级机构。");
             }
 
-            return context.SysOrgs.Delete(org) > 0;
+            return await context.SysOrgs.DeleteAsync(org) > 0;
         }
         #endregion
 
@@ -1006,9 +1009,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public virtual SysRole GetRole(int roleId)
+        public virtual async Task<SysRole> GetRoleAsync(int roleId)
         {
-            return context.SysRoles.Get(roleId);
+            return await context.SysRoles.GetAsync(roleId);
         }
 
         /// <summary>
@@ -1017,9 +1020,9 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="roleId">主键值。</param>
         /// <param name="info"></param>
         /// <returns></returns>
-        public virtual int SaveRole(int? roleId, SysRole info)
+        public virtual async Task<int> SaveRoleAsync(int? roleId, SysRole info)
         {
-            if (context.SysRoles.Any(s => s.Name == info.Name && s.RoleID != roleId))
+            if (await context.SysRoles.AnyAsync(s => s.Name == info.Name && s.RoleID != roleId))
             {
                 throw new ClientNotificationException(string.Format("角色{0}已经存在，名称不能重复。", info.Name));
             }
@@ -1028,12 +1031,12 @@ namespace Fireasy.Zero.Services.Impls
             {
                 info.PyCode = info.Name.ToPinyin();
                 info.Code = GetNextCode();
-                context.SysRoles.Insert(info);
+                await context.SysRoles.InsertAsync(info);
                 roleId = info.RoleID;
             }
             else
             {
-                context.SysRoles.Update(info, s => s.RoleID == roleId);
+                await context.SysRoles.UpdateAsync(info, s => s.RoleID == roleId);
             }
 
             return (int)roleId;
@@ -1044,10 +1047,10 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="posts"></param>
         /// <returns></returns>
-        public virtual bool SaveRoles(List<SysRole> posts)
+        public virtual async Task<bool> SaveRolesAsync(List<SysRole> posts)
         {
             var names = posts.Select(s => s.Name).ToArray();
-            names = (context.SysRoles.Where(s => names.Contains(s.Name)).Select(s => s.Name)).ToArray();
+            names = await (context.SysRoles.Where(s => names.Contains(s.Name)).Select(s => s.Name)).ToArrayAsync();
             if (names.Length > 0)
             {
                 throw new ClientNotificationException(string.Format("角色{0}已经存在，不能重复添加。", string.Join("、", names)));
@@ -1061,7 +1064,7 @@ namespace Fireasy.Zero.Services.Impls
                 code = GetNextCode(code, 4);
             }
 
-            context.SysRoles.Batch(posts, (u, s) => u.Insert(s));
+            await context.SysRoles.BatchAsync(posts, (u, s) => u.Insert(s));
 
             return true;
         }
@@ -1088,9 +1091,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="roleId"></param>
         /// <param name="state">是否启用，反之禁用。</param>
-        public virtual void SetRoleState(int roleId, StateFlags state)
+        public virtual async Task SetRoleStateAsync(int roleId, StateFlags state)
         {
-            context.SysRoles.Update(() => new SysRole { State = state }, s => s.RoleID == roleId);
+            await context.SysRoles.UpdateAsync(() => new SysRole { State = state }, s => s.RoleID == roleId);
         }
 
         /// <summary>
@@ -1098,9 +1101,9 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool DeleteRole(int id)
+        public virtual async Task<bool> DeleteRoleAsync(int id)
         {
-            return context.SysRoles.Delete(id) > 0;
+            return await context.SysRoles.DeleteAsync(id) > 0;
         }
 
         /// <summary>
@@ -1111,9 +1114,9 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="pager"></param>
         /// <param name="sorting"></param>
         /// <returns></returns>
-        public virtual List<SysRole> GetRoles(StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
+        public virtual async Task<List<SysRole>> GetRolesAsync(StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
         {
-            return context.SysRoles
+            return await context.SysRoles
                 .AssertWhere(state != null, s => s.State == state)
                 .AssertWhere(!string.IsNullOrEmpty(keyword), s => s.Name.Contains(keyword) || s.PyCode.Contains(keyword))
                 .Select(s => s.ExtendAs<SysRole>(() => new SysRole
@@ -1122,7 +1125,7 @@ namespace Fireasy.Zero.Services.Impls
                 }))
                 .Segment(pager)
                 .OrderBy(sorting)
-                .ToList();
+                .ToListAsync();
         }
         #endregion
 
@@ -1132,20 +1135,21 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId">用户ID。</param>
         /// <returns></returns>
-        [CacheSupport]
+        //[CacheSupport]
         [CacheRelation(typeof(SysUserRole))]
         [CacheRelation(typeof(SysModulePermission))]
-        public virtual List<SysModule> GetPurviewModules(int userId)
+        public virtual async Task<List<SysModule>> GetPurviewModulesAsync(int userId)
         {
             var result = new List<SysModule>();
 
-            var user = context.SysUsers.Get(userId);
+            var user = await context.SysUsers.GetAsync(userId);
             var roleIds = context.SysUserRoles.Where(s => s.UserID == userId).Select(s => s.RoleID).Distinct();
 
-            var list = context.SysModules.Where(s => s.State == StateFlags.Enabled)
+            var list = await context.SysModules.Where(s => s.State == StateFlags.Enabled)
                 //超级用户不用判断权限
                 .AssertWhere(user.Account != "admin", s => context.SysModulePermissions.Any(t => roleIds.Contains(t.RoleID) && t.ModuleID == s.ModuleID))
-                .ToList();
+                .CacheExecution(true)
+                .ToListAsync();
 
             Util.MakeChildren(result, list, string.Empty);
             return result;
@@ -1210,8 +1214,8 @@ namespace Fireasy.Zero.Services.Impls
             var list = context.SysOrgs.Where(s => s.State == StateFlags.Enabled)
                 .Select(s => s.ExtendAs<SysOrg>(() => new SysOrg
                 {
-                        //判断是否此机构是否给定了角色权限
-                        Permissible = context.SysOrgPermissions.Any(t => t.RoleID == roleId && t.OrgID == orgId)
+                    //判断是否此机构是否给定了角色权限
+                    Permissible = context.SysOrgPermissions.Any(t => t.RoleID == roleId && t.OrgID == orgId)
                 }))
                 .ToList();
 

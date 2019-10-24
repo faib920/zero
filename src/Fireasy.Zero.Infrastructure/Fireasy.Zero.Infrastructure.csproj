@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.Data.Entity" Version="2.1.0-beta3" />
+    <PackageReference Include="Fireasy.Data.Entity" Version="2.1.0-beta6" />
   </ItemGroup>
   
 </Project>

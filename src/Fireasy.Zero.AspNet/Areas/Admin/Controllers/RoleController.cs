@@ -3,6 +3,7 @@ using Fireasy.Web.EasyUI;
 using Fireasy.Web.Mvc;
 using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
@@ -31,9 +32,9 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// </summary>
         /// <param name="id">信息ID。</param>
         /// <returns></returns>
-        public JsonResult Get(int id)
+        public async Task<JsonResult> Get(int id)
         {
-            var info = adminService.GetRole(id);
+            var info = await adminService.GetRoleAsync(id);
             return Json(info);
         }
 
@@ -45,9 +46,9 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns>id</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Save(int? id, SysRole info)
+        public async Task<JsonResult> Save(int? id, SysRole info)
         {
-            id = adminService.SaveRole(id, info);
+            id = await adminService.SaveRoleAsync(id, info);
             return Json(Result.Success("保存成功。", id));
         }
 
@@ -59,11 +60,11 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <param name="state"></param>
         /// <returns></returns>
         [EmptyArrayResult(true)]
-        public JsonResult Data(string keyword, int? type, StateFlags? state)
+        public async Task<JsonResult> Data(string keyword, int? type, StateFlags? state)
         {
             var pager = EasyUIHelper.GetDataPager();
             var sorting = EasyUIHelper.GetSorting();
-            var list = adminService.GetRoles(state, keyword, pager, sorting);
+            var list = await adminService.GetRolesAsync(state, keyword, pager, sorting);
             return Json(EasyUIHelper.Transfer(pager, list));
         }
 
@@ -73,9 +74,9 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Delete(int id)
+        public async Task<JsonResult> Delete(int id)
         {
-            adminService.DeleteRole(id);
+            await adminService.DeleteRoleAsync(id);
             return Json(Result.Success("删除成功。"));
         }
 
@@ -86,9 +87,9 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Enable(int id)
+        public async Task<JsonResult> Enable(int id)
         {
-            adminService.SetRoleState(id, StateFlags.Enabled);
+            await adminService.SetRoleStateAsync(id, StateFlags.Enabled);
             return Json(Result.Success("启用成功。"));
         }
 
@@ -99,9 +100,9 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Disable(int id)
+        public async Task<JsonResult> Disable(int id)
         {
-            adminService.SetRoleState(id, StateFlags.Disabled);
+            await adminService.SetRoleStateAsync(id, StateFlags.Disabled);
             return Json(Result.Success("禁用成功。"));
         }
     }

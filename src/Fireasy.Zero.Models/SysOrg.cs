@@ -52,7 +52,7 @@ namespace Fireasy.Zero.Models
         /// 获取或设置状态。
         /// </summary>
 
-        [PropertyMapping(ColumnName = "State", Description = "状态", IsNullable = false)]
+        [PropertyMapping(ColumnName = "State", Description = "状态", DefaultValue = StateFlags.Enabled, IsNullable = false)]
         public virtual StateFlags State { get; set; }
 
         /// <summary>

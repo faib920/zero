@@ -6,7 +6,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 using Fireasy.Common.Caching;
+using Fireasy.Data.Entity;
+using Fireasy.Data.Entity.Subscribes;
 using System;
+using System.Collections.Generic;
 
 namespace Fireasy.Zero.Infrastructure
 {
@@ -28,6 +31,11 @@ namespace Fireasy.Zero.Infrastructure
         protected override void OnRemove(Type entityType)
         {
             RemoveCacheKeys(entityType);
+        }
+
+        protected override void OnAfterUpdate(IEntity entity)
+        {
+            RemoveCacheKeys(entity.EntityType);
         }
 
         /// <summary>

@@ -22,6 +22,8 @@ namespace Fireasy.Zero.Infrastructure.Aop
     public class CacheInterceptor : IInterceptor
     {
         private static MethodInfo MthCacheTryGet = typeof(ICacheManager).GetMethods().FirstOrDefault(s => s.Name == "TryGet" && s.GetParameters().Length == 3);
+        private static MethodInfo MthCacheAdd = typeof(ICacheManager).GetMethods().FirstOrDefault(s => s.Name == "Add");
+        private bool loadFromCache = false; //表示是否从缓存加载数据
 
         public void Initialize(InterceptContext context)
         {
@@ -51,23 +53,17 @@ namespace Fireasy.Zero.Infrastructure.Aop
                 var cacheMgr = CacheManagerFactory.CreateManager();
                 var cacheKey = GetCacheKey(info);
 
-                try
+                //检查缓存管理器里有没有对应的缓存项，如果有的话直接取出来赋给 ReturnValue，然后设置 Cancel 忽略方法调用
+                if (cacheMgr.Contains(cacheKey))
                 {
-                    //检查缓存管理器里有没有对应的缓存项，如果有的话直接取出来赋给 ReturnValue，然后设置 Cancel 忽略方法调用
-                    if (cacheMgr.Contains(cacheKey))
-                    {
-                        var returnType = (info.Member as MethodInfo).ReturnType;
-                        var method = MthCacheTryGet.MakeGenericMethod(returnType);
-                        info.ReturnValue = method.FastInvoke(cacheMgr, new object[] { cacheKey, null, null });
+                    var method = MthCacheTryGet.MakeGenericMethod(info.ReturnType);
+                    info.ReturnValue = method.FastInvoke(cacheMgr, new object[] { cacheKey, null, null });
 
-                        if (info.ReturnValue != null)
-                        {
-                            info.Cancel = true;
-                        }
+                    if (info.ReturnValue != null)
+                    {
+                        loadFromCache = true;
+                        info.Cancel = true;
                     }
-                }
-                catch (Exception exp)
-                {
                 }
             }
         }
@@ -88,18 +84,19 @@ namespace Fireasy.Zero.Infrastructure.Aop
                 var cacheMgr = CacheManagerFactory.CreateManager();
                 var cacheKey = GetCacheKey(info);
 
-                try
+                if (loadFromCache)
                 {
-                    cacheMgr.Add(cacheKey, info.ReturnValue, TimeSpan.FromSeconds(attr.Expired));
-
-                    CacheKeyManager.AddKeys(returnType, cacheKey);
-                    if (relationTypes.Count > 0)
-                    {
-                        CacheKeyManager.AddKeys(relationTypes, cacheKey);
-                    }
+                    loadFromCache = false;
+                    return;
                 }
-                catch (Exception exp)
+
+                var method = MthCacheAdd.MakeGenericMethod(info.ReturnType);
+                method.FastInvoke(cacheMgr, cacheKey, info.ReturnValue, TimeSpan.FromSeconds(attr.Expired), null);
+
+                CacheKeyManager.AddKeys(returnType, cacheKey);
+                if (relationTypes.Count > 0)
                 {
+                    CacheKeyManager.AddKeys(relationTypes, cacheKey);
                 }
             }
         }
@@ -137,6 +134,5 @@ namespace Fireasy.Zero.Infrastructure.Aop
 
             return sb.ToString();
         }
-
     }
 }

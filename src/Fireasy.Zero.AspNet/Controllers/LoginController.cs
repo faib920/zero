@@ -2,6 +2,7 @@
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Fireasy.Zero.AspNet.Controllers
@@ -31,9 +32,9 @@ namespace Fireasy.Zero.AspNet.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult CheckLogin(string account, string password)
+        public async Task<JsonResult> CheckLogin(string account, string password)
         {
-            var session = adminService.CheckLogin(account, t => encryptProvider.Validate(password, t), null);
+            var session = await adminService.CheckLoginAsync(account, t => encryptProvider.Validate(password, t), null);
             if (session != null)
             {
                 HttpContext.SetSession(session);

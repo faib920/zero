@@ -7,6 +7,7 @@ using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 {
@@ -42,9 +43,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// </summary>
         /// <param name="id">信息ID。</param>
         /// <returns></returns>
-        public JsonResult Get(int id)
+        public async Task<JsonResult> Get(int id)
         {
-            var info = adminService.GetModule(id);
+            var info = await adminService.GetModuleAsync(id);
             return Json(info);
         }
 
@@ -53,9 +54,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// </summary>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public JsonResult GetNextOrderNo(int? parentId)
+        public async Task<JsonResult> GetNextOrderNo(int? parentId)
         {
-            return Json(adminService.GetModuleNextOrderNo(parentId));
+            return Json(await adminService.GetModuleNextOrderNoAsync(parentId));
         }
 
         /// <summary>
@@ -66,9 +67,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns>id</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Save(int? id, SysModule info)
+        public async Task<JsonResult> Save(int? id, SysModule info)
         {
-            id = adminService.SaveModule(id, info);
+            id = await adminService.SaveModuleAsync(id, info);
             return Json(Result.Success("保存成功。", id));
         }
 
@@ -81,20 +82,20 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="currentId"></param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public JsonResult Data(int? id, int? targetId, int? currentId, ItemFlag? flag = null)
+        public async Task<JsonResult> Data([FromServices]JsonSerializeOptionHosting hosting, int? id, int? targetId, int? currentId, ItemFlag? flag = null)
         {
             var converter = new DynamicTreeNodeJsonConverter<SysModule>(s => s.Name, s => s.Url, s => s.State);
-            //hosting.Option.Converters.Add(converter);
+            hosting.Option.Converters.Add(converter);
 
-            var list = adminService.GetModules(id, targetId, currentId, null);
+            var list = await adminService.GetModulesAsync(id, targetId, currentId, null);
 
             if (id != null)
             {
-                return this.Json(list, converter);
+                return Json(list);
             }
             else
             {
-                return this.Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }), converter);
+                return Json(ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }));
             }
         }
 
@@ -103,9 +104,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// </summary>
         /// <param name="keyword">关键字。</param>
         /// <returns></returns>
-        public JsonResult Search(string keyword)
+        public async Task<JsonResult> Search(string keyword)
         {
-            var list = adminService.SearchModules(keyword);
+            var list = await adminService.SearchModulesAsync(keyword);
             return Json(list);
         }
 
@@ -116,9 +117,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Delete(int id)
+        public async Task<JsonResult> Delete(int id)
         {
-            adminService.DeleteModule(id);
+            await adminService.DeleteModuleAsync(id);
             return Json(Result.Success("删除成功。"));
         }
 
@@ -129,9 +130,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Enable(int id)
+        public async Task<JsonResult> Enable(int id)
         {
-            adminService.SetModuleState(id, StateFlags.Enabled);
+            await adminService.SetModuleStateAsync(id, StateFlags.Enabled);
             return Json(Result.Success("启用成功。"));
         }
 
@@ -142,9 +143,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Disable(int id)
+        public async Task<JsonResult> Disable(int id)
         {
-            adminService.SetModuleState(id, StateFlags.Disabled);
+            await adminService.SetModuleStateAsync(id, StateFlags.Disabled);
             return Json(Result.Success("禁用成功。"));
         }
 
@@ -155,9 +156,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult MoveUp(int id)
+        public async Task<JsonResult> MoveUp(int id)
         {
-            var result = adminService.MoveModuleUp(id) ?
+            var result = await adminService.MoveModuleUpAsync(id) ?
                 Result.Success("上移成功。") :
                 Result.Fail("已经是第一个模块了。");
 
@@ -171,9 +172,9 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult MoveDown(int id)
+        public async Task<JsonResult> MoveDown(int id)
         {
-            var result = adminService.MoveModuleDown(id) ?
+            var result = await adminService.MoveModuleDownAsync(id) ?
                 Result.Success("下移成功。") :
                 Result.Fail("已经是最后一个模块了。");
 

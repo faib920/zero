@@ -1,5 +1,6 @@
 ﻿using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Services;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Fireasy.Zero.AspNet.Controllers
@@ -13,11 +14,11 @@ namespace Fireasy.Zero.AspNet.Controllers
             this.adminService = adminService;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var session = HttpContext.GetSession();
 
-            ViewBag.Modules = adminService.GetPurviewModules(session.UserID);
+            ViewBag.Modules = await adminService.GetPurviewModulesAsync(session.UserID);
             ViewBag.UserName = session.UserName;
 
             return View();

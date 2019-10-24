@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore
 {
@@ -35,16 +36,15 @@ namespace Fireasy.Zero.AspNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddFireasy(Configuration, options =>
-                {
-                    //注册实体持久化的订阅通知
-                    options.AddSubscriber<EntityPersistentSubject>(string.Empty, subject => new EntitySubscriber().Accept(subject));
-                })
+            services.AddFireasy(Configuration)
                 .AddIoc(ContainerUnity.GetContainer()) //添加 appsettings.json 里的 ioc 配置
                 .AddEntityContext<DbContext>(options =>
                     {
                         options.NotifyEvents = true; //此项设为 true 时, 上面的实体持久化订阅通知才会触发
                     });
+
+            //注册实体持久化的订阅通知
+            EntityPersistentSubscribeManager.AddSubscriber(subject => new EntitySubscriber().Accept(subject));
 
             services.AddMvc()
                 .AddSessionStateTempDataProvider()
@@ -99,13 +99,13 @@ namespace Fireasy.Zero.AspNetCore
         /// </summary>
         class SessionReviveNotification : ISessionReviveNotification
         {
-            public void Invoke(HttpContext context)
+            public async Task InvokeAsync(HttpContext context)
             {
                 var adminService = context.RequestServices.GetRequiredService<IAdminService>();
                 var userId = context.GetIdentity();
                 if (userId != 0)
                 {
-                    var user = adminService.GetUser(userId);
+                    var user = await adminService.GetUserAsync(userId);
                     if (user != null)
                     {
                         var session = new SessionContext { UserID = userId, UserName = user.Name, OrgID = user.OrgID };

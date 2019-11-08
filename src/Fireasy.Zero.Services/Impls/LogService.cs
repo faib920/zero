@@ -99,5 +99,11 @@ namespace Fireasy.Zero.Services.Impls
         {
             throw new NotImplementedException();
         }
+
+        public ILogger GetLogger<T>() where T : class
+        {
+            return this;
+        }
+
     }
 }

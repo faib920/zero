@@ -54,22 +54,22 @@
       <HintPath>..\packages\CSRedisCore.3.1.10\lib\net45\CSRedisCore.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Common, Version=2.1.0.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Common.2.1.0-preview1\lib\net46\Fireasy.Common.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Common.2.1.0\lib\net46\Fireasy.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Data, Version=2.1.0.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.2.1.0-preview1\lib\net45\Fireasy.Data.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Data.2.1.0\lib\net45\Fireasy.Data.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Data.Entity, Version=2.1.0.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.Entity.2.1.0-preview1\lib\net45\Fireasy.Data.Entity.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Data.Entity.2.1.0\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Redis, Version=2.1.0.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Redis.2.1.0-preview1\lib\net45\Fireasy.Redis.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Redis.2.1.0\lib\net45\Fireasy.Redis.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Web.EasyUI, Version=2.1.0.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.EasyUI.2.1.0-beta6\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Web.EasyUI.2.1.0\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Web.Mvc, Version=2.1.0.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.Mvc.2.1.0-beta6\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Web.Mvc.2.1.0\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>

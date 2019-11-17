@@ -50,6 +50,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return View();
         }
 
+        public ActionResult Select()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 根据ID获取用户信息。
         /// </summary>
@@ -61,6 +66,10 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return Json(info);
         }
 
+        /// <summary>
+        /// 获取当前登录者的信息。
+        /// </summary>
+        /// <returns></returns>
         public async Task<JsonResult> GetMyInfo()
         {
             var session = HttpContext.GetSession();

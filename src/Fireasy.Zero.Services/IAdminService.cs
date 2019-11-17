@@ -137,12 +137,13 @@ namespace Fireasy.Zero.Services
         Task<List<SysUser>> GetUsersAsync(int orgId, int roleId);
 
         /// <summary>
-        /// 获取机构下某角色的用户列表。
+        /// 获取某角色的用户列表。
         /// </summary>
-        /// <param name="orgCode"></param>
         /// <param name="roleId"></param>
+        /// <param name="pager"></param>
+        /// <param name="sorting"></param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersAsync(string orgCode, int roleId);
+        Task<List<SysUser>> GetUsersByRoleAsync(int roleId, DataPager pager, SortDefinition sorting);
 
         /// <summary>
         /// 获取用户人员信息列表 根据机构编码和状态
@@ -415,7 +416,7 @@ namespace Fireasy.Zero.Services
         /// </summary>
         /// <param name="roleId">角色ID。</param>
         /// <returns></returns>
-        List<SysModule> GetModulesByRole(int roleId);
+        Task<List<SysModule>> GetModulesByRoleAsync(int roleId);
 
         /// <summary>
         /// 根据机构ID和角色ID获取机构列表。
@@ -431,7 +432,7 @@ namespace Fireasy.Zero.Services
         /// <param name="roleId"></param>
         /// <param name="modules"></param>
         /// <param name="opers"></param>
-        void SaveFuncRolePermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers);
+        Task SaveFuncRolePermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers);
 
         /// <summary>
         /// 保存数据角色的权限，包括分配的用户。

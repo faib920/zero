@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "角色管理";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        loadRoles();
+    });
+
+    //加载数据
+    function loadRoles() {
+        $('#dg').datagrid({
+            url: '@Url.Action("Data")',
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: true,//分页信息
+            rownumbers: true,//显示行号
+            pageNumber: 1,//默认显示第一页
+            pageSize:20,//每页的行数
+            idField: 'RoleID',
+            columns: [[
+
+                { field: 'Name', title: '名称', width: 160, halign: 'center', align: 'left', sortable: true },
+                { field: 'Remark', title: '备注', width: 300, halign: 'center', align: 'left', sortable: true },
+                {
+                    field: 'Oper', title: '操作', width: 300, halign: 'center', align: 'center', formatter: function (index, row) {
+                        var html = '';
+                        html += '<a href="javascript:editInfo()">[修改]</a> ';
+                        html += '<a href="javascript:deleteInfo()">[删除]</a> ';
+                        if (row.State == 0) {
+                            html += '<a href="javascript:enableInfo()">[启用]</a> ';
+                        }
+                        if (row.State == 1) {
+                            html += '<a href="javascript:disableInfo()">[禁用]</a> ';
+                            html += '<a href="javascript:rightInfo()">[权限设置]</a> ';
+                        }
+                        return html;
+                    }
+                }
+            ]],
+            rowStyler: function (index, row) {
+                if (row.State == 0) {
+                    return 'color:red';
+                }
+            },
+            onDblClickRow: function () {
+                editInfo();
+            },
+            queryParams: { state: '1' }
+        });
+    }
+
+    //工具栏按钮单击事件
+    function toolbarClick(key) {
+        switch (key) {
+            case "Add":
+                addInfo();
+                break;
+            case "Edit":
+                editInfo();
+                break;
+            case "Delete":
+                deleteInfo();
+                break;
+            case "Enable":
+                enableInfo();
+                break;
+            case "Disable":
+                disableInfo();
+                break;
+            case "Permission":
+                rightInfo();
+                break;
+        }
+    }
+
+    //添加信息
+    function addInfo() {
+        common.showDialog('@Url.Action("Edit")', '添加角色', 500, 320, function () {
+            $('#dg').datagrid('reload');
+        });
+    }
+
+    //修改信息
+    function editInfo() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.showDialog('@Url.Action("Edit")?id=' + row.RoleID, '修改角色', 500, 320, function () {
+            $('#dg').datagrid('reload');
+        });
+    }
+
+    //删除信息
+    function deleteInfo() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var postData = new Object();
+        postData.id = row.RoleID;
+        common.antiToken(postData);
+
+        common.confirm('你确认要删除[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+            $.post('@Url.Action("Delete")', postData, function (result) {
+                common.processResult(result, function () {
+                    $('#dg').datagrid('reload');
+                });
+            });
+        });
+    }
+
+    //启用信息
+    function enableInfo() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var postData = new Object();
+        postData.id = row.RoleID;
+        common.antiToken(postData);
+
+        common.confirm('你确认要启用[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+            $.post('@Url.Action("Enable")', postData, function (result) {
+                common.processResult(result, function () {
+                    $('#dg').datagrid('reload');
+                });
+            });
+        });
+    }
+
+    //禁用信息
+    function disableInfo() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        var postData = new Object();
+        postData.id = row.RoleID;
+        common.antiToken(postData);
+
+        common.confirm('你确认要禁用[<span class="msg_tip">' + row.Name + '</span>]吗?', function () {
+            $.post('@Url.Action("Disable")', postData, function (result) {
+                common.processResult(result, function () {
+                    $('#dg').datagrid('reload');
+                });
+            });
+        });
+    }
+
+    function rightInfo() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.showDialog('@Url.Action("Index", "Permission", new { area = "Admin" })?roleId=' + row.RoleID, '权限设置', 800, 550);
+    }
+
+    //查询
+    function query() {
+        var node = $('#treOrg').tree('getSelected');
+        var orgCode = node == null ? '' : node.Code;
+
+        $('#dg').datagrid('unselectAll');
+        $('#dg').datagrid({
+            queryParams: {
+                state: $('#txtState').combobox('getValue'),
+                keyword: $('#txtKeyword').val()
+            }
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <div class="datagrid-toolbar">
+        @Html.Toolbar()
+    </div>
+    <div class="query">
+        <table>
+            <tr>
+                <td>状态</td>
+                <td><input type="text" id="txtState" class="easyui-combobox" data-options="data: [{value: '',text:'--全部--'},{value: '1',text:'启用'},{value: '0',text:'禁用'}],valueField:'value',textField:'text',editable:false,panelHeight:'auto',value:'1'" style="width:90px" /></td>
+                <td>快速查询</td>
+                <td>
+                    <input id="txtKeyword" type="text" class="easyui-textbox enterQuery" data-options="prompt:'名称、拼音首字母'" style="width: 240px" />
+                </td>
+                <td>
+                    <a class="easyui-linkbutton" id="btnQuery" onclick="query()" data-options="iconCls:'icon-search'">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="dg"></table>
+</div>

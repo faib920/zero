@@ -5,12 +5,12 @@
 //   (c) Copyright Fireasy. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
+using Fireasy.Common.Caching;
 using Fireasy.Common.Extensions;
 using Fireasy.Common.Threading;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Properties;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Fireasy.Zero.Infrastructure
@@ -20,8 +20,8 @@ namespace Fireasy.Zero.Infrastructure
     /// </summary>
     public class CacheKeyManager
     {
-        private static ConcurrentDictionary<Type, List<string>> cache = new ConcurrentDictionary<Type, List<string>>();
         private static ReadWriteLocker locker = new ReadWriteLocker();
+        private const string ROOT_KEY = "_Zero_Keys_";
 
         /// <summary>
         /// 添加类型与缓存键的映射。
@@ -41,17 +41,27 @@ namespace Fireasy.Zero.Infrastructure
         /// <param name="cacheKey"></param>
         public static void AddKeys(List<Type> types, string cacheKey)
         {
+            var cacheMgr = CacheManagerFactory.CreateManager();
             foreach (var ctype in types)
             {
-                var list = cache.GetOrAdd(ctype, t => new List<string>());
-
                 locker.LockWrite(() =>
-                {
-                    if (!list.Contains(cacheKey))
                     {
-                        list.Add(cacheKey);
-                    }
-                });
+                        //每一个实体类与一个List相对应，List里存放与该实体相关的缓存键
+                        var keyDict = cacheMgr.TryGet(ROOT_KEY, () => new Dictionary<string, List<string>>());
+
+                        if (!keyDict.TryGetValue(ctype.Name, out List<string> keys))
+                        {
+                            keys = new List<string>();
+                            keyDict.Add(ctype.Name, keys);
+                        }
+
+                        if (!keys.Contains(cacheKey))
+                        {
+                            keys.Add(cacheKey);
+                        }
+
+                        cacheMgr.Add(ROOT_KEY, keyDict, NeverExpired.Instance);
+                    });
             }
         }
 
@@ -62,11 +72,12 @@ namespace Fireasy.Zero.Infrastructure
         /// <returns></returns>
         public static List<string> GetCacheKeys(Type type)
         {
-            foreach (var key in cache.Keys)
+            var cacheMgr = CacheManagerFactory.CreateManager();
+            if (cacheMgr.TryGet(ROOT_KEY, out Dictionary<string, List<string>> keyDict))
             {
-                if (key.IsAssignableFrom(type))
+                if (keyDict.TryGetValue(type.Name, out List<string> keys))
                 {
-                    return cache[key];
+                    return keys;
                 }
             }
 

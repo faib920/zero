@@ -1,0 +1,113 @@
+﻿@{
+    ViewData["Title"] = "权限设置";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+
+<script type="text/javascript">
+    var roleId = '@Context.Request.Query["roleId"]';
+
+    $(function () {
+        loadModules();
+    });
+
+    //加载数据
+    function loadModules() {
+        $('#dgFunc').treegrid({
+            url: '@Url.Action("GetModulesByRole")?roleId=' + roleId,
+            fit: true,//自动填充
+            idField: 'id',
+            treeField: 'Name',
+            columns: [[
+
+                { field: 'Name', title: '模块', width: 260, halign: 'center', align: 'left', formatter: function (value, row) { return formatCheckbox(value, row); } },
+                { field: 'Operaters', title: '操作', width: 600, halign: 'center', align: 'left', formatter: formatOperates }
+            ]]
+        });
+    }
+
+    function formatCheckbox(value, row) {
+        return '<input did="' + row.id + '" type="checkbox" ' + (row.Permissible ? 'checked' : '') + ' onclick="checkChildren(' + row.id + ', $(this).prop(\'checked\'))" />' + value;
+    }
+
+    function formatOperates(value, row) {
+        if (row.SysOperates.length == 0) {
+            return null;
+        }
+        var str = '<label style="color:blue"><input id="chkAll_' + row.id + '" type="checkbox" onclick="checkAllOpers(' + row.id + ', $(this).prop(\'checked\'))" />全选</label>&nbsp;';
+        $.each(row.SysOperates, function (i, r) {
+            str += '<input id="o_' + r.OperID + '" mid="' + row.id + '" oid="' + r.OperID + '" type="checkbox" ' + (r.Permissible ? 'checked' : '') + ' /><label class="lbl" for="o_' + r.OperID + '">' + r.Name + '</label>&nbsp;';
+        });
+        return str;
+    }
+
+    function checkChildren(id, ck) {
+        if (ck) {
+            var parent = $('#dg').treegrid('getParent', id);
+            while (parent != null) {
+                $('[did="' + parent.id + '"]').prop('checked', ck);
+                parent = $('#dg').treegrid('getParent', parent.id);
+            }
+        }
+
+        var children = $('#dg').treegrid('getChildren', id);
+        $.each(children, function (i, r) {
+            $('[did="' + r.id + '"]').prop('checked', ck);
+            checkAllOpers(r.id, ck);
+        });
+
+        checkAllOpers(id, ck);
+    }
+
+    function checkAllOpers(mid, ck) {
+        $('input[mid="' + mid + '"]').each(function (i, r) {
+            $(r).prop('checked', ck);
+        });
+    }
+
+    function saveInfo() {
+        if (roleId == null) {
+            common.alert('请选择左边的角色。');
+            return;
+        }
+
+        common.confirm('是否保存权限?', function () {
+            var checked = $('input[did]:checked');
+            var data = [];
+            var opers = {};
+            $.each(checked, function (i, c) {
+                var did = $(c).attr('did');
+                data.push(did);
+
+                opers[did] = [];
+                $('input[mid="' + did + '"]:checked').each(function (j, o) {
+                    opers[did].push($(o).attr('oid'))
+                });
+            })
+
+            var postData = new Object();
+            postData.roleId = roleId;
+            postData.modules = JSON.stringify(data);
+            postData.opers = JSON.stringify(opers);
+
+            common.showProcess();
+
+            $.post('@Url.Action("SaveFuncPermissions")', postData, function (result) {
+                common.processResult(result);
+            })
+        });
+    }
+</script>
+<div data-options="region:'center',border:false">
+    <div class="easyui-tabs" data-options="fit:true">
+        <div title="功能权限">
+            <table id="dgFunc"></table>
+        </div>
+        <div title="数据权限"></div>
+        <div title="相关用户"></div>
+    </div>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>
+
+

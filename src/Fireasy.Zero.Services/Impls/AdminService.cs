@@ -333,32 +333,26 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
-        /// 获取机构下某角色的用户列表。
+        /// 获取某角色的用户列表。
         /// </summary>
-        /// <param name="orgCode"></param>
         /// <param name="roleId"></param>
+        /// <param name="pager"></param>
+        /// <param name="sorting"></param>
         /// <returns></returns>
-        [CacheSupport]
-        public virtual async Task<List<SysUser>> GetUsersAsync(string orgCode, int roleId)
+        public virtual async Task<List<SysUser>> GetUsersByRoleAsync(int roleId, DataPager pager, SortDefinition sorting)
         {
-            while (orgCode.Length > 0)
-            {
-                var list = await context.SysUsers
-                .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
-                    .Where(s => s.State == StateFlags.Enabled && s.SysOrg.Code == orgCode)
-                    .Select(s => new SysUser { UserID = s.UserID, Name = s.Name })
-                    .CacheParsing(false)
-                    .ToListAsync();
-
-                if (list.Count > 0)
+            return await context.SysUsers
+            .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
+                .Where(s => s.State == StateFlags.Enabled)
+                .Where(s => context.SysUserRoles.Any(t => t.RoleID == roleId && t.UserID == s.UserID))
+                .Segment(pager)
+                .OrderBy(sorting)
+                .ExtendSelect(s => new SysUser
                 {
-                    return list;
-                }
-
-                orgCode = orgCode.Substring(0, orgCode.Length - 2);
-            }
-
-            return new List<SysUser>();
+                    OrgName = s.SysOrg.FullName,
+                    SexName = s.Sex.GetDescription()
+                })
+                .ToListAsync();
         }
 
         /// <summary>
@@ -871,7 +865,7 @@ namespace Fireasy.Zero.Services.Impls
                 else
                 {
                     //插入为parent的孩子
-                    await treeOper.InsertAsync(info, context.SysOrgs.Get(info.ParentId), EntityTreePosition.Children);
+                    await treeOper.InsertAsync(info, await context.SysOrgs.GetAsync(info.ParentId), EntityTreePosition.Children);
                 }
 
                 orgId = info.OrgID;
@@ -1135,7 +1129,7 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId">用户ID。</param>
         /// <returns></returns>
-        //[CacheSupport]
+        [CacheSupport]
         [CacheRelation(typeof(SysUserRole))]
         [CacheRelation(typeof(SysModulePermission))]
         public virtual async Task<List<SysModule>> GetPurviewModulesAsync(int userId)
@@ -1148,7 +1142,6 @@ namespace Fireasy.Zero.Services.Impls
             var list = await context.SysModules.Where(s => s.State == StateFlags.Enabled)
                 //超级用户不用判断权限
                 .AssertWhere(user.Account != "admin", s => context.SysModulePermissions.Any(t => roleIds.Contains(t.RoleID) && t.ModuleID == s.ModuleID))
-                .CacheExecution(true)
                 .ToListAsync();
 
             Util.MakeChildren(result, list, string.Empty);
@@ -1160,7 +1153,7 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="roleId">角色ID。</param>
         /// <returns></returns>
-        public virtual List<SysModule> GetModulesByRole(int roleId)
+        public virtual async Task<List<SysModule>> GetModulesByRoleAsync(int roleId)
         {
             var result = new List<SysModule>();
 
@@ -1172,23 +1165,24 @@ namespace Fireasy.Zero.Services.Impls
             var operates = context.SysOperates.ToList();
             var operatePermissions = context.SysOperatePermissions.Include(s => s.SysOperate).ToList();
 
-            var list = context.SysModules.Where(s => s.State == StateFlags.Enabled)
+            var list = await context.SysModules.Where(s => s.State == StateFlags.Enabled)
+                .CacheParsing(false)
                 .Select(s => s.ExtendAs<SysModule>(() => new SysModule
                 {
                     //判断是否此模块是否给定了角色权限
                     Permissible = context.SysModulePermissions
-                            .Any(t => t.RoleID == roleId && t.ModuleID == s.ModuleID),
+                                .Any(t => t.RoleID == roleId && t.ModuleID == s.ModuleID),
                     SysOperates = operates.Where(t => t.ModuleID == s.ModuleID).ToEntitySet()
                 }))
-                .ToList();
+                .ToListAsync();
 
             list.ForEach(s =>
-            {
-                s.SysOperates.ForEach(t => t.Permissible = operatePermissions
-                    .Any(v => v.OperID == t.OperID && v.ModuleID == s.ModuleID && v.RoleID == roleId));
-            });
+                {
+                    s.SysOperates.ForEach(t => t.Permissible = operatePermissions
+                        .Any(v => v.OperID == t.OperID && v.ModuleID == s.ModuleID && v.RoleID == roleId));
+                });
 
-            //CommonService.MakeChildren(result, list, string.Empty);
+            Util.MakeChildren(result, list, string.Empty);
 
             operates.Clear();
             operatePermissions.Clear();
@@ -1230,11 +1224,11 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="modules"></param>
         /// <param name="opers"></param>
         [TransactionSupport]
-        public virtual void SaveFuncRolePermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers)
+        public virtual async Task SaveFuncRolePermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers)
         {
             //清理数据
-            context.SysModulePermissions.Delete(s => s.RoleID == roleId);
-            context.SysOperatePermissions.Delete(s => s.RoleID == roleId);
+            await context.SysModulePermissions.DeleteAsync(s => s.RoleID == roleId);
+            await context.SysOperatePermissions.DeleteAsync(s => s.RoleID == roleId);
 
             var permissions = modules.Select(s => new SysModulePermission
             {
@@ -1242,12 +1236,12 @@ namespace Fireasy.Zero.Services.Impls
                 ModuleID = s
             });
 
-            context.SysModulePermissions.Batch(permissions, (u, s) => u.Insert(s));
+            await context.SysModulePermissions.BatchAsync(permissions, (u, s) => u.Insert(s));
 
             var operatePermissions = opers.SelectMany(s => s.Value.Select(t => new SysOperatePermission { ModuleID = s.Key, OperID = t, RoleID = roleId })).ToList();
             if (operatePermissions.Count > 0)
             {
-                context.SysOperatePermissions.Batch(operatePermissions, (u, s) => u.Insert(s));
+                await context.SysOperatePermissions.BatchAsync(operatePermissions, (u, s) => u.Insert(s));
             }
         }
 

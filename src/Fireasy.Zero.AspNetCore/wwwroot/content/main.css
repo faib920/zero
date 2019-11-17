@@ -167,3 +167,110 @@ INPUT::-webkit-input-placeholder {
 .noscroll {
     overflow: hidden;
 }
+
+
+#btnSave {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #1E9FFF;
+    color: #fff;
+}
+
+    #btnSave:hover {
+        background: #1E8ADE;
+    }
+
+#btnOk {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #1E9FFF;
+    color: #fff;
+}
+
+    #btnOk .icon-ok {
+        background: url('themes/icons/ok1.png') no-repeat center center;
+    }
+
+#btnSaveAndNew {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #3AC782;
+    color: #fff;
+}
+
+    #btnSaveAndNew:hover {
+        background: #3AB762;
+    }
+
+#btnClose {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #FF5722;
+    color: #fff;
+}
+
+    #btnClose:hover {
+        background: #E23722;
+    }
+
+#btnCancelEdit {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #f3a205;
+    color: #fff;
+}
+
+    #btnCancelEdit:hover {
+        background: #e39205;
+    }
+
+    #btnCancelEdit .icon-close {
+        background: url('themes/icons/cancel1.png') no-repeat center center;
+    }
+
+#btnQuery {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #3e9ee5;
+    color: #fff;
+}
+
+    #btnQuery:hover {
+        background: #2288cc;
+    }
+
+    #btnQuery .icon-search {
+        background: url('themes/icons/query1.png') no-repeat center center;
+    }
+
+#btnSelect {
+    display: inline-block;
+    text-align: center;
+    border: 0 none;
+    padding: 3px;
+    border-radius: 3px;
+    background: #79b2b7;
+    color: #fff;
+}
+
+    #btnSelect .icon-ok {
+        background: url('themes/icons/ok1.png') no-repeat center center;
+    }

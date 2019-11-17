@@ -1,0 +1,79 @@
+﻿@model SysRole
+@{
+    ViewBag.Title = "角色信息";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+<script type="text/javascript">
+    var id = '@Context.Request.Query["id"]';
+    var pid = '@Context.Request.Query["parentId"]';
+
+    $(function () {
+        loadInfo();
+    });
+
+    //加载信息
+    function loadInfo() {
+        if (id !== '') {
+            $.getJSON('@Url.Action("Get")?id=' + id, function (data) {
+                common.processResult(data, function () {
+                    $('#form1').form('load', data);
+                });
+            });
+
+            $('#btnSaveAndNew').remove();
+        }
+        else {
+            getNextOrderNo(pid);
+            loadOrgs();
+        }
+    }
+
+    //保存信息
+    function saveInfo(isNew) {
+        if (!$('#form1').form('validate')) {
+            return;
+        }
+
+        var postData = new Object();
+
+        //将表单填充的内容序列化为json
+        var data = $('#form1').form('save');
+        postData["info"] = JSON.stringify(data);
+        common.antiToken(postData);
+
+        common.showProcess();
+        $.post('@Url.Action("Save")?id=' + id, postData, function (result) {
+            common.processResult(result, function () {
+                if (isNew) {
+                    $('#form1').form('clear');
+                }
+
+                common.setReturnValue(true);
+
+                if (common.closeWhenSave && !isNew) {
+                    common.closeWindow();
+                }
+            });
+        });
+    }
+
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <table class="form-body">
+
+        <tr>
+            <td class="addon">名称</td>
+            <td>@Html.TextBox(s => s.Name).Style("width:200px")</td>
+        </tr>
+        <tr>
+            <td class="addon">备注</td>
+            <td colspan="3">@Html.TextMultiBox(s => s.Remark).Style("width:200px;height:60px")</td>
+        </tr>
+    </table>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
+    <a class="easyui-linkbutton" onclick="saveInfo(true)" id="btnSaveAndNew" data-options="iconCls:'icon-save_new'">保存并新建</a>
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>

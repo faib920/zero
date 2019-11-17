@@ -92,5 +92,18 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 
             return Json(list);
         }
+
+        /// <summary>
+        /// 为角色添加多个用户。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="users">用户ID列表。</param>
+        /// <returns></returns>
+        public async Task<JsonResult> AddRoleUsers(int roleId, List<int> users)
+        {
+            await adminService.AddRoleUsers(roleId, users);
+
+            return Json(Result.Success("添加成功。"));
+        }
     }
 }

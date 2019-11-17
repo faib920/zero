@@ -456,6 +456,14 @@ namespace Fireasy.Zero.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         List<string> GetPurviewOrgs(int userId);
+
+        /// <summary>
+        /// 为角色添加多个用户。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="users">用户ID列表。</param>
+        /// <returns></returns>
+        Task AddRoleUsers(int roleId, List<int> users);
         #endregion
 
         #region 字典

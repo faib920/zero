@@ -115,9 +115,21 @@
             return;
         }
 
-        common.showDialog('@Url.Action("Select", "User", new { area = "Admin" })?roleId=' + roleId, '选择用户', 1080, 550, function () {
-            $('#dgUser').datagrid('reload');
+        common.showDialog('@Url.Action("Select", "User", new { area = "Admin" })?roleId=' + roleId, '选择用户', 1080, 550, function (users) {
+            var postData = new Object();
+            postData.roleId = roleId;
+            postData.users = JSON.stringify(users);
+            $.post('@Url.Action("AddRoleUsers")', postData, function (result) {
+                $('#dgUser').datagrid('reload');
+            })
         }).max();
+    }
+
+    function deleteUser() {
+        if (roleId == 0) {
+            common.alert('请选择左边的角色。');
+            return;
+        }
     }
 
     function saveInfo() {

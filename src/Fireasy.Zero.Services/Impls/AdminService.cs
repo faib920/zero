@@ -1356,7 +1356,20 @@ UNION ALL
             }
 
             return orgs;
+        }
 
+        /// <summary>
+        /// 为角色添加多个用户。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="users">用户ID列表。</param>
+        /// <returns></returns>
+        public virtual async Task AddRoleUsers(int roleId, List<int> users)
+        {
+            //已经存在的要排除掉
+            var exists = context.SysUserRoles.Where(s => s.RoleID == roleId).Select(s => s.UserID).ToArray();
+            var userRoles = users.Where(s => !exists.Contains(s)).Select(s => new SysUserRole { RoleID = roleId, UserID = s });
+            await context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
         }
         #endregion
 

@@ -48,13 +48,17 @@
                 { field: 'TitleName', title: '职称', width: 120, halign: 'center', align: 'center', sortable: true },
                 { field: 'Account', title: '帐号', width: 120, halign: 'center', align: 'center', sortable: true }
             ]],
-            rowStyler: function (index, row) {
-                if (row.State == 0) {
-                    return 'color:red';
-                }
+            onCheck: function () {
+                getCheckCount();
             },
-            onDblClickRow: function () {
-                editInfo();
+            onUncheck: function () {
+                getCheckCount();
+            },
+            onCheckAll: function () {
+                getCheckCount();
+            },
+            onUncheckAll: function () {
+                getCheckCount();
             },
             queryParams: { state: '1' }
         });
@@ -74,16 +78,35 @@
         });
     }
 
-    function select() {
+    function selectOk() {
+        var rows = $('#dg').datagrid('getChecked');
+        var ids = [];
+        $.each(rows, function (i, r) {
+            ids.push(r.UserID);
+        });
+        common.setReturnValue(ids);
         common.closeWindow();
     }
+
+    function clearData() {
+        $('#dg').datagrid('clearChecked');
+        getCheckCount();
+    }
+    
+    function getCheckCount() {
+        var rows = $('#dg').datagrid('getChecked');
+        $('#count').text(rows.length);
+        $('a[key="Clear"]').linkbutton(rows.length > 0 ? 'enable' : 'disable');
+    }
+
 </script>
 @Html.AntiForgeryToken()
 <div data-options="region:'center',border:false">
     <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
         <div data-options="region:'north',border:false" style="height:96px">
             <div class="datagrid-toolbar">
-                <a key="Ok" class="easyui-linkbutton" onclick="select()" data-options="iconCls: 'icon-ok', plain: true">确定</a>
+                <a key="Ok" class="easyui-linkbutton" onclick="selectOk()" data-options="iconCls: 'icon-ok', plain: true">确定所选</a>
+                <a key="Clear" class="easyui-linkbutton" onclick="clearData()" data-options="iconCls: 'icon-delete', plain: true, disabled: true">清除所选</a>
             </div>
             <div class="query">
                 <table>
@@ -95,6 +118,7 @@
                         <td>
                             <a class="easyui-linkbutton" id="btnQuery" onclick="query()" data-options="iconCls:'icon-search'">查询</a>
                         </td>
+                        <td><span style="font-size:16px;">已选择 <span id="count">0</span> 个用户</span></td>
                     </tr>
                 </table>
             </div>

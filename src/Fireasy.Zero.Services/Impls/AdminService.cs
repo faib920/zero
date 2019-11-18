@@ -276,11 +276,13 @@ namespace Fireasy.Zero.Services.Impls
             var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
             var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
 
+            var orgs = GetPurviewOrgs(userId);
+
             return await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
-                //.AssertRight(userId, orgCode)
                 .AssertWhere(state != null, s => s.State == state)
-                .AssertWhere(!string.IsNullOrEmpty(orgCode), s => s.SysOrg.Code.StartsWith(orgCode))
+                //如果指定了orgCode则按orgCode左匹配，否则根据用户的数据权限进行逐一的左匹配
+                .AssertWhere(!string.IsNullOrEmpty(orgCode) || orgs == null, s => s.SysOrg.Code.StartsWith(orgCode), s => s.BatchOr(orgs, (t, v) => t.SysOrg.Code.StartsWith(v)))
                 .AssertWhere(!string.IsNullOrEmpty(keyword), s => s.Account == keyword ||
                                                                   s.Name.Contains(keyword) ||
                                                                   s.PyCode.Contains(keyword) ||
@@ -312,11 +314,14 @@ namespace Fireasy.Zero.Services.Impls
         {
             var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
             var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
+            
+            var orgs = GetPurviewOrgs(userId);
 
             return await context.SysUsers
                 .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
                 .Where(s => s.State == StateFlags.Enabled && !context.SysUserRoles.Where(t => t.RoleID == roleId).Any(t => t.UserID == s.UserID))
-                .AssertWhere(!string.IsNullOrEmpty(orgCode), s => s.SysOrg.Code.StartsWith(orgCode))
+                //如果指定了orgCode则按orgCode左匹配，否则根据用户的数据权限进行逐一的左匹配
+                .AssertWhere(!string.IsNullOrEmpty(orgCode) || orgs == null, s => s.SysOrg.Code.StartsWith(orgCode), s => s.BatchOr(orgs, (t, v) => t.SysOrg.Code.StartsWith(v)))
                 .AssertWhere(!string.IsNullOrEmpty(keyword), s => s.Account == keyword ||
                                                                   s.Name.Contains(keyword) ||
                                                                   s.PyCode.Contains(keyword) ||
@@ -1366,17 +1371,16 @@ JOIN (
 		p.UserID = {userId}
 ) t ON m.OrgID = t.OrgID
 AND m.RoleID = t.RoleID
-JOIN SysOrg o ON o.OrgID = m.DataID
+JOIN SysOrg o ON o.OrgID = m.OrgID
 UNION ALL
-	(
-		SELECT
-			o.code
-		FROM
-			SysUser u
-		JOIN SysOrg o ON o.OrgID = u.OrgID
-		WHERE
-			u.UserID = {userId}
-	)";
+	SELECT
+		o.code
+	FROM
+		SysUser u
+	JOIN SysOrg o ON o.OrgID = u.OrgID
+	WHERE
+		u.UserID = {userId}
+";
 
             var orgs = context.Database.ExecuteEnumerable<string>(sql).ToList();
 
@@ -1414,7 +1418,7 @@ UNION ALL
         /// <param name="roleId">角色ID。</param>
         /// <param name="users">用户ID列表。</param>
         /// <returns></returns>
-        public virtual  async Task DeleteRoleUsers(int roleId, List<int> users)
+        public virtual async Task DeleteRoleUsers(int roleId, List<int> users)
         {
             context.SysUserRoles.DeleteAsync(s => s.RoleID == roleId && users.Contains(s.UserID));
         }

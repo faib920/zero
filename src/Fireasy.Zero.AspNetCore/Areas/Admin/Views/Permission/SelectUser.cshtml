@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "用户选择";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+
+<script type="text/javascript">
+    var roleId = '@Context.Request.Query["roleId"]';
+    $(function () {
+        loadOrgs();
+        loadUsers();
+    });
+
+    function loadOrgs() {
+        $('#treOrg').tree({
+            url: '@Url.Action("Data", "Org", new { area = "Admin" })',
+            idField: 'id',
+            treeField: 'text',
+            onClick: function (node) {
+                $('#dg').datagrid({
+                    queryParams: { orgCode: node.Code }
+                });
+            }
+        });
+    }
+
+    //加载数据
+    function loadUsers() {
+        $('#dg').datagrid({
+            url: '@Url.Action("GetUsers")?roleId=' + roleId,
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: true,//分页信息
+            rownumbers: true,//显示行号
+            pageNumber: 1,//默认显示第一页
+            pageSize:20,//每页的行数
+            checkOnSelect: false,
+            selectOnCheck: false,
+            idField: 'UserID',
+            columns: [[
+
+                { field: 'ck', checkbox: true },
+                { field: 'Name', title: '姓名', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'OrgName', title: '隶属机构', width: 350, halign: 'center', align: 'left', sortable: true },
+                { field: 'IDCard', title: '身份证号', width: 200, halign: 'center', align: 'left', sortable: true },
+                { field: 'Email', title: '电子邮件', width: 200, halign: 'center', align: 'left', sortable: true },
+                { field: 'SexName', title: '性别', width: 60, halign: 'center', align: 'center', sortable: true },
+                { field: 'Mobile', title: '手机号码', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'DegreeName', title: '学历', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'TitleName', title: '职称', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'Account', title: '帐号', width: 120, halign: 'center', align: 'center', sortable: true }
+            ]],
+            onCheck: function () {
+                getCheckCount();
+            },
+            onUncheck: function () {
+                getCheckCount();
+            },
+            onCheckAll: function () {
+                getCheckCount();
+            },
+            onUncheckAll: function () {
+                getCheckCount();
+            }
+        });
+    }
+
+    //查询
+    function query() {
+        var node = $('#treOrg').tree('getSelected');
+        var orgCode = node == null ? '' : node.Code;
+
+        $('#dg').datagrid('unselectAll');
+        $('#dg').datagrid({
+            queryParams: {
+                orgCode: orgCode,
+                keyword: $('#txtKeyword').val()
+            }
+        });
+    }
+
+    function selectOk() {
+        var rows = $('#dg').datagrid('getChecked');
+        var ids = [];
+        $.each(rows, function (i, r) {
+            ids.push(r.UserID);
+        });
+        common.setReturnValue(ids);
+        common.closeWindow();
+    }
+
+    function clearData() {
+        $('#dg').datagrid('clearChecked');
+        getCheckCount();
+    }
+
+    function getCheckCount() {
+        var rows = $('#dg').datagrid('getChecked');
+        $('#count').text(rows.length);
+        $('a[key="Clear"]').linkbutton(rows.length > 0 ? 'enable' : 'disable');
+    }
+
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+        <div data-options="region:'north',border:false" style="height:96px">
+            <div class="datagrid-toolbar">
+                <a key="Ok" class="easyui-linkbutton" onclick="selectOk()" data-options="iconCls: 'icon-ok', plain: true">确定所选</a>
+                <a key="Clear" class="easyui-linkbutton" onclick="clearData()" data-options="iconCls: 'icon-delete', plain: true, disabled: true">清除所选</a>
+            </div>
+            <div class="query">
+                <table>
+                    <tr>
+                        <td>快速查询</td>
+                        <td>
+                            <input id="txtKeyword" type="text" class="easyui-textbox enterQuery" data-options="prompt:'姓名、拼音首字母、手机号或帐号'" style="width: 240px" />
+                        </td>
+                        <td>
+                            <a class="easyui-linkbutton" id="btnQuery" onclick="query()" data-options="iconCls:'icon-search'">查询</a>
+                        </td>
+                        <td><span style="font-size:16px;">已选择 <span id="count">0</span> 个用户</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div data-options="region:'center',border:false">
+            <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+                <div data-options="region:'west',border:true,split:true,collapsible:true" style="width:220px">
+                    <table id="treOrg" style="width:100%"></table>
+                </div>
+                <div data-options="region:'center',border:false">
+                    <table id="dg"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

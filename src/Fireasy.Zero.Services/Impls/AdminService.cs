@@ -297,6 +297,42 @@ namespace Fireasy.Zero.Services.Impls
                 .ToListAsync();
         }
 
+
+        /// <summary>
+        /// 获取用户列表（用指定的角色ID进行排除）。
+        /// </summary>
+        /// <param name="userId">用户ID。</param>
+        /// <param name="orgCode">机构编码。</param>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="keyword">关键字。</param>
+        /// <param name="pager"></param>
+        /// <param name="sorting"></param>
+        /// <returns></returns>
+        public virtual async Task<List<SysUser>> GetUsersByRoleExcludeAsync(int userId, string orgCode, int roleId, string keyword, DataPager pager, SortDefinition sorting)
+        {
+            var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
+            var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
+
+            return await context.SysUsers
+                .Where(s => s.Account != "admin" || string.IsNullOrEmpty(s.Account))
+                .Where(s => s.State == StateFlags.Enabled && !context.SysUserRoles.Where(t => t.RoleID == roleId).Any(t => t.UserID == s.UserID))
+                .AssertWhere(!string.IsNullOrEmpty(orgCode), s => s.SysOrg.Code.StartsWith(orgCode))
+                .AssertWhere(!string.IsNullOrEmpty(keyword), s => s.Account == keyword ||
+                                                                  s.Name.Contains(keyword) ||
+                                                                  s.PyCode.Contains(keyword) ||
+                                                                  s.Mobile.Contains(keyword))
+                .Segment(pager)
+                .ExtendSelect(s => new SysUser
+                {
+                    OrgName = s.SysOrg.FullName,
+                    SexName = s.Sex.GetDescription(),
+                    DegreeName = dictDegree.FirstOrDefault(t => t.Value == s.DegreeNo).AssertNotNull(t => t.Name),
+                    TitleName = dictTitle.FirstOrDefault(t => t.Value == s.TitleNo).AssertNotNull(t => t.Name),
+                })
+                .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
+                .ToListAsync();
+        }
+
         /// <summary>
         /// 获取机构下的用户列表。
         /// </summary>
@@ -1162,22 +1198,22 @@ namespace Fireasy.Zero.Services.Impls
                 return result;
             }
 
-            var operates = context.SysOperates.ToList();
-            var operatePermissions = context.SysOperatePermissions.Include(s => s.SysOperate).ToList();
+            var operates = await context.SysOperates.ToListAsync();
+            var operatePermissions = await context.SysOperatePermissions.Include(s => s.SysOperate).ToListAsync();
 
             var list = await context.SysModules.Where(s => s.State == StateFlags.Enabled)
-                .CacheParsing(false)
                 .Select(s => s.ExtendAs<SysModule>(() => new SysModule
                 {
                     //判断是否此模块是否给定了角色权限
                     Permissible = context.SysModulePermissions
                                 .Any(t => t.RoleID == roleId && t.ModuleID == s.ModuleID),
-                    SysOperates = operates.Where(t => t.ModuleID == s.ModuleID).ToEntitySet()
+                    //SysOperates = operates.Where(t => t.ModuleID == s.ModuleID).ToEntitySet() //如果CacheParsing开启则下一次无法获取到数据
                 }))
                 .ToListAsync();
 
             list.ForEach(s =>
                 {
+                    s.SysOperates = operates.Where(t => t.ModuleID == s.ModuleID).ToEntitySet();
                     s.SysOperates.ForEach(t => t.Permissible = operatePermissions
                         .Any(v => v.OperID == t.OperID && v.ModuleID == s.ModuleID && v.RoleID == roleId));
                 });
@@ -1370,6 +1406,17 @@ UNION ALL
             var exists = context.SysUserRoles.Where(s => s.RoleID == roleId).Select(s => s.UserID).ToArray();
             var userRoles = users.Where(s => !exists.Contains(s)).Select(s => new SysUserRole { RoleID = roleId, UserID = s });
             await context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
+        }
+
+        /// <summary>
+        /// 移除角色中的指定的用户。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="users">用户ID列表。</param>
+        /// <returns></returns>
+        public virtual  async Task DeleteRoleUsers(int roleId, List<int> users)
+        {
+            context.SysUserRoles.DeleteAsync(s => s.RoleID == roleId && users.Contains(s.UserID));
         }
         #endregion
 

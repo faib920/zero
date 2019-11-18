@@ -115,7 +115,7 @@
             return;
         }
 
-        common.showDialog('@Url.Action("Select", "User", new { area = "Admin" })?roleId=' + roleId, '选择用户', 1080, 550, function (users) {
+        common.showDialog('@Url.Action("SelectUser")?roleId=' + roleId, '选择用户', 1080, 550, function (users) {
             var postData = new Object();
             postData.roleId = roleId;
             postData.users = JSON.stringify(users);
@@ -130,6 +130,26 @@
             common.alert('请选择左边的角色。');
             return;
         }
+
+        var rows = $('#dgUser').datagrid('getChecked');
+        if (rows.length == 0) {
+            common.alert('请选择要移除的用户。');
+            return;
+        }
+
+        var ids = [];
+        $.each(rows, function (i, r) {
+            ids.push(r.UserID);
+        });
+
+        common.confirm('是否从当前角色中移除指定的用户?', function () {
+            var postData = new Object();
+            postData.roleId = roleId;
+            postData.users = JSON.stringify(ids);
+            $.post('@Url.Action("DeleteRoleUsers")', postData, function (result) {
+                $('#dgUser').datagrid('reload');
+            })
+        });
     }
 
     function saveInfo() {
@@ -189,7 +209,7 @@
 
                     <div class="datagrid-toolbar">
                         <a key="Add" class="easyui-linkbutton" onclick="addUser()" data-options="iconCls: 'icon-add', plain: true">添加</a>
-                        <a key="Delete" class="easyui-linkbutton" onclick="deleteUser()" data-options="iconCls: 'icon-delete', plain: true">删除</a>
+                        <a key="Delete" class="easyui-linkbutton" onclick="deleteUser()" data-options="iconCls: 'icon-delete', plain: true">移除</a>
                     </div>
                 </div>
                 <div data-options="region:'center',border:false">

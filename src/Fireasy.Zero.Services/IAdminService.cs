@@ -112,6 +112,18 @@ namespace Fireasy.Zero.Services
         Task<List<SysUser>> GetUsersAsync(int userId, string orgCode, StateFlags? state, string keyword, DataPager pager, SortDefinition sorting);
 
         /// <summary>
+        /// 获取用户列表（用指定的角色ID进行排除）。
+        /// </summary>
+        /// <param name="userId">用户ID。</param>
+        /// <param name="orgCode">机构编码。</param>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="keyword">关键字。</param>
+        /// <param name="pager"></param>
+        /// <param name="sorting"></param>
+        /// <returns></returns>
+        Task<List<SysUser>> GetUsersByRoleExcludeAsync(int userId, string orgCode, int roleId, string keyword, DataPager pager, SortDefinition sorting);
+
+        /// <summary>
         /// 根据角色代码（拼音码）获取用户列表。
         /// </summary>
         /// <param name="orgCode">机构编码。</param>
@@ -464,6 +476,14 @@ namespace Fireasy.Zero.Services
         /// <param name="users">用户ID列表。</param>
         /// <returns></returns>
         Task AddRoleUsers(int roleId, List<int> users);
+
+        /// <summary>
+        /// 移除角色中的指定的用户。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="users">用户ID列表。</param>
+        /// <returns></returns>
+        Task DeleteRoleUsers(int roleId, List<int> users);
         #endregion
 
         #region 字典

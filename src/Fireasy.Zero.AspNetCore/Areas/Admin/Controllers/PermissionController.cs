@@ -1,5 +1,4 @@
 ﻿using Fireasy.Common.ComponentModel;
-using Fireasy.Common.Extensions;
 using Fireasy.Web.EasyUI;
 using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
@@ -24,6 +23,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         }
 
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult SelectUser()
         {
             return View();
         }
@@ -58,6 +62,28 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return Json(list);
         }
 
+
+        /// <summary>
+        /// 根据查询条件获取用户。
+        /// </summary>
+        /// <param name="orgCode">机构编码</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="state">启用状态</param>
+        /// <returns></returns>
+        public async Task<JsonResult> GetUsers(string orgCode, string keyword, int roleId)
+        {
+            var pager = EasyUIHelper.GetDataPager(HttpContext);
+            var sorting = EasyUIHelper.GetSorting(HttpContext);
+
+            var userId = HttpContext.GetSession().UserID;
+
+            sorting = sorting.Replace("SexName", "Sex", "DegreeName", "DegreeNo", "TitleName", "TitleNo");
+
+            var list = await adminService.GetUsersByRoleExcludeAsync(userId, orgCode, roleId, keyword, pager, sorting);
+            return Json(EasyUIHelper.Transfer(pager, list));
+        }
+
         /// <summary>
         /// 保存功能权限。
         /// </summary>
@@ -90,7 +116,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 
             var list = await adminService.GetUsersByRoleAsync((int)roleId, pager, sorting);
 
-            return Json(list);
+            return Json(EasyUIHelper.Transfer(pager, list));
         }
 
         /// <summary>
@@ -104,6 +130,19 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             await adminService.AddRoleUsers(roleId, users);
 
             return Json(Result.Success("添加成功。"));
+        }
+
+        /// <summary>
+        /// 移除角色中的指定的用户。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="users">用户ID列表。</param>
+        /// <returns></returns>
+        public async Task<JsonResult> DeleteRoleUsers(int roleId, List<int> users)
+        {
+            await adminService.DeleteRoleUsers(roleId, users);
+
+            return Json(Result.Success("删除成功。"));
         }
     }
 }

@@ -12,11 +12,13 @@ using Fireasy.Data;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Linq;
 using Fireasy.Data.Entity.Metadata;
+using Fireasy.Data.Schema;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -314,7 +316,7 @@ namespace Fireasy.Zero.Services.Impls
         {
             var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
             var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
-            
+
             var orgs = GetPurviewOrgs(userId);
 
             return await context.SysUsers
@@ -828,6 +830,7 @@ namespace Fireasy.Zero.Services.Impls
         [CacheSupport]
         [CacheRelation(typeof(SysRole))]
         [CacheRelation(typeof(SysUser))]
+        [CacheRelation(typeof(SysOrgPermission))]
         public virtual async Task<List<SysOrg>> GetOrgsAsync(int userId, string keyword, OrgAttribute? attribute)
         {
             //通过数据权限来限定要显示的机构
@@ -1151,6 +1154,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         public virtual async Task<List<SysRole>> GetRolesAsync(StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
         {
+            Expression<Func<SysUser, bool>> dd;
             return await context.SysRoles
                 .AssertWhere(state != null, s => s.State == state)
                 .AssertWhere(!string.IsNullOrEmpty(keyword), s => s.Name.Contains(keyword) || s.PyCode.Contains(keyword))
@@ -1234,32 +1238,32 @@ namespace Fireasy.Zero.Services.Impls
         /// <summary>
         /// 根据角色ID获取机构列表。
         /// </summary>
-        /// <param name="orgId">机构ID。</param>
         /// <param name="roleId">角色ID。</param>
         /// <returns></returns>
-        public virtual List<SysOrg> GetOrgsByRole(int orgId, int roleId)
+        public virtual async Task<List<SysOrg>> GetOrgsByRoleAsync(int roleId)
         {
             var result = new List<SysOrg>();
 
-            if (orgId == 0 || roleId == 0)
+            if (roleId == 0)
             {
                 return result;
             }
 
-            var list = context.SysOrgs.Where(s => s.State == StateFlags.Enabled)
+            var list = await context.SysOrgs.Where(s => s.State == StateFlags.Enabled && s.Attribute == OrgAttribute.Org)
                 .Select(s => s.ExtendAs<SysOrg>(() => new SysOrg
                 {
                     //判断是否此机构是否给定了角色权限
-                    Permissible = context.SysOrgPermissions.Any(t => t.RoleID == roleId && t.OrgID == orgId)
+                    Permissible = context.SysOrgPermissions.Any(t => t.RoleID == roleId && t.OrgID == s.OrgID)
                 }))
-                .ToList();
+                .ToListAsync();
 
-            //CommonService.MakeChildren(result, list, string.Empty, 2);
+            Util.MakeChildren(result, list, string.Empty, 2);
+
             return result;
         }
 
         /// <summary>
-        /// 保存功能角色的权限，包括分配的用户。
+        /// 保存功能角色的权限。
         /// </summary>
         /// <param name="roleId"></param>
         /// <param name="modules"></param>
@@ -1283,28 +1287,28 @@ namespace Fireasy.Zero.Services.Impls
             if (operatePermissions.Count > 0)
             {
                 await context.SysOperatePermissions.BatchAsync(operatePermissions, (u, s) => u.Insert(s));
+                await context.RemoveCacheAsync<SysModule>();
             }
         }
 
         /// <summary>
-        /// 保存数据角色的权限，包括分配的用户。
+        /// 保存数据角色的权限。
         /// </summary>
-        /// <param name="orgId"></param>
         /// <param name="roleId"></param>
         /// <param name="orgs"></param>
         [TransactionSupport]
-        public virtual void SaveOrgRolePermissions(int orgId, int roleId, List<int> orgs)
+        public virtual async Task SaveOrgRolePermissionsAsync(int roleId, List<int> orgs)
         {
             //清理数据
-            context.SysOrgPermissions.Delete(s => s.OrgID == orgId && s.RoleID == roleId);
+            await context.SysOrgPermissions.DeleteAsync(s => s.RoleID == roleId);
 
             var permissions = orgs.Select(s => new SysOrgPermission
             {
-                OrgID = orgId,
+                OrgID = s,
                 RoleID = roleId
             });
 
-            context.SysOrgPermissions.Batch(permissions, (u, s) => u.Insert(s));
+            await context.SysOrgPermissions.BatchAsync(permissions, (u, s) => u.Insert(s));
         }
 
         /// <summary>
@@ -1333,8 +1337,9 @@ namespace Fireasy.Zero.Services.Impls
             return context.SysOperatePermissions
                 .Include(s => s.SysOperate)
                 .Where(s => moduleUrl.EndsWith(s.SysModule.Url) && posts.Contains(s.RoleID))
+                .OrderBy(s => s.SysOperate.OrderNo)
                 .Select(s => s.SysOperate)
-                .OrderBy(s => s.OrderNo)
+                .Distinct()
                 .ToList();
         }
 
@@ -1369,8 +1374,7 @@ JOIN (
 	JOIN SysUser u ON u.UserID = p.UserID
 	WHERE
 		p.UserID = {userId}
-) t ON m.OrgID = t.OrgID
-AND m.RoleID = t.RoleID
+) t ON m.RoleID = t.RoleID
 JOIN SysOrg o ON o.OrgID = m.OrgID
 UNION ALL
 	SELECT
@@ -1410,6 +1414,7 @@ UNION ALL
             var exists = context.SysUserRoles.Where(s => s.RoleID == roleId).Select(s => s.UserID).ToArray();
             var userRoles = users.Where(s => !exists.Contains(s)).Select(s => new SysUserRole { RoleID = roleId, UserID = s });
             await context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
+            await context.RemoveCacheAsync<SysUser>();
         }
 
         /// <summary>
@@ -1420,7 +1425,8 @@ UNION ALL
         /// <returns></returns>
         public virtual async Task DeleteRoleUsers(int roleId, List<int> users)
         {
-            context.SysUserRoles.DeleteAsync(s => s.RoleID == roleId && users.Contains(s.UserID));
+            await context.SysUserRoles.DeleteAsync(s => s.RoleID == roleId && users.Contains(s.UserID));
+            await context.RemoveCacheAsync<SysUser>();
         }
         #endregion
 

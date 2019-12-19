@@ -62,6 +62,25 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return Json(list);
         }
 
+        /// <summary>
+        /// 根据角色获取相应的机构。
+        /// </summary>
+        /// <param name="hosting"></param>
+        /// <param name="roleId"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> GetOrgsByRole([FromServices]JsonSerializeOptionHosting hosting, int? roleId)
+        {
+            if (roleId == null)
+            {
+                return Json(new string[0]);
+            }
+
+            var converter = new DynamicTreeNodeJsonConverter<SysOrg>(s => s.Name, s => s.Permissible, s => s.FullName);
+            hosting.Option.Converters.Add(converter);
+
+            var list = await adminService.GetOrgsByRoleAsync((int)roleId);
+            return Json(list);
+        }
 
         /// <summary>
         /// 根据查询条件获取用户。
@@ -95,6 +114,20 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         public async Task<JsonResult> SaveFuncPermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers)
         {
             await adminService.SaveFuncRolePermissions(roleId, modules, opers);
+
+            return Json(Result.Success("保存成功。"));
+        }
+
+        /// <summary>
+        /// 保存数据权限。
+        /// </summary>
+        /// <param name="roleId">角色ID。</param>
+        /// <param name="org">勾选的机构ID列表。</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> SaveDataPermissions(int roleId, List<int> orgs)
+        {
+            await adminService.SaveOrgRolePermissionsAsync(roleId, orgs);
 
             return Json(Result.Success("保存成功。"));
         }

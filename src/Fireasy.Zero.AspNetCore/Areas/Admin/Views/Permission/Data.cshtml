@@ -1,8 +1,179 @@
-﻿
-@{
-    ViewData["Title"] = "Data";
+﻿@{
+    ViewBag.Title = "数据授权";
     Layout = "~/Views/Shared/_EasyUILayout.cshtml";
 }
 
-<h2>Data</h2>
+<script type="text/javascript">
+    var roleId = 0;
 
+    $(function () {
+        loadRoles();
+        loadOrgs();
+        loadUsers();
+    });
+
+    function loadRoles() {
+        $('#dgRole').datalist({
+            url: '@Url.Action("Data", "Role", new { area = "Admin" })',
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: false,//分页信息
+            idField: 'RoleID',
+            border: false,
+            valueField: 'RoleID',
+            textField: 'Name',
+            onClickRow: function (index, row) {
+                roleId = row.RoleID;
+                loadOrgs();
+                loadUsers();
+            },
+            queryParams: { state: '1' }
+        });
+    }
+
+    function loadUsers() {
+        $('#dgUser').datagrid({
+            url: '@Url.Action("GetUsersByRole")?roleId=' + roleId,
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: true,//分页信息
+            rownumbers: true,//显示行号
+            pageNumber: 1,//默认显示第一页
+            pageSize: 20,//每页的行数
+            checkOnSelect: false,
+            selectOnCheck: false,
+            idField: 'UserID',
+            columns: [[
+
+                { field: 'ck', checkbox: true },
+                { field: 'Name', title: '姓名', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'OrgName', title: '隶属机构', width: 350, halign: 'center', align: 'left', sortable: true },
+                { field: 'Account', title: '帐号', width: 120, halign: 'center', align: 'center', sortable: true }
+            ]],
+            queryParams: { state: '1' }
+        });
+    }
+
+    //加载数据
+    function loadOrgs() {
+        $('#dgOrg').treegrid({
+            url: '@Url.Action("GetOrgsByRole")?roleId=' + roleId,
+            fit: true,//自动填充
+            idField: 'id',
+            treeField: 'Name',
+            columns: [[
+
+                { field: 'Name', title: '名称', width: 260, halign: 'center', align: 'left', formatter: function (value, row) { return formatCheckbox(value, row); } },
+                { field: 'FullName', title: '全称', width: 600, halign: 'center', align: 'left' }
+            ]]
+        });
+    }
+
+    function formatCheckbox(value, row) {
+        return '<input did="' + row.id + '" type="checkbox" ' + (row.Permissible ? 'checked' : '') + ' />' + value;
+    }
+
+    function addUser() {
+        if (roleId == 0) {
+            common.alert('请选择左边的角色。');
+            return;
+        }
+
+        common.showDialog('@Url.Action("SelectUser")?roleId=' + roleId, '选择用户', 1080, 550, function (users) {
+            var postData = new Object();
+            postData.roleId = roleId;
+            postData.users = JSON.stringify(users);
+            $.post('@Url.Action("AddRoleUsers")', postData, function (result) {
+                $('#dgUser').datagrid('reload');
+            })
+        }).max();
+    }
+
+    function deleteUser() {
+        if (roleId == 0) {
+            common.alert('请选择左边的角色。');
+            return;
+        }
+
+        var rows = $('#dgUser').datagrid('getChecked');
+        if (rows.length == 0) {
+            common.alert('请选择要移除的用户。');
+            return;
+        }
+
+        var ids = [];
+        $.each(rows, function (i, r) {
+            ids.push(r.UserID);
+        });
+
+        common.confirm('是否从当前角色中移除指定的用户?', function () {
+            var postData = new Object();
+            postData.roleId = roleId;
+            postData.users = JSON.stringify(ids);
+            $.post('@Url.Action("DeleteRoleUsers")', postData, function (result) {
+                $('#dgUser').datagrid('reload');
+            })
+        });
+    }
+
+    function saveInfo() {
+        if (roleId == 0) {
+            common.alert('请选择左边的角色。');
+            return;
+        }
+
+        common.confirm('是否保存权限?', function () {
+            var checked = $('input[did]:checked');
+            var data = [];
+            $.each(checked, function (i, c) {
+                var did = $(c).attr('did');
+                data.push(did);
+            })
+
+            var postData = new Object();
+            postData.roleId = roleId;
+            postData.orgs = JSON.stringify(data);
+
+            common.showProcess();
+
+            $.post('@Url.Action("SaveDataPermissions")', postData, function (result) {
+                common.processResult(result);
+            })
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'west',border:false,split:true,collapsible:true,title:'角色'" style="width:160px">
+    <table id="dgRole" style="width:100%"></table>
+</div>
+<div data-options="region:'center',border:false">
+    <div class="easyui-tabs" data-options="fit:true" style="width: 100%; height: 100%">
+        <div title="权限设置">
+            <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+                <div data-options="region:'north',border:false">
+                    <div class="datagrid-toolbar">
+                        <a key="Save" class="easyui-linkbutton" onclick="saveInfo()" data-options="iconCls: 'icon-ok', plain: true">保存</a>
+                    </div>
+                </div>
+                <div data-options="region:'center',border:false">
+                    <table id="dgOrg"></table>
+                </div>
+            </div>
+        </div>
+        <div title="相关用户">
+            <div class="easyui-layout" data-options="fit:true" style="width: 100%; height: 100%">
+                <div data-options="region:'north',border:false">
+
+                    <div class="datagrid-toolbar">
+                        <a key="Add" class="easyui-linkbutton" onclick="addUser()" data-options="iconCls: 'icon-add', plain: true">添加</a>
+                        <a key="Delete" class="easyui-linkbutton" onclick="deleteUser()" data-options="iconCls: 'icon-delete', plain: true">移除</a>
+                    </div>
+                </div>
+                <div data-options="region:'center',border:false">
+
+                    <table id="dgUser"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -433,13 +433,12 @@ namespace Fireasy.Zero.Services
         /// <summary>
         /// 根据机构ID和角色ID获取机构列表。
         /// </summary>
-        /// <param name="orgId">机构ID。</param>
         /// <param name="roleId">角色ID。</param>
         /// <returns></returns>
-        List<SysOrg> GetOrgsByRole(int orgId, int roleId);
+        Task<List<SysOrg>> GetOrgsByRoleAsync(int roleId);
 
         /// <summary>
-        /// 保存功能角色的权限，包括分配的用户。
+        /// 保存功能角色的权限。
         /// </summary>
         /// <param name="roleId"></param>
         /// <param name="modules"></param>
@@ -447,12 +446,11 @@ namespace Fireasy.Zero.Services
         Task SaveFuncRolePermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers);
 
         /// <summary>
-        /// 保存数据角色的权限，包括分配的用户。
+        /// 保存数据角色的权限。
         /// </summary>
-        /// <param name="orgId"></param>
         /// <param name="roleId"></param>
         /// <param name="orgs"></param>
-        void SaveOrgRolePermissions(int orgId, int roleId, List<int> orgs);
+        Task SaveOrgRolePermissionsAsync(int roleId, List<int> orgs);
 
         /// <summary>
         /// 根据 Url 获取操作按钮。

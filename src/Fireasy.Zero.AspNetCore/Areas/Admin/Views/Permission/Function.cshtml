@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "用户管理";
+    ViewBag.Title = "功能授权";
     Layout = "~/Views/Shared/_EasyUILayout.cshtml";
 }
 
@@ -13,16 +13,15 @@
     });
 
     function loadRoles() {
-        $('#dgRole').datagrid({
+        $('#dgRole').datalist({
             url: '@Url.Action("Data", "Role", new { area = "Admin" })',
             fit: true,//自动填充
             singleSelect: true,//单选
             pagination: false,//分页信息
             idField: 'RoleID',
-            columns: [[
-
-                { field: 'Name', title: '角色名称', width: 160, halign: 'center', align: 'left', sortable: true }
-            ]],
+            border: false,
+            valueField: 'RoleID',
+            textField: 'Name',
             onClickRow: function (index, row) {
                 roleId = row.RoleID;
                 loadModules();
@@ -186,7 +185,7 @@
     }
 </script>
 @Html.AntiForgeryToken()
-<div data-options="region:'west',border:false,split:true,collapsible:true" style="width:220px">
+<div data-options="region:'west',border:false,split:true,collapsible:true,title:'角色'" style="width:160px">
     <table id="dgRole" style="width:100%"></table>
 </div>
 <div data-options="region:'center',border:false">

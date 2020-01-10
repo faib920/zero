@@ -54,13 +54,13 @@
       <HintPath>..\packages\CSRedisCore.3.1.10\lib\net45\CSRedisCore.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Common, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Common.2.1.2-beta1\lib\net46\Fireasy.Common.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Common.2.1.2-beta3\lib\net46\Fireasy.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Data, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.2.1.2-beta1\lib\net45\Fireasy.Data.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Data.2.1.2-beta3\lib\net45\Fireasy.Data.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Data.Entity, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.Entity.2.1.2-beta1\lib\net45\Fireasy.Data.Entity.dll</HintPath>
+      <HintPath>..\packages\Fireasy.Data.Entity.2.1.2-beta3\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
     <Reference Include="Fireasy.Redis, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
       <HintPath>..\packages\Fireasy.Redis.2.1.2-beta1\lib\net45\Fireasy.Redis.dll</HintPath>

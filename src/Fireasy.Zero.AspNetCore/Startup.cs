@@ -1,8 +1,5 @@
-using Fireasy.Common;
-using Fireasy.Common.Configuration;
 using Fireasy.Common.Ioc;
-using Fireasy.Common.Logging;
-using Fireasy.Common.Logging.Configuration;
+using Fireasy.Common.Serialization;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Web.Mvc;
@@ -14,12 +11,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore
@@ -36,6 +29,8 @@ namespace Fireasy.Zero.AspNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            SerializeOption.GlobalConverters.Add(new LightEntityJsonConverter());
+
             services.AddFireasy(Configuration)
                 .AddIoc(ContainerUnity.GetContainer()) //ÃÌº” appsettings.json ¿Ôµƒ ioc ≈‰÷√
                 .AddEntityContext<DbContext>(options =>
@@ -50,7 +45,7 @@ namespace Fireasy.Zero.AspNetCore
                 .AddSessionStateTempDataProvider()
                 .ConfigureFireasyMvc(options =>
                     {
-                        options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
+                        //options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
                     })
                 .ConfigureEasyUI();
 

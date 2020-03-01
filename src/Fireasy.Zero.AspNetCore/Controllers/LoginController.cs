@@ -1,4 +1,5 @@
 ﻿using Fireasy.Common.ComponentModel;
+using Fireasy.Common.Logging;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
@@ -34,13 +35,15 @@ namespace Fireasy.Zero.AspNetCore.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> CheckLogin(string account, string password)
+        public async Task<JsonResult> CheckLogin(string account, string password, [FromServices]ILogger logger)
         {
             var session = await adminService.CheckLoginAsync(account, t => encryptProvider.Validate(password, t), null);
             if (session != null)
             {
                 HttpContext.SetSession(session);
                 HttpContext.SignIn(session);
+
+                logger.Info($"{account}登录到系统");
 
                 return Json(Result.Success("登录成功"));
             }

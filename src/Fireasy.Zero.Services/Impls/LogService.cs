@@ -1,5 +1,6 @@
 ﻿using Fireasy.Common;
 using Fireasy.Common.Logging;
+using Fireasy.Data.Entity;
 using Fireasy.Zero.Models;
 using System;
 using System.Threading;
@@ -9,9 +10,9 @@ namespace Fireasy.Zero.Services.Impls
 {
     public class LogService : ILogService
     {
-        private DbContext context;
+        private MongodbContext context;
 
-        public LogService(DbContext context)
+        public LogService(MongodbContext context)
         {
             this.context = context;
         }
@@ -70,24 +71,50 @@ namespace Fireasy.Zero.Services.Impls
 
         public void Info(object message, Exception exception = null)
         {
-            context.SysLogs.Insert(new SysLog
+            try
             {
-                LogTime = DateTime.Now,
-                LogType = 1,
-                Title = message.ToString(),
-                Content = exception == null ? string.Empty : exception.Message
-            });
+                context.UseTransaction(db =>
+                {
+                    db.SysLogs.Insert(new SysLog
+                    {
+                        LogTime = DateTime.Now,
+                        LogType = 1,
+                        Title = message.ToString(),
+                        Content = exception == null ? string.Empty : exception.Message
+                    });
+                });
+            }
+            catch (Exception exp)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("无法连接到 mongodb 日志数据库。");
+                Console.WriteLine(exp.Message);
+                Console.ResetColor();
+            }
         }
 
         public async Task InfoAsync(object message, Exception exception = null, CancellationToken cancellationToken = default)
         {
-            await context.SysLogs.InsertAsync(new SysLog
+            try
             {
-                LogTime = DateTime.Now,
-                LogType = 1,
-                Title = message.ToString(),
-                Content = exception == null ? string.Empty : exception.Message
-            }, cancellationToken);
+                await context.UseTransactionAsync(async (db, cancel) =>
+                {
+                    await context.SysLogs.InsertAsync(new SysLog
+                    {
+                        LogTime = DateTime.Now,
+                        LogType = 1,
+                        Title = message.ToString(),
+                        Content = exception == null ? string.Empty : exception.Message
+                    }, cancel);
+                });
+            }
+            catch (Exception exp)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("无法连接到 mongodb 日志数据库。");
+                Console.WriteLine(exp.Message);
+                Console.ResetColor();
+            }
         }
 
         public void Warn(object message, Exception exception = null)

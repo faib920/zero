@@ -234,7 +234,7 @@
 
                 //只有一个匹配的，直接跳转
                 if (result.length == 1) {
-                    gotoNode(result[0].Id);
+                    gotoNode(result[0].ModuleID);
                 }
                 else {
                     common.popup('没有查询到内容。');
@@ -253,7 +253,7 @@
                 { field: 'Name', title: '匹配的模块', width: 166 }
             ]],
             onClickRow: function (index, row) {
-                gotoNode(row.Id);
+                gotoNode(row.ModuleID);
             }
         });
 

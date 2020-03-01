@@ -12,14 +12,12 @@ using Fireasy.Data;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Linq;
 using Fireasy.Data.Entity.Metadata;
-using Fireasy.Data.Schema;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -275,9 +273,6 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         public virtual async Task<List<SysUser>> GetUsersAsync(int userId, string orgCode, StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
         {
-            var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
-            var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
-
             var orgs = GetPurviewOrgs(userId);
 
             return await context.SysUsers
@@ -290,17 +285,18 @@ namespace Fireasy.Zero.Services.Impls
                                                                   s.PyCode.Contains(keyword) ||
                                                                   s.Mobile.Contains(keyword))
                 .Segment(pager)
+                .Join(context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").DefaultIfEmpty(), s => s.DegreeNo, s => s.Value, (s, t) => new { sysUser = s, dictDegree = t })
+                .Join(context.SysDictItems.Where(s => s.SysDictType.Code == "Title").DefaultIfEmpty(), s => s.sysUser.TitleNo, s => s.Value, (s, t) => new { s.sysUser, s.dictDegree, dictTitle = t })
                 .ExtendSelect(s => new SysUser
-                {
-                    OrgName = s.SysOrg.FullName,
-                    SexName = s.Sex.GetDescription(),
-                    DegreeName = dictDegree.FirstOrDefault(t => t.Value == s.DegreeNo).AssertNotNull(t => t.Name),
-                    TitleName = dictTitle.FirstOrDefault(t => t.Value == s.TitleNo).AssertNotNull(t => t.Name),
-                })
+                    {
+                        OrgName = s.sysUser.SysOrg.FullName,
+                        SexName = s.sysUser.Sex.GetDescription(),
+                        DegreeName = s.dictDegree.Name,
+                        TitleName = s.dictTitle.Name,
+                    })
                 .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
                 .ToListAsync();
         }
-
 
         /// <summary>
         /// 获取用户列表（用指定的角色ID进行排除）。
@@ -314,9 +310,6 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         public virtual async Task<List<SysUser>> GetUsersByRoleExcludeAsync(int userId, string orgCode, int roleId, string keyword, DataPager pager, SortDefinition sorting)
         {
-            var dictDegree = await context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").ToListAsync();
-            var dictTitle = await context.SysDictItems.Where(s => s.SysDictType.Code == "Title").ToListAsync();
-
             var orgs = GetPurviewOrgs(userId);
 
             return await context.SysUsers
@@ -329,13 +322,15 @@ namespace Fireasy.Zero.Services.Impls
                                                                   s.PyCode.Contains(keyword) ||
                                                                   s.Mobile.Contains(keyword))
                 .Segment(pager)
+                .Join(context.SysDictItems.Where(s => s.SysDictType.Code == "Degree").DefaultIfEmpty(), s => s.DegreeNo, s => s.Value, (s, t) => new { sysUser = s, dictDegree = t })
+                .Join(context.SysDictItems.Where(s => s.SysDictType.Code == "Title").DefaultIfEmpty(), s => s.sysUser.TitleNo, s => s.Value, (s, t) => new { s.sysUser, s.dictDegree, dictTitle = t })
                 .ExtendSelect(s => new SysUser
-                {
-                    OrgName = s.SysOrg.FullName,
-                    SexName = s.Sex.GetDescription(),
-                    DegreeName = dictDegree.FirstOrDefault(t => t.Value == s.DegreeNo).AssertNotNull(t => t.Name),
-                    TitleName = dictTitle.FirstOrDefault(t => t.Value == s.TitleNo).AssertNotNull(t => t.Name),
-                })
+                    {
+                        OrgName = s.sysUser.SysOrg.FullName,
+                        SexName = s.sysUser.Sex.GetDescription(),
+                        DegreeName = s.dictDegree.Name,
+                        TitleName = s.dictTitle.Name,
+                    })
                 .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
                 .ToListAsync();
         }
@@ -656,8 +651,12 @@ namespace Fireasy.Zero.Services.Impls
                 prev.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                await context.SysModules.UpdateAsync(info);
-                await context.SysModules.UpdateAsync(prev);
+                await context.UseTransactionAsync(async (dc, token) =>
+                    {
+                        await dc.SysModules.UpdateAsync(info, token);
+                        await dc.SysModules.UpdateAsync(prev, token);
+                    });
+
                 return true;
             }
 
@@ -683,8 +682,12 @@ namespace Fireasy.Zero.Services.Impls
                 next.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                await context.SysModules.UpdateAsync(info);
-                await context.SysModules.UpdateAsync(next);
+                await context.UseTransactionAsync(async (dc, token) =>
+                    {
+                        await dc.SysModules.UpdateAsync(info, token);
+                        await dc.SysModules.UpdateAsync(next, token);
+                    });
+
                 return true;
             }
 
@@ -956,7 +959,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         public virtual async Task<List<SysOrg>> SearchOrgsAsync(string keyword)
         {
-            return await context.SysOrgs.Where(s => (s.Name.Contains(keyword)))
+            return await context.SysOrgs.Where(s => s.PyCode.Contains(keyword) || s.Name.Contains(keyword))
                 .ToListAsync();
         }
 
@@ -979,8 +982,12 @@ namespace Fireasy.Zero.Services.Impls
                 prev.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                await context.SysOrgs.UpdateAsync(info);
-                await context.SysOrgs.UpdateAsync(prev);
+                await context.UseTransactionAsync(async (dc, token) =>
+                    {
+                        await dc.SysOrgs.UpdateAsync(info, token);
+                        await dc.SysOrgs.UpdateAsync(prev, token);
+                    });
+
                 return true;
             }
 
@@ -1006,8 +1013,12 @@ namespace Fireasy.Zero.Services.Impls
                 next.OrderNo = info.OrderNo;
                 info.OrderNo = orderNo;
 
-                await context.SysOrgs.UpdateAsync(info);
-                await context.SysOrgs.UpdateAsync(next);
+                await context.UseTransactionAsync(async (dc, token) =>
+                    {
+                        await dc.SysOrgs.UpdateAsync(info, token);
+                        await dc.SysOrgs.UpdateAsync(next, token);
+                    });
+
                 return true;
             }
 

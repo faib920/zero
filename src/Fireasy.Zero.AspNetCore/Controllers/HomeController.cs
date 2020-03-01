@@ -1,4 +1,5 @@
-﻿using Fireasy.Zero.AspNetCore.Models;
+﻿using Fireasy.Common.Logging;
+using Fireasy.Zero.AspNetCore.Models;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;

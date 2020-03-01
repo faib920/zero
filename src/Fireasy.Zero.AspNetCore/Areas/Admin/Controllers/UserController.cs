@@ -63,6 +63,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         public async Task<JsonResult> Get(int id)
         {
             var info = await adminService.GetUserAsync(id);
+
             return Json(info);
         }
 
@@ -74,6 +75,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         {
             var session = HttpContext.GetSession();
             var info = await adminService.GetUserAsync(session.UserID);
+
             return Json(info);
         }
 

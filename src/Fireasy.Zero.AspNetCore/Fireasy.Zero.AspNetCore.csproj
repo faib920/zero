@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.Redis" Version="2.1.2-beta1" />
-    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.1.2-beta1" />
-    <PackageReference Include="Fireasy.Web.Mvc" Version="2.1.2-beta1" />
+    <PackageReference Include="Fireasy.Log4net" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.NLog" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.RabbitMQ" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.Redis" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.Web.Mvc" Version="2.1.2-preview2" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="2.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />

@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.Log4net" Version="2.1.2" />
+    <PackageReference Include="Fireasy.Log4net" Version="2.1.2.1" />
     <PackageReference Include="Fireasy.Newtonsoft" Version="2.1.2" />
-    <PackageReference Include="Fireasy.NLog" Version="2.1.2" />
-    <PackageReference Include="Fireasy.QuartzNet" Version="2.1.2" />
-    <PackageReference Include="Fireasy.RabbitMQ" Version="2.1.2" />
-    <PackageReference Include="Fireasy.Redis" Version="2.1.2" />
+    <PackageReference Include="Fireasy.NLog" Version="2.1.2.1" />
+    <PackageReference Include="Fireasy.QuartzNet" Version="2.1.2.1" />
+    <PackageReference Include="Fireasy.RabbitMQ" Version="2.1.2.1" />
+    <PackageReference Include="Fireasy.Redis" Version="2.1.2.1" />
     <PackageReference Include="Fireasy.Web.EasyUI" Version="2.1.2" />
     <PackageReference Include="Fireasy.Web.Mvc" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />

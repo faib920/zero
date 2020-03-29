@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace Fireasy.Zero.Services.Impls
 {
-    public class AdminService : BaseService, IAdminService
+    public class AdminService : IAdminService
     {
         private DbContext context;
 

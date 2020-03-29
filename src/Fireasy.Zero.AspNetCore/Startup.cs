@@ -1,11 +1,12 @@
-using Fireasy.Common.Ioc;
+using Fireasy.Common.Caching;
+using Fireasy.Common.Localization;
 using Fireasy.Common.Serialization;
 using Fireasy.Common.Subscribes;
 using Fireasy.Data;
 using Fireasy.Data.Entity;
+using Fireasy.Data.Entity.Query;
 using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Data.Extensions;
-using Fireasy.MongoDB;
 using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
@@ -39,19 +40,20 @@ namespace Fireasy.Zero.AspNetCore
             SerializeOption.GlobalConverters.Add(new LightEntityJsonConverter());
 
             services.AddFireasy(Configuration)
-                .AddIoc(ContainerUnity.GetContainer()); //添加 appsettings.json 里的 ioc 配置
+                .AddIoc(); //添加 appsettings.json 里的 ioc 配置
 
             // ############################ 演示两个实体上下文的配置 ############################
-            services.AddEntityContext<DbContext>(builder =>
+            services.AddEntityContextPool<DbContext>(builder =>
                 {
-                    builder.Options.NotifyEvents = true; //此项设为 true 时, 上面的实体持久化订阅通知才会触发
-                });
+                    builder.Options.NotifyEvents = true; //此项设为 true 时, 下面的实体持久化订阅通知才会触发
+
+                }, 500);
 
             // mongodb 是用来记录日志的
             services.AddEntityContext<MongodbContext>(builder =>
                 {
-                    //builder.Options.ConfigName = "mongodb"; //指定配置文件中的实例名称
-                    builder.UseMongoDB("server=mongodb://192.168.1.106;database=test"); //指定连接串
+                    builder.Options.ConfigName = "mongodb"; //指定配置文件中的实例名称
+                    //builder.UseMongoDB("server=mongodb://192.168.1.106;database=test"); //指定连接串
                 });
 
             // ############################ 演示消息队列的订阅与发布 ############################
@@ -59,7 +61,8 @@ namespace Fireasy.Zero.AspNetCore
             // redis配置
             services.AddRedisSubscriber(options =>
                 {
-                    options.Hosts = "localhost";
+                    options.ConfigName = "redis"; //通过指定配置名称
+                    //options.Hosts = "localhost";
                     options.Initializer = s => s.AddSubscriber<CommandLogSubject>(d =>
                         {
                             Console.ForegroundColor = d.Level == 0 ? ConsoleColor.Green : ConsoleColor.Red;
@@ -73,12 +76,13 @@ namespace Fireasy.Zero.AspNetCore
                         });
                 });
 
-            // rabittmq配置
+            // rabbitmq配置
             //services.AddRabbitMQSubscriber(options =>
             //    {
-            //        options.Server = "amqp://127.0.0.1:5672";
-            //        options.UserName = "guest";
-            //        options.Password = "123";
+            //        options.ConfigName = "rabbit"; //通过指定配置名称
+            //        //options.Server = "amqp://127.0.0.1:5672";
+            //        //options.UserName = "guest";
+            //        //options.Password = "123";
             //        options.Initializer = s => s.AddSubscriber<CommandLogSubject>(d =>
             //            {
             //                Console.ForegroundColor = d.Type == 0 ? ConsoleColor.Green : ConsoleColor.Red;
@@ -96,26 +100,37 @@ namespace Fireasy.Zero.AspNetCore
             // 即先由 MQCommandTracker 将消息发送到 mq，mq在上面的配置处分别使用 redis 或 rabbitmq 来接收消息显示
             services.AddTransient<ICommandTracker, MQCommandTracker>();
 
+            // ############################ 演示使用实体持久化事件订阅 ############################
+            EntityPersistentSubscribeManager.AddSubscriber(subject => new EntitySubscriber().Accept(subject));
+            EntityPersistentSubscribeManager.AddAsyncSubscriber(subject => new AsyncEntitySubscriber().AcceptAsync(subject));
+
             // ############################ 演示使用第三方的日志组件 ############################
             // NLog日志
-            //services.AddNLogger();
+            services.AddNLogger();
 
             // Log4net日志
-            services.AddLog4netLogger();
+            //services.AddLog4netLogger();
 
-            // 注册实体持久化的订阅通知
-            EntityPersistentSubscribeManager.AddSubscriber(subject => new EntitySubscriber().Accept(subject));
+            // ############################ 演示使用第三方的任务调度组件 ############################
+            // 使用 Quartz 调度管理器
+            services.AddQuartzScheduler();
+
             services.AddMvc()
                 .AddSessionStateTempDataProvider()
                 .ConfigureFireasyMvc(options =>
                     {
-                        //options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
+                        options.UseErrorHandleFilter = false;
+                        options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
                     })
                 .ConfigureEasyUI();
 
             // ############################ 演示Session自动复活 ############################
             services.AddSession()
                 .AddSessionRevive<SessionReviveNotification>();
+
+            // ############################ 演示使用缓存键规范化及缓存清理栅栏 ############################
+            services.AddSingleton<ICacheKeyNormalizer, CacheKeyNormalizer>();
+            services.AddSingleton<ICacheClearTaskBarrier, CacheClearTaskBarrier>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -206,6 +221,44 @@ namespace Fireasy.Zero.AspNetCore
         public async Task FailAsync(IDbCommand command, Exception exception, CancellationToken cancellationToken = default)
         {
             await subMgr.PublishAsync(new CommandLogSubject { Level = 1, CommandText = command.Output() });
+        }
+    }
+
+    /// <summary>
+    /// 缓存键标准化。
+    /// </summary>
+    public class CacheKeyNormalizer : ICacheKeyNormalizer
+    {
+        /// <summary>
+        /// 标准化。
+        /// </summary>
+        /// <param name="cacheKey">缓存键。</param>
+        /// <param name="additional">附加的。</param>
+        /// <returns></returns>
+        public string NormalizeKey(string cacheKey, object additional = null)
+        {
+            if (additional != null && cacheKey.StartsWith(additional.ToString()))
+            {
+                return cacheKey;
+            }
+
+            if (cacheKey.StartsWith("zero:"))
+            {
+                return cacheKey;
+            }
+
+            return "zero:" + cacheKey;
+        }
+    }
+
+    /// <summary>
+    /// 清理任务栅栏。
+    /// </summary>
+    public class CacheClearTaskBarrier : ICacheClearTaskBarrier
+    {
+        public string GetBarrier()
+        {
+            return "zero";
         }
     }
 

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.Data.Entity" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.Data.Entity" Version="2.1.2" />
   </ItemGroup>
   
 </Project>

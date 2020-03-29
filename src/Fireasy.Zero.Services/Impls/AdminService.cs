@@ -6,8 +6,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 using Fireasy.Common;
+using Fireasy.Common.Caching;
 using Fireasy.Common.Extensions;
+using Fireasy.Common.Localization;
+using Fireasy.Common.Logging;
 using Fireasy.Common.Serialization;
+using Fireasy.Common.Tasks;
 using Fireasy.Data;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Entity.Linq;
@@ -17,7 +21,6 @@ using Fireasy.Zero.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -295,6 +298,7 @@ namespace Fireasy.Zero.Services.Impls
                         TitleName = s.dictTitle.Name,
                     })
                 .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -1165,7 +1169,6 @@ namespace Fireasy.Zero.Services.Impls
         /// <returns></returns>
         public virtual async Task<List<SysRole>> GetRolesAsync(StateFlags? state, string keyword, DataPager pager, SortDefinition sorting)
         {
-            Expression<Func<SysUser, bool>> dd;
             return await context.SysRoles
                 .AssertWhere(state != null, s => s.State == state)
                 .AssertWhere(!string.IsNullOrEmpty(keyword), s => s.Name.Contains(keyword) || s.PyCode.Contains(keyword))
@@ -1298,7 +1301,6 @@ namespace Fireasy.Zero.Services.Impls
             if (operatePermissions.Count > 0)
             {
                 await context.SysOperatePermissions.BatchAsync(operatePermissions, (u, s) => u.Insert(s));
-                await context.RemoveCacheAsync<SysModule>();
             }
         }
 
@@ -1425,7 +1427,6 @@ UNION ALL
             var exists = context.SysUserRoles.Where(s => s.RoleID == roleId).Select(s => s.UserID).ToArray();
             var userRoles = users.Where(s => !exists.Contains(s)).Select(s => new SysUserRole { RoleID = roleId, UserID = s });
             await context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
-            await context.RemoveCacheAsync<SysUser>();
         }
 
         /// <summary>
@@ -1437,7 +1438,6 @@ UNION ALL
         public virtual async Task DeleteRoleUsers(int roleId, List<int> users)
         {
             await context.SysUserRoles.DeleteAsync(s => s.RoleID == roleId && users.Contains(s.UserID));
-            await context.RemoveCacheAsync<SysUser>();
         }
         #endregion
 

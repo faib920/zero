@@ -33,11 +33,11 @@ namespace Fireasy.Zero.Infrastructure.Aop
         {
             if (info.InterceptType == InterceptType.BeforeMethodCall)
             {
-                CheckDataCache(info);
+                //CheckDataCache(info);
             }
             else if (info.InterceptType == InterceptType.AfterMethodCall)
             {
-                UpdateDataCache(info);
+                //UpdateDataCache(info);
             }
         }
 

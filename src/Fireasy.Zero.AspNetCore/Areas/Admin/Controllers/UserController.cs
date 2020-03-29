@@ -1,5 +1,6 @@
 ﻿using Fireasy.Common;
 using Fireasy.Common.ComponentModel;
+using Fireasy.Data;
 using Fireasy.Web.EasyUI;
 using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -161,6 +163,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="keyword">关键字</param>
         /// <param name="state">启用状态</param>
         /// <returns></returns>
+        [AllowAnonymous]
         public async Task<JsonResult> Data(string orgCode, string keyword, StateFlags? state)
         {
             var pager = EasyUIHelper.GetDataPager(HttpContext);
@@ -170,7 +173,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 
             sorting = sorting.Replace("SexName", "Sex", "DegreeName", "DegreeNo", "TitleName", "TitleNo");
 
-            var list = await adminService.GetUsersAsync(userId, orgCode, state, keyword, pager, sorting);
+            var list = await adminService.GetUsersAsync(userId, orgCode, state, keyword, pager, null);
             return Json(EasyUIHelper.Transfer(pager, list));
         }
 

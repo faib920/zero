@@ -33,7 +33,7 @@ namespace Fireasy.Zero.AspNet
             var container = GetContainer();
             ControllerBuilder.Current.SetControllerFactory(new ControllerFactory(container));
 
-            container.Register(() => new DbContext(new EntityContextOptions { NotifyEvents = true }));
+            //container.Register(() => new DbContext(new EntityContextOptions { NotifyEvents = true }));
 
             //easyui验证绑定
             SettingsBindManager.RegisterBinder("validatebox", new ValidateBoxSettingBinder());

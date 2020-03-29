@@ -24,6 +24,11 @@ namespace Fireasy.Zero.AspNetCore.Controllers
         {
             var session = HttpContext.GetSession();
 
+            if (session == null)
+            {
+                return Redirect("~/Login");
+            }
+
             ViewBag.Modules = await adminService.GetPurviewModulesAsync(session.UserID);
             ViewBag.UserName = session.UserName;
 

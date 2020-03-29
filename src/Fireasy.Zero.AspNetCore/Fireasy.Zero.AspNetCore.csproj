@@ -4,15 +4,18 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
 	<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
 	<RuntimeIdentifiers>win10-x64;win-x64;linux-x64</RuntimeIdentifiers>
+	<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.Log4net" Version="2.1.2-preview2" />
-    <PackageReference Include="Fireasy.NLog" Version="2.1.2-preview2" />
-    <PackageReference Include="Fireasy.RabbitMQ" Version="2.1.2-preview2" />
-    <PackageReference Include="Fireasy.Redis" Version="2.1.2-preview2" />
-    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.1.2-preview2" />
-    <PackageReference Include="Fireasy.Web.Mvc" Version="2.1.2-preview2" />
+    <PackageReference Include="Fireasy.Log4net" Version="2.1.2" />
+    <PackageReference Include="Fireasy.Newtonsoft" Version="2.1.2" />
+    <PackageReference Include="Fireasy.NLog" Version="2.1.2" />
+    <PackageReference Include="Fireasy.QuartzNet" Version="2.1.2" />
+    <PackageReference Include="Fireasy.RabbitMQ" Version="2.1.2" />
+    <PackageReference Include="Fireasy.Redis" Version="2.1.2" />
+    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.1.2" />
+    <PackageReference Include="Fireasy.Web.Mvc" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="2.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />

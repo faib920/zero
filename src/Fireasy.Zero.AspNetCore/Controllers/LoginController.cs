@@ -1,5 +1,6 @@
 ﻿using Fireasy.Common.ComponentModel;
 using Fireasy.Common.Logging;
+using Fireasy.Data;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
@@ -20,6 +21,12 @@ namespace Fireasy.Zero.AspNetCore.Controllers
         {
             this.adminService = adminService;
             this.encryptProvider = encryptProvider;
+        }
+
+        public async Task<IActionResult> Test()
+        {
+            var rr = await adminService.GetUsersAsync(2, "0002", null, null, new DataPager(2, 0), null);
+            return Json(rr);
         }
 
         public IActionResult Index()

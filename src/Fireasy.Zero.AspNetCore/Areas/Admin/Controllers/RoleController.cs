@@ -12,11 +12,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
     [Area("Admin")]
     public class RoleController : Controller
     {
-        private IAdminService adminService;
+        private IAdminService _adminService;
 
         public RoleController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
         }
 
         public ActionResult Index()
@@ -36,7 +36,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> Get(int id)
         {
-            var info = await adminService.GetRoleAsync(id);
+            var info = await _adminService.GetRoleAsync(id);
             return Json(info);
         }
 
@@ -51,7 +51,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             var pager = EasyUIHelper.GetDataPager(HttpContext);
             var sorting = EasyUIHelper.GetSorting(HttpContext);
 
-            var list = await adminService.GetRolesAsync(state, keyword, pager, sorting);
+            var list = await _adminService.GetRolesAsync(state, keyword, pager, sorting);
             return Json(list);
         }
 
@@ -65,7 +65,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Save(int? id, SysRole info)
         {
-            id = await adminService.SaveRoleAsync(id, info);
+            id = await _adminService.SaveRoleAsync(id, info);
             return Json(Result.Success("保存成功。", id));
         }
 
@@ -78,7 +78,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Delete(int id)
         {
-            await adminService.DeleteRoleAsync(id);
+            await _adminService.DeleteRoleAsync(id);
             return Json(Result.Success("删除成功。"));
         }
 
@@ -91,7 +91,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Enable(int id)
         {
-            await adminService.SetRoleStateAsync(id, StateFlags.Enabled);
+            await _adminService.SetRoleStateAsync(id, StateFlags.Enabled);
             return Json(Result.Success("启用成功。"));
         }
 
@@ -104,7 +104,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Disable(int id)
         {
-            await adminService.SetRoleStateAsync(id, StateFlags.Disabled);
+            await _adminService.SetRoleStateAsync(id, StateFlags.Disabled);
             return Json(Result.Success("禁用成功。"));
         }
     }

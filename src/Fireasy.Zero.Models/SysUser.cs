@@ -26,6 +26,7 @@ namespace Fireasy.Zero.Models
         /// </summary>
 
         [PropertyMapping(ColumnName = "UserID", Description = "»À‘±ID", GenerateType = IdentityGenerateType.AutoIncrement, IsPrimaryKey = true, IsNullable = false)]
+        [Key]
         public virtual int UserID { get; set; }
 
         /// <summary>

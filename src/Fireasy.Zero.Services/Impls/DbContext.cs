@@ -66,13 +66,5 @@ namespace Fireasy.Zero.Services.Impls
         /// 获取或设置 人员角色 实体仓储。
         /// </summary> 
         public IRepository<SysUserRole> SysUserRoles { get; set; }
-
-        protected override bool Dispose(bool disposing)
-        {
-            //返回true才是真正的回收，为false为放回对象池里
-            var disposed = base.Dispose(disposing);
-            Console.WriteLine(disposed);
-            return disposed;
-        }
     }
 }

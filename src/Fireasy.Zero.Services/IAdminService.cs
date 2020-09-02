@@ -6,6 +6,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 using Fireasy.Data;
+using Fireasy.Zero.Dtos;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
 using System;
@@ -109,7 +110,7 @@ namespace Fireasy.Zero.Services
         /// <param name="pager"></param>
         /// <param name="sorting"></param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersAsync(int userId, string orgCode, StateFlags? state, string keyword, DataPager pager, SortDefinition sorting);
+        Task<List<UserDto>> GetUsersAsync(int userId, string orgCode, StateFlags? state, string keyword, DataPager pager, SortDefinition sorting);
 
         /// <summary>
         /// 获取用户列表（用指定的角色ID进行排除）。
@@ -121,7 +122,7 @@ namespace Fireasy.Zero.Services
         /// <param name="pager"></param>
         /// <param name="sorting"></param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersByRoleExcludeAsync(int userId, string orgCode, int roleId, string keyword, DataPager pager, SortDefinition sorting);
+        Task<List<UserDto>> GetUsersByRoleExcludeAsync(int userId, string orgCode, int roleId, string keyword, DataPager pager, SortDefinition sorting);
 
         /// <summary>
         /// 根据角色代码（拼音码）获取用户列表。
@@ -131,14 +132,14 @@ namespace Fireasy.Zero.Services
         /// <param name="keyword"></param>
         /// <param name="orgCodeLength">机构编码的位数。如果指定，则在此编码范围的机构下检索。比如分公司范围，则此值传 4。</param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersAsync(string orgCode, string RoleName, string keyword, int? orgCodeLength);
+        Task<List<UserDto>> GetUsersAsync(string orgCode, string RoleName, string keyword, int? orgCodeLength);
 
         /// <summary>
         /// 获取机构下的用户列表。
         /// </summary>
         /// <param name="orgId"></param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersAsync(int orgId);
+        Task<List<UserDto>> GetUsersAsync(int orgId);
 
         /// <summary>
         /// 获取机构下某角色的用户列表。
@@ -146,7 +147,7 @@ namespace Fireasy.Zero.Services
         /// <param name="orgId"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersAsync(int orgId, int roleId);
+        Task<List<UserDto>> GetUsersAsync(int orgId, int roleId);
 
         /// <summary>
         /// 获取某角色的用户列表。
@@ -155,7 +156,7 @@ namespace Fireasy.Zero.Services
         /// <param name="pager"></param>
         /// <param name="sorting"></param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersByRoleAsync(int roleId, DataPager pager, SortDefinition sorting);
+        Task<List<UserDto>> GetUsersByRoleAsync(int roleId, DataPager pager, SortDefinition sorting);
 
         /// <summary>
         /// 获取用户人员信息列表 根据机构编码和状态
@@ -163,7 +164,7 @@ namespace Fireasy.Zero.Services
         /// <param name="orgCode">组织机构编码</param>
         /// <param name="state">状态 启用或 停用</param>
         /// <returns></returns>
-        Task<List<SysUser>> GetUsersByCodeAsync(string orgCode, StateFlags? state);
+        Task<List<UserDto>> GetUsersByCodeAsync(string orgCode, StateFlags? state);
 
         /// <summary>
         /// 删除用户。
@@ -465,7 +466,7 @@ namespace Fireasy.Zero.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        List<string> GetPurviewOrgs(int userId);
+        Task<List<string>> GetPurviewOrgsAsync(int userId);
 
         /// <summary>
         /// 为角色添加多个用户。

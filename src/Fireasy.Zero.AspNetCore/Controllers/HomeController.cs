@@ -1,7 +1,6 @@
-﻿using Fireasy.Common.Logging;
+﻿using Fireasy.Data;
 using Fireasy.Zero.AspNetCore.Models;
 using Fireasy.Zero.Helpers;
-using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +12,18 @@ namespace Fireasy.Zero.AspNetCore.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private IAdminService adminService;
+        private IAdminService _adminService;
 
         public HomeController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Test()
+        {
+            var r = await _adminService.GetUsersAsync(2, "0003", Zero.Models.StateFlags.Enabled, null, new DataPager(20, 0), null);
+            return Json(r);
         }
 
         public async Task<IActionResult> Index()
@@ -29,7 +35,7 @@ namespace Fireasy.Zero.AspNetCore.Controllers
                 return Redirect("~/Login");
             }
 
-            ViewBag.Modules = await adminService.GetPurviewModulesAsync(session.UserID);
+            ViewBag.Modules = await _adminService.GetPurviewModulesAsync(session.UserID);
             ViewBag.UserName = session.UserName;
 
             return View();

@@ -1,4 +1,5 @@
-﻿using Fireasy.Zero.Helpers;
+﻿using Fireasy.Data;
+using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Services;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -7,18 +8,25 @@ namespace Fireasy.Zero.AspNet.Controllers
 {
     public class HomeController : Controller
     {
-        private IAdminService adminService;
+        private readonly IAdminService _adminService;
 
         public HomeController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> Test()
+        {
+            var r = await _adminService.GetUsersAsync(2, "0003", Zero.Models.StateFlags.Enabled, null, new DataPager(20, 0), null);
+            return Json(r);
         }
 
         public async Task<ActionResult> Index()
         {
             var session = HttpContext.GetSession();
 
-            ViewBag.Modules = await adminService.GetPurviewModulesAsync(session.UserID);
+            ViewBag.Modules = await _adminService.GetPurviewModulesAsync(session.UserID);
             ViewBag.UserName = session.UserName;
 
             return View();

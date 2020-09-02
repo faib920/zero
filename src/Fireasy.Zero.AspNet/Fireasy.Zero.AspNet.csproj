@@ -47,29 +47,35 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="CSRedisCore, Version=3.1.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSRedisCore.3.1.10\lib\net45\CSRedisCore.dll</HintPath>
+    <Reference Include="CSRedisCore, Version=3.6.2.0, Culture=neutral, PublicKeyToken=9aa6a3079358d437, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSRedisCore.3.6.2\lib\net45\CSRedisCore.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Common, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Common.2.1.2.2\lib\net46\Fireasy.Common.dll</HintPath>
+    <Reference Include="Fireasy.AutoMapper, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.AutoMapper.2.2.1.1\lib\net461\Fireasy.AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.2.1.2.2\lib\net45\Fireasy.Data.dll</HintPath>
+    <Reference Include="Fireasy.Common, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Common.2.2.1\lib\net46\Fireasy.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data.Entity, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.Entity.2.1.2.2\lib\net45\Fireasy.Data.Entity.dll</HintPath>
+    <Reference Include="Fireasy.Data, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.2.2.1\lib\net45\Fireasy.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Redis, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Redis.2.1.2.2\lib\net461\Fireasy.Redis.dll</HintPath>
+    <Reference Include="Fireasy.Data.Entity, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.Entity.2.2.1\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Web.EasyUI, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.EasyUI.2.1.2.2\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
+    <Reference Include="Fireasy.Redis, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Redis.2.2.0\lib\net45\Fireasy.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Web.Mvc, Version=2.1.2.2, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.Mvc.2.1.2.2\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
+    <Reference Include="Fireasy.Web.EasyUI, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Web.EasyUI.2.2.0\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Fireasy.Web.Mvc, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Web.Mvc.2.2.0\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
@@ -86,8 +92,7 @@
       <HintPath>..\packages\MySql.Data.8.0.18\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NPOI, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.2.4.1\lib\net45\NPOI.dll</HintPath>
@@ -107,8 +112,8 @@
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
-    <Reference Include="SafeObjectPool, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SafeObjectPool.2.1.2\lib\net45\SafeObjectPool.dll</HintPath>
+    <Reference Include="SafeObjectPool, Version=2.3.1.0, Culture=neutral, PublicKeyToken=2979badd66b9f481, processorArchitecture=MSIL">
+      <HintPath>..\packages\SafeObjectPool.2.3.1\lib\net45\SafeObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="StackExchange.Redis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
       <HintPath>..\packages\StackExchange.Redis.2.0.601\lib\net461\StackExchange.Redis.dll</HintPath>
@@ -744,6 +749,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fireasy.Zero.Dtos\Fireasy.Zero.Dtos.csproj">
+      <Project>{bc6270dd-873a-4bbb-9aa1-48a77cc77681}</Project>
+      <Name>Fireasy.Zero.Dtos</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fireasy.Zero.Helpers\Fireasy.Zero.Helpers.csproj">
       <Project>{e8b3d0b1-6d36-460f-b207-b1e20db3f189}</Project>
       <Name>Fireasy.Zero.Helpers</Name>

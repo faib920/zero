@@ -8,15 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.Log4net" Version="2.1.2.1" />
-    <PackageReference Include="Fireasy.Newtonsoft" Version="2.1.2" />
-    <PackageReference Include="Fireasy.NLog" Version="2.1.2.1" />
-    <PackageReference Include="Fireasy.QuartzNet" Version="2.1.2.1" />
-    <PackageReference Include="Fireasy.RabbitMQ" Version="2.1.2.2" />
-    <PackageReference Include="Fireasy.Redis" Version="2.1.2.2" />
-    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.1.2.2" />
-    <PackageReference Include="Fireasy.Web.Mvc" Version="2.1.2.2" />
+    <PackageReference Include="Fireasy.Aliyun.AMQP" Version="2.2.0" />
+    <PackageReference Include="Fireasy.AutoMapper" Version="2.2.1.1" />
+    <PackageReference Include="Fireasy.Log4net" Version="2.2.0" />
+    <PackageReference Include="Fireasy.Newtonsoft" Version="2.2.0-beta4" />
+    <PackageReference Include="Fireasy.NLog" Version="2.2.0" />
+    <PackageReference Include="Fireasy.QuartzNet" Version="2.2.0" />
+    <PackageReference Include="Fireasy.RabbitMQ" Version="2.2.0" />
+    <PackageReference Include="Fireasy.Redis" Version="2.2.0" />
+    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.2.0" />
+    <PackageReference Include="Fireasy.Web.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.4.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="2.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="MySqlConnector" Version="0.60.3-beta1" />

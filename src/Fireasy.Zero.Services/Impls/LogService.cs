@@ -1,4 +1,5 @@
 ﻿using Fireasy.Common;
+using Fireasy.Common.Ioc;
 using Fireasy.Common.Logging;
 using Fireasy.Data.Entity;
 using Fireasy.Zero.Models;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Fireasy.Zero.Services.Impls
 {
-    public class LogService : ILogService
+    public class LogService : ILogService, ITransientService
     {
-        private MongodbContext context;
+        private MongodbContext _context;
 
         public LogService(MongodbContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         public void Debug(object message, Exception exception = null)
@@ -34,7 +35,7 @@ namespace Fireasy.Zero.Services.Impls
                 return;
             }
 
-            context.SysLogs.Insert(new SysLog
+            _context.SysLogs.Insert(new SysLog
             {
                 LogTime = DateTime.Now,
                 LogType = 2,
@@ -50,7 +51,7 @@ namespace Fireasy.Zero.Services.Impls
                 return;
             }
 
-            await context.SysLogs.InsertAsync(new SysLog
+            await _context.SysLogs.InsertAsync(new SysLog
             {
                 LogTime = DateTime.Now,
                 LogType = 2,
@@ -73,7 +74,7 @@ namespace Fireasy.Zero.Services.Impls
         {
             try
             {
-                context.UseTransaction(db =>
+                _context.UseTransaction(db =>
                 {
                     db.SysLogs.Insert(new SysLog
                     {
@@ -97,9 +98,9 @@ namespace Fireasy.Zero.Services.Impls
         {
             try
             {
-                await context.UseTransactionAsync(async (db, cancel) =>
+                await _context.UseTransactionAsync(async (db, cancel) =>
                 {
-                    await context.SysLogs.InsertAsync(new SysLog
+                    await _context.SysLogs.InsertAsync(new SysLog
                     {
                         LogTime = DateTime.Now,
                         LogType = 1,
@@ -132,5 +133,9 @@ namespace Fireasy.Zero.Services.Impls
             return this;
         }
 
+        public ILogger<T> Create<T>() where T : class
+        {
+            throw new NotImplementedException();
+        }
     }
 }

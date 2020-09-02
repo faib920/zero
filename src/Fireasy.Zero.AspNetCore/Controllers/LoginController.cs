@@ -6,7 +6,6 @@ using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fireasy.Zero.AspNetCore.Controllers
@@ -14,18 +13,18 @@ namespace Fireasy.Zero.AspNetCore.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        private IAdminService adminService;
-        private IEncryptProvider encryptProvider;
+        private IAdminService _adminService;
+        private IEncryptProvider _encryptProvider;
 
         public LoginController(IAdminService adminService, IEncryptProvider encryptProvider)
         {
-            this.adminService = adminService;
-            this.encryptProvider = encryptProvider;
+            _adminService = adminService;
+            _encryptProvider = encryptProvider;
         }
 
         public async Task<IActionResult> Test()
         {
-            var rr = await adminService.GetUsersAsync(2, "0002", null, null, new DataPager(2, 0), null);
+            var rr = await _adminService.GetUsersAsync(2, "0002", null, null, new DataPager(2, 0), null);
             return Json(rr);
         }
 
@@ -42,15 +41,15 @@ namespace Fireasy.Zero.AspNetCore.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> CheckLogin(string account, string password, [FromServices]ILogger logger)
+        public async Task<JsonResult> CheckLogin(string account, string password, [FromServices] ILogger logger)
         {
-            var session = await adminService.CheckLoginAsync(account, t => encryptProvider.Validate(password, t), null);
+            var session = await _adminService.CheckLoginAsync(account, t => _encryptProvider.Validate(password, t), null);
             if (session != null)
             {
                 HttpContext.SetSession(session);
                 HttpContext.SignIn(session);
 
-                logger.Info($"{account}登录到系统");
+                //logger.Info($"{account}登录到系统");
 
                 return Json(Result.Success("登录成功"));
             }

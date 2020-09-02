@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fireasy.Zero.AspNet", "Fireasy.Zero.AspNet\Fireasy.Zero.AspNet.csproj", "{E1424080-1B26-4EBF-B6AF-0DD38544D959}"
 EndProject
@@ -21,7 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{FB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fireasy.Zero.Helpers", "Fireasy.Zero.Helpers\Fireasy.Zero.Helpers.csproj", "{E8B3D0B1-6D36-460F-B207-B1E20DB3F189}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fireasy.Zero.WebSockets", "Fireasy.Zero.WebSockets\Fireasy.Zero.WebSockets.csproj", "{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fireasy.Zero.WebSockets", "Fireasy.Zero.WebSockets\Fireasy.Zero.WebSockets.csproj", "{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fireasy.Zero.Dtos", "Fireasy.Zero.Dtos\Fireasy.Zero.Dtos.csproj", "{BC6270DD-873A-4BBB-9AA1-48A77CC77681}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D56273A-D1B0-4806-80F9-7DA7F8D535A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC6270DD-873A-4BBB-9AA1-48A77CC77681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC6270DD-873A-4BBB-9AA1-48A77CC77681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC6270DD-873A-4BBB-9AA1-48A77CC77681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC6270DD-873A-4BBB-9AA1-48A77CC77681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

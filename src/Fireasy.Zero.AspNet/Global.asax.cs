@@ -1,13 +1,14 @@
-﻿using Fireasy.Common.Extensions;
+﻿using Fireasy.AutoMapper;
+using Fireasy.Common.Extensions;
 using Fireasy.Common.Ioc;
 using Fireasy.Common.Serialization;
-using Fireasy.Common.Subscribes;
 using Fireasy.Data.Entity;
-using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Web.EasyUI.Binders;
 using Fireasy.Web.Mvc;
+using Fireasy.Zero.Dtos;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
+using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using Fireasy.Zero.Services.Impls;
 using System.Reflection;
@@ -15,6 +16,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
+using AutoMap = AutoMapper;
 
 namespace Fireasy.Zero.AspNet
 {
@@ -50,12 +52,14 @@ namespace Fireasy.Zero.AspNet
             GlobalSetting.Converters.Add(new ContainerJsonConverter(container));
 
             //注册实体持久化的订阅通知
-            DefaultSubscribeManager.Instance.AddSubscriber<EntityPersistentSubject>(subject => new EntitySubscriber().Accept(subject));
+            //DefaultSubscribeManager.Instance.AddSubscriber<PersistentSubject>(subject => new EntitySubscriber().Accept(subject));
+
+            MapperUnity.AddProfile<AutoProfile>();
         }
 
         protected void Session_Start()
         {
-            var id = HttpContext.Current.GetIdentity();
+            var id = AuthenticationHelper.GetIdentity(HttpContext.Current);
 
             if (id != 0)
             {
@@ -75,6 +79,13 @@ namespace Fireasy.Zero.AspNet
                     }
                 }
             }
+        }
+    }
+    public class AutoProfile : AutoMap.Profile
+    {
+        public AutoProfile()
+        {
+            CreateMap<SysUser, UserDto>().ForMember(s => s.IDCard, s => s.MapFrom(t => t.IDCard.ToString()));
         }
     }
 }

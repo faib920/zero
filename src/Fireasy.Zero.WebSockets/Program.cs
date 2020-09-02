@@ -33,7 +33,7 @@ namespace Fireasy.Zero.WebSockets
         {
             app.UseWebSockets(options =>
             {
-                options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+                options.KeepAliveInterval = TimeSpan.MaxValue;
                 options.ReceiveBufferSize = 4 * 1024;
                 options.MapHandler<ChatHandler>("/wsChat");
             });

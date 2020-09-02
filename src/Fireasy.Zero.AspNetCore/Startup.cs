@@ -1,17 +1,19 @@
+using AutoMapper;
 using Fireasy.Common.Caching;
-using Fireasy.Common.Localization;
 using Fireasy.Common.Serialization;
 using Fireasy.Common.Subscribes;
 using Fireasy.Data;
 using Fireasy.Data.Entity;
-using Fireasy.Data.Entity.Query;
-using Fireasy.Data.Entity.Subscribes;
 using Fireasy.Data.Extensions;
 using Fireasy.Web.Mvc;
+using Fireasy.Zero.Dtos;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
+using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using Fireasy.Zero.Services.Impls;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,11 +45,10 @@ namespace Fireasy.Zero.AspNetCore
                 .AddIoc(); //添加 appsettings.json 里的 ioc 配置
 
             // ############################ 演示两个实体上下文的配置 ############################
-            services.AddEntityContextPool<DbContext>(builder =>
+            services.AddEntityContext(builder =>
                 {
                     builder.Options.NotifyEvents = true; //此项设为 true 时, 下面的实体持久化订阅通知才会触发
-
-                }, 500);
+                });
 
             // mongodb 是用来记录日志的
             services.AddEntityContext<MongodbContext>(builder =>
@@ -55,6 +56,10 @@ namespace Fireasy.Zero.AspNetCore
                     builder.Options.ConfigName = "mongodb"; //指定配置文件中的实例名称
                     //builder.UseMongoDB("server=mongodb://192.168.1.106;database=test"); //指定连接串
                 });
+
+            // ############################ 演示持久化事件订阅 ############################
+            services.AddPersistentSubscriber<BaseEntitySubscriber>();
+            services.AddAsyncPersistentSubscriber<AsyncBaseEntitySubscriber>();
 
             // ############################ 演示消息队列的订阅与发布 ############################
             // 以下两个配置要注释掉其中一个
@@ -101,19 +106,24 @@ namespace Fireasy.Zero.AspNetCore
             services.AddTransient<ICommandTracker, MQCommandTracker>();
 
             // ############################ 演示使用实体持久化事件订阅 ############################
-            EntityPersistentSubscribeManager.AddSubscriber(subject => new EntitySubscriber().Accept(subject));
-            EntityPersistentSubscribeManager.AddAsyncSubscriber(subject => new AsyncEntitySubscriber().AcceptAsync(subject));
+            //EntitySubscribeManager.AddSubscriber(subject => new BaseEntitySubscriber().Accept(subject));
+            //EntitySubscribeManager.AddAsyncSubscriber(subject => new AsyncBaseEntitySubscriber().AcceptAsync(subject));
 
             // ############################ 演示使用第三方的日志组件 ############################
             // NLog日志
-            services.AddNLogger();
+            //services.AddNLogger();
 
             // Log4net日志
             //services.AddLog4netLogger();
 
             // ############################ 演示使用第三方的任务调度组件 ############################
             // 使用 Quartz 调度管理器
-            services.AddQuartzScheduler();
+            //services.AddQuartzScheduler();
+
+            services.AddAutoMapper(s =>
+                {
+                    s.AddProfile<AutoProfile>();
+                });
 
             services.AddMvc()
                 .AddSessionStateTempDataProvider()
@@ -130,13 +140,14 @@ namespace Fireasy.Zero.AspNetCore
 
             // ############################ 演示使用缓存键规范化及缓存清理栅栏 ############################
             services.AddSingleton<ICacheKeyNormalizer, CacheKeyNormalizer>();
-            services.AddSingleton<ICacheClearTaskBarrier, CacheClearTaskBarrier>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                     {
                         options.LoginPath = new PathString("/login");
                     });
+
+            services.AddOData();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -158,6 +169,10 @@ namespace Fireasy.Zero.AspNetCore
             app.UseSession();
             app.UseSessionRevive();
 
+            var builder = new ODataConventionModelBuilder(app.ApplicationServices);
+            builder.EntitySet<SysOrg>("Orgs");
+            builder.EntitySet<SysUser>("Users");
+
             app.UseMvc(routes =>
                 {
                     routes.MapRoute(
@@ -166,6 +181,10 @@ namespace Fireasy.Zero.AspNetCore
                     routes.MapRoute(
                         name: "default",
                         template: "{controller=Home}/{action=Index}/{id?}");
+
+                    routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
+                    routes.MapODataServiceRoute("ODataRoute", "odata", builder.GetEdmModel());
+                    routes.EnableDependencyInjection();
                 });
         }
     }
@@ -252,17 +271,6 @@ namespace Fireasy.Zero.AspNetCore
     }
 
     /// <summary>
-    /// 清理任务栅栏。
-    /// </summary>
-    public class CacheClearTaskBarrier : ICacheClearTaskBarrier
-    {
-        public string GetBarrier()
-        {
-            return "zero";
-        }
-    }
-
-    /// <summary>
     /// 执行 sql 脚本的订阅主题。
     /// </summary>
     public class CommandLogSubject
@@ -281,5 +289,13 @@ namespace Fireasy.Zero.AspNetCore
         /// 获取或设置耗时。
         /// </summary>
         public double Period { get; set; }
+    }
+
+    public class AutoProfile : Profile
+    {
+        public AutoProfile()
+        {
+            CreateMap<SysUser, UserDto>().ForMember(s => s.IDCard, s => s.MapFrom(t => t.IDCard.ToString()));
+        }
     }
 }

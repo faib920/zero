@@ -12,11 +12,11 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
 {
     public class OrgController : Controller
     {
-        private IAdminService adminService;
+        private readonly IAdminService _adminService;
 
         public OrgController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
         }
 
         public ActionResult Index()
@@ -36,7 +36,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> Get(int id)
         {
-            var info = await adminService.GetOrgAsync(id);
+            var info = await _adminService.GetOrgAsync(id);
             return Json(info);
         }
 
@@ -47,7 +47,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> GetNextOrderNo(int? parentId)
         {
-            return Json(await adminService.GetOrgNextOrderNoAsync(parentId));
+            return Json(await _adminService.GetOrgNextOrderNoAsync(parentId));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Save(int? id, SysOrg info)
         {
-            id = await adminService.SaveOrgAsync(id, info);
+            id = await _adminService.SaveOrgAsync(id, info);
             return Json(Result.Success("保存成功。", id));
         }
 
@@ -72,7 +72,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> SaveRows(int? parentId, List<SysOrg> rows)
         {
-            await adminService.SaveOrgsAsync(parentId, rows);
+            await _adminService.SaveOrgsAsync(parentId, rows);
             return Json(Result.Success("保存成功。"));
         }
 
@@ -91,7 +91,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         {
             var converter = new DynamicTreeNodeJsonConverter<SysOrg>(s => s.Name, s => s.Code, s => s.AttributeName, s => s.State);
 
-            var list = await adminService.GetOrgsAsync(id, targetId, currentId, state, null, attribute);
+            var list = await _adminService.GetOrgsAsync(id, targetId, currentId, state, null, attribute);
 
             return this.Json(id != null ? list : ItemFlagHelper.Insert(list, flag, s => new { id = 0, text = s.GetDescription() }), converter);
         }
@@ -111,7 +111,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
 
             var session = HttpContext.GetSession();
 
-            var list = await adminService.GetOrgsAsync(session.UserID, null, attribute);
+            var list = await _adminService.GetOrgsAsync(session.UserID, null, attribute);
             if (targetId != null)
             {
                 await ExpandTargetAsync(list, (int)targetId);
@@ -128,7 +128,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> Search(string keyword)
         {
-            var list = await adminService.SearchOrgsAsync(keyword);
+            var list = await _adminService.SearchOrgsAsync(keyword);
             return Json(list);
         }
 
@@ -141,7 +141,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Delete(int id)
         {
-            await adminService.DeleteOrgAsync(id);
+            await _adminService.DeleteOrgAsync(id);
             return Json(Result.Success("删除成功。"));
         }
 
@@ -154,7 +154,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Enable(int id)
         {
-            await adminService.SetOrgStateAsync(id, StateFlags.Enabled);
+            await _adminService.SetOrgStateAsync(id, StateFlags.Enabled);
             return Json(Result.Success("启用成功。"));
         }
 
@@ -167,7 +167,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Disable(int id)
         {
-            await adminService.SetOrgStateAsync(id, StateFlags.Disabled);
+            await _adminService.SetOrgStateAsync(id, StateFlags.Disabled);
             return Json(Result.Success("禁用成功。"));
         }
 
@@ -178,7 +178,7 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
         /// <param name="parentId"></param>
         private async Task ExpandTargetAsync(List<SysOrg> list, int parentId)
         {
-            var org = await adminService.GetOrgAsync(parentId);
+            var org = await _adminService.GetOrgAsync(parentId);
             if (org == null)
             {
                 return;

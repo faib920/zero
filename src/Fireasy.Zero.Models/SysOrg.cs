@@ -25,6 +25,7 @@ namespace Fireasy.Zero.Models
         /// </summary>
 
         [PropertyMapping(ColumnName = "OrgID", Description = "»ú¹¹ID", GenerateType = IdentityGenerateType.AutoIncrement, IsPrimaryKey = true, IsNullable = false)]
+        [Key]
         public virtual int OrgID { get; set; }
 
         /// <summary>

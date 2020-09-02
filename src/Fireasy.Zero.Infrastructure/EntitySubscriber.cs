@@ -17,7 +17,7 @@ namespace Fireasy.Zero.Infrastructure
     /// <summary>
     /// 实体的事件订阅器。用于在维护实体时，移除相关的缓存键。
     /// </summary>
-    public class EntitySubscriber : EntityPersistentSubscriber
+    public class BaseEntitySubscriber : PersistentSubscriber
     {
         protected override void OnCreate(Type entityType)
         {
@@ -66,7 +66,7 @@ namespace Fireasy.Zero.Infrastructure
     /// <summary>
     /// 演示异步事件订阅器。
     /// </summary>
-    public class AsyncEntitySubscriber : AsyncEntityPersistentSubscriber
+    public class AsyncBaseEntitySubscriber : AsyncPersistentSubscriber
     {
         protected override Task<bool> OnBeforeCreateAsync(IEntity entity)
         {

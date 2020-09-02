@@ -10,13 +10,13 @@ namespace Fireasy.Zero.AspNet.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        private IAdminService adminService;
-        private IEncryptProvider encryptProvider;
+        private readonly IAdminService _adminService;
+        private readonly IEncryptProvider _encryptProvider;
 
         public LoginController(IAdminService adminService, IEncryptProvider encryptProvider)
         {
-            this.adminService = adminService;
-            this.encryptProvider = encryptProvider;
+            _adminService = adminService;
+            _encryptProvider = encryptProvider;
         }
 
         public ActionResult Index()
@@ -34,7 +34,7 @@ namespace Fireasy.Zero.AspNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> CheckLogin(string account, string password)
         {
-            var session = await adminService.CheckLoginAsync(account, t => encryptProvider.Validate(password, t), null);
+            var session = await _adminService.CheckLoginAsync(account, t => _encryptProvider.Validate(password, t), null);
             if (session != null)
             {
                 HttpContext.SetSession(session);

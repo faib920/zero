@@ -1,8 +1,5 @@
-﻿using Fireasy.Common;
-using Fireasy.Common.ComponentModel;
-using Fireasy.Data;
+﻿using Fireasy.Common.ComponentModel;
 using Fireasy.Web.EasyUI;
-using Fireasy.Web.Mvc;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
@@ -13,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -23,13 +19,13 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
     [Area("Admin")]
     public class UserController : Controller
     {
-        private IAdminService adminService;
-        private IEncryptProvider encryptProvider;
+        private IAdminService _adminService;
+        private IEncryptProvider _encryptProvider;
 
         public UserController(IAdminService adminService, IEncryptProvider encryptProvider)
         {
-            this.adminService = adminService;
-            this.encryptProvider = encryptProvider;
+            _adminService = adminService;
+            _encryptProvider = encryptProvider;
         }
 
         public ActionResult Index()
@@ -64,7 +60,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> Get(int id)
         {
-            var info = await adminService.GetUserAsync(id);
+            var info = await _adminService.GetUserAsync(id);
 
             return Json(info);
         }
@@ -76,7 +72,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         public async Task<JsonResult> GetMyInfo()
         {
             var session = HttpContext.GetSession();
-            var info = await adminService.GetUserAsync(session.UserID);
+            var info = await _adminService.GetUserAsync(session.UserID);
 
             return Json(info);
         }
@@ -97,15 +93,15 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             //新增时使用默认密码
             if (id == null && string.IsNullOrEmpty(password))
             {
-                creator = () => encryptProvider.Create("123456");
+                creator = () => _encryptProvider.Create("123456");
             }
             //修改时如果填写了新密码
             else if (!string.IsNullOrEmpty(password))
             {
-                creator = () => encryptProvider.Create(password);
+                creator = () => _encryptProvider.Create(password);
             }
 
-            id = await adminService.SaveUserAsync(id, info, creator);
+            id = await _adminService.SaveUserAsync(id, info, creator);
 
             var session = HttpContext.GetSession();
             if (session.UserID == (int)id)
@@ -130,11 +126,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         {
             var session = HttpContext.GetSession();
 
-            await adminService.SaveUserAsync(session.UserID, info, null);
+            await _adminService.SaveUserAsync(session.UserID, info, null);
 
             if (!string.IsNullOrEmpty(oldPwd))
             {
-                await adminService.ModifyUserPasswordAsync(session.UserID, t => encryptProvider.Validate(oldPwd, t), () => encryptProvider.Create(newPwd));
+                await _adminService.ModifyUserPasswordAsync(session.UserID, t => _encryptProvider.Validate(oldPwd, t), () => _encryptProvider.Create(newPwd));
             }
 
             session.UserName = info.Name;
@@ -152,7 +148,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> SaveRows(int orgId, List<SysUser> rows)
         {
-            await adminService.SaveUsersAsync(orgId, rows, () => encryptProvider.Create("123456"));
+            await _adminService.SaveUsersAsync(orgId, rows, () => _encryptProvider.Create("123456"));
             return Json(Result.Success("保存成功。"));
         }
 
@@ -173,7 +169,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 
             sorting = sorting.Replace("SexName", "Sex", "DegreeName", "DegreeNo", "TitleName", "TitleNo");
 
-            var list = await adminService.GetUsersAsync(userId, orgCode, state, keyword, pager, null);
+            var list = await _adminService.GetUsersAsync(userId, orgCode, state, keyword, pager, null);
             return Json(EasyUIHelper.Transfer(pager, list));
         }
 
@@ -188,7 +184,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         {
             var userId = HttpContext.GetSession().UserID;
 
-            var list = await adminService.GetUsersAsync(userId, orgCode, state, keyword, null, null);
+            var list = await _adminService.GetUsersAsync(userId, orgCode, state, keyword, null, null);
 
             var bytes = ExcelHelper.Export("\\templates\\user.xlsx", list, null);
 
@@ -204,7 +200,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Delete(int id)
         {
-            await adminService.DeleteUserAsync(id);
+            await _adminService.DeleteUserAsync(id);
             return Json(Result.Success("删除成功。"));
         }
 
@@ -217,7 +213,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Enable(int id)
         {
-            await adminService.SetUserStateAsync(id, StateFlags.Enabled);
+            await _adminService.SetUserStateAsync(id, StateFlags.Enabled);
             return Json(Result.Success("启用成功。"));
         }
 
@@ -230,7 +226,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Disable(int id)
         {
-            await adminService.SetUserStateAsync(id, StateFlags.Disabled);
+            await _adminService.SetUserStateAsync(id, StateFlags.Disabled);
             return Json(Result.Success("禁用成功。"));
         }
 
@@ -243,7 +239,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> ResetPwd(int id)
         {
-            await adminService.ResetUserPasswordAsync(id, "123456", () => encryptProvider.Create("123456"));
+            await _adminService.ResetUserPasswordAsync(id, "123456", () => _encryptProvider.Create("123456"));
             return Json(Result.Success("成功重设了用户的密码。"));
         }
 
@@ -252,7 +248,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<Result<string>> UploadPhoto([FromServices]IHostingEnvironment env, int? userId)
+        public async Task<Result<string>> UploadPhoto([FromServices] IHostingEnvironment env, int? userId)
         {
             if (Request.Form.Files.Count == 0)
             {
@@ -288,7 +284,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 
             if (userId != null)
             {
-                await adminService.UpdateUserPhotoAsync((int)userId, virPath);
+                await _adminService.UpdateUserPhotoAsync((int)userId, virPath);
             }
 
             return virPath;

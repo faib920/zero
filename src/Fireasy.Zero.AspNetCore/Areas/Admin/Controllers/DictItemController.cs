@@ -8,11 +8,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Base.Controllers
     [Area("Admin")]
     public class DictItemController : Controller
     {
-        private IAdminService adminService;
+        private IAdminService _adminService;
 
         public DictItemController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
         }
 
         public IActionResult Index()
@@ -22,7 +22,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Base.Controllers
 
         public JsonResult GetDictItems(string typeCode)
         {
-            return Json(adminService.GetDictItems(typeCode));
+            return Json(_adminService.GetDictItems(typeCode));
         }
     }
 }

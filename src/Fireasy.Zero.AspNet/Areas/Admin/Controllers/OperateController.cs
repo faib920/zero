@@ -14,11 +14,11 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
 {
     public class OperateController : Controller
     {
-        private IAdminService adminService;
+        private readonly IAdminService _adminService;
 
         public OperateController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
         }
 
         public ActionResult Index()
@@ -33,13 +33,13 @@ namespace Fireasy.Zero.AspNet.Areas.Admin.Controllers
 
         public async Task<JsonResult> Data(int moduleId)
         {
-            var list = await adminService.GetOperatesAsync(moduleId);
+            var list = await _adminService.GetOperatesAsync(moduleId);
             return Json(list);
         }
 
         public async Task<JsonResult> SaveRows(int moduleId, List<SysOperate> added, List<SysOperate> updated, List<SysOperate> deleted)
         {
-            await adminService.SaveOperatesAsync(moduleId, added, updated, deleted);
+            await _adminService.SaveOperatesAsync(moduleId, added, updated, deleted);
 
             return Json(Result.Success("保存成功"));
         }

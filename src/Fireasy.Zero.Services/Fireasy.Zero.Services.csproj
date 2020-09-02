@@ -1,14 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.MongoDB" Version="2.1.2" />
+    <PackageReference Include="Fireasy.MongoDB" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fireasy.Zero.Dtos\Fireasy.Zero.Dtos.csproj" />
     <ProjectReference Include="..\Fireasy.Zero.Infrastructure\Fireasy.Zero.Infrastructure.csproj" />
     <ProjectReference Include="..\Fireasy.Zero.Models\Fireasy.Zero.Models.csproj" />
   </ItemGroup>

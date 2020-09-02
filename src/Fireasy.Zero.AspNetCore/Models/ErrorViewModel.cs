@@ -1,5 +1,3 @@
-using System;
-
 namespace Fireasy.Zero.AspNetCore.Models
 {
     public class ErrorViewModel

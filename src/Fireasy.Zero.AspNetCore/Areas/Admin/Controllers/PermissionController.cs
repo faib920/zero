@@ -15,11 +15,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
     [Area("Admin")]
     public class PermissionController : Controller
     {
-        private IAdminService adminService;
+        private IAdminService _adminService;
 
         public PermissionController(IAdminService adminService)
         {
-            this.adminService = adminService;
+            _adminService = adminService;
         }
 
         public ActionResult Index()
@@ -48,7 +48,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="hosting"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<JsonResult> GetModulesByRole([FromServices]JsonSerializeOptionHosting hosting, int? roleId)
+        public async Task<JsonResult> GetModulesByRole([FromServices] JsonSerializeOptionHosting hosting, int? roleId)
         {
             if (roleId == null)
             {
@@ -58,7 +58,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             var converter = new DynamicTreeNodeJsonConverter<SysModule>(s => s.Name, s => s.Permissible, s => s.SysOperates);
             hosting.Option.Converters.Add(converter);
 
-            var list = await adminService.GetModulesByRoleAsync((int)roleId);
+            var list = await _adminService.GetModulesByRoleAsync((int)roleId);
             return Json(list);
         }
 
@@ -68,7 +68,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="hosting"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<JsonResult> GetOrgsByRole([FromServices]JsonSerializeOptionHosting hosting, int? roleId)
+        public async Task<JsonResult> GetOrgsByRole([FromServices] JsonSerializeOptionHosting hosting, int? roleId)
         {
             if (roleId == null)
             {
@@ -78,7 +78,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             var converter = new DynamicTreeNodeJsonConverter<SysOrg>(s => s.Name, s => s.Permissible, s => s.FullName);
             hosting.Option.Converters.Add(converter);
 
-            var list = await adminService.GetOrgsByRoleAsync((int)roleId);
+            var list = await _adminService.GetOrgsByRoleAsync((int)roleId);
             return Json(list);
         }
 
@@ -99,7 +99,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
 
             sorting = sorting.Replace("SexName", "Sex", "DegreeName", "DegreeNo", "TitleName", "TitleNo");
 
-            var list = await adminService.GetUsersByRoleExcludeAsync(userId, orgCode, roleId, keyword, pager, sorting);
+            var list = await _adminService.GetUsersByRoleExcludeAsync(userId, orgCode, roleId, keyword, pager, sorting);
             return Json(EasyUIHelper.Transfer(pager, list));
         }
 
@@ -113,7 +113,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [HttpPost]
         public async Task<JsonResult> SaveFuncPermissions(int roleId, List<int> modules, Dictionary<int, List<int>> opers)
         {
-            await adminService.SaveFuncRolePermissions(roleId, modules, opers);
+            await _adminService.SaveFuncRolePermissions(roleId, modules, opers);
 
             return Json(Result.Success("保存成功。"));
         }
@@ -127,7 +127,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         [HttpPost]
         public async Task<JsonResult> SaveDataPermissions(int roleId, List<int> orgs)
         {
-            await adminService.SaveOrgRolePermissionsAsync(roleId, orgs);
+            await _adminService.SaveOrgRolePermissionsAsync(roleId, orgs);
 
             return Json(Result.Success("保存成功。"));
         }
@@ -147,7 +147,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             var pager = EasyUIHelper.GetDataPager(HttpContext);
             var sorting = EasyUIHelper.GetSorting(HttpContext);
 
-            var list = await adminService.GetUsersByRoleAsync((int)roleId, pager, sorting);
+            var list = await _adminService.GetUsersByRoleAsync((int)roleId, pager, sorting);
 
             return Json(EasyUIHelper.Transfer(pager, list));
         }
@@ -160,7 +160,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> AddRoleUsers(int roleId, List<int> users)
         {
-            await adminService.AddRoleUsers(roleId, users);
+            await _adminService.AddRoleUsers(roleId, users);
 
             return Json(Result.Success("添加成功。"));
         }
@@ -173,7 +173,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns></returns>
         public async Task<JsonResult> DeleteRoleUsers(int roleId, List<int> users)
         {
-            await adminService.DeleteRoleUsers(roleId, users);
+            await _adminService.DeleteRoleUsers(roleId, users);
 
             return Json(Result.Success("删除成功。"));
         }

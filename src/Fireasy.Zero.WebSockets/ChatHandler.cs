@@ -20,6 +20,11 @@ namespace Fireasy.Zero.WebSockets
             }
         }
 
+        public void Notify(string message)
+        {
+            Clients.All.SendAsync("OnReceiveNotify", message);
+        }
+
         protected override void OnDisconnected()
         {
             _manager.Remove(ConnectionId);

@@ -58,7 +58,7 @@ namespace Fireasy.Zero.Services
         /// <param name="info"></param>
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
-        Task<int> SaveUserAsync(int? userId, SysUser info, Func<string> pwdCreator);
+        Task<int> SaveUserAsync(int? userId, UserDto info, Func<string> pwdCreator);
 
         /// <summary>
         /// 保存用户信息。
@@ -66,16 +66,16 @@ namespace Fireasy.Zero.Services
         /// <param name="userId">主键值。</param>
         /// <param name="info"></param>
         /// <returns></returns>
-        Task<bool> SaveUserAsync(int userId, SysUser info);
+        Task<bool> SaveUserAsync(int userId, UserDto info);
 
         /// <summary>
         /// 保存多个用户。
         /// </summary>
         /// <param name="orgId">机构ID。</param>
-        /// <param name="users"></param>
+        /// <param name="infos"></param>
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
-        Task<bool> SaveUsersAsync(int orgId, List<SysUser> users, Func<string> pwdCreator);
+        Task<bool> SaveUsersAsync(int orgId, List<UserDto> infos, Func<string> pwdCreator);
 
         /// <summary>
         /// 设置用户状态。
@@ -425,6 +425,13 @@ namespace Fireasy.Zero.Services
         Task<List<SysModule>> GetPurviewModulesAsync(int userId);
 
         /// <summary>
+        /// 获取用户具有的角色。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<List<SysRole>> GetPurviewRolesAsync(int userId);
+
+        /// <summary>
         /// 根据角色ID获取模块列表。
         /// </summary>
         /// <param name="roleId">角色ID。</param>
@@ -452,6 +459,14 @@ namespace Fireasy.Zero.Services
         /// <param name="roleId"></param>
         /// <param name="orgs"></param>
         Task SaveOrgRolePermissionsAsync(int roleId, List<int> orgs);
+
+        /// <summary>
+        /// 保存用户角色。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roleIds"></param>
+        /// <returns></returns>
+        Task SaveUserRoles(int userId, List<int> roleIds);
 
         /// <summary>
         /// 根据 Url 获取操作按钮。

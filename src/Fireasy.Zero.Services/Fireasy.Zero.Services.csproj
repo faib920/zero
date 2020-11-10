@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fireasy.MongoDB" Version="2.2.1" />
+    <PackageReference Include="Fireasy.MongoDB" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>

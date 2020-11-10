@@ -1,5 +1,6 @@
 ﻿using Fireasy.Common.ComponentModel;
 using Fireasy.Web.EasyUI;
+using Fireasy.Zero.Dtos;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
@@ -86,7 +87,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns>id</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> Save(int? id, SysUser info, string password)
+        public async Task<JsonResult> Save(int? id, UserDto info, string password)
         {
             Func<string> creator = null;
 
@@ -122,7 +123,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <returns>id</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> SaveMyInfo(SysUser info, string oldPwd, string newPwd)
+        public async Task<JsonResult> SaveMyInfo(UserDto info, string oldPwd, string newPwd)
         {
             var session = HttpContext.GetSession();
 
@@ -146,7 +147,7 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
         /// <param name="orgId">隶属机构ID。</param>
         /// <param name="rows">多个用户数据。</param>
         /// <returns></returns>
-        public async Task<JsonResult> SaveRows(int orgId, List<SysUser> rows)
+        public async Task<JsonResult> SaveRows(int orgId, List<UserDto> rows)
         {
             await _adminService.SaveUsersAsync(orgId, rows, () => _encryptProvider.Create("123456"));
             return Json(Result.Success("保存成功。"));

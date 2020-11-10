@@ -1,45 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-	<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
-	<RuntimeIdentifiers>win10-x64;win-x64;linux-x64</RuntimeIdentifiers>
-	<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <!--<TargetFramework>netcoreapp3.1</TargetFramework>-->
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <RuntimeIdentifiers>win10-x64;win-x64;linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Fireasy.Aliyun.AMQP" Version="2.2.0" />
-    <PackageReference Include="Fireasy.AutoMapper" Version="2.2.1.1" />
-    <PackageReference Include="Fireasy.Log4net" Version="2.2.0" />
-    <PackageReference Include="Fireasy.Newtonsoft" Version="2.2.0-beta4" />
-    <PackageReference Include="Fireasy.NLog" Version="2.2.0" />
-    <PackageReference Include="Fireasy.QuartzNet" Version="2.2.0" />
-    <PackageReference Include="Fireasy.RabbitMQ" Version="2.2.0" />
-    <PackageReference Include="Fireasy.Redis" Version="2.2.0" />
-    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.2.0" />
-    <PackageReference Include="Fireasy.Web.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.4.0" />
+    <PackageReference Include="Fireasy.Aliyun.AMQP" Version="2.2.2" />
+    <PackageReference Include="Fireasy.AutoMapper" Version="2.2.2" />
+    <PackageReference Include="Fireasy.Log4net" Version="2.2.2" />
+    <PackageReference Include="Fireasy.Newtonsoft" Version="2.2.2" />
+    <PackageReference Include="Fireasy.NLog" Version="2.2.2" />
+    <PackageReference Include="Fireasy.QuartzNet" Version="2.2.2" />
+    <PackageReference Include="Fireasy.RabbitMQ" Version="2.2.2" />
+    <PackageReference Include="Fireasy.Redis" Version="2.2.2" />
+    <PackageReference Include="Fireasy.Web.EasyUI" Version="2.2.2" />
+    <PackageReference Include="Fireasy.Web.Mvc" Version="2.2.2" />
+    <PackageReference Include="Fireasy.Web.Sockets" Version="2.2.2" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="2.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="MySqlConnector" Version="0.60.3-beta1" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
-
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.0.0" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fireasy.Zero.Helpers\Fireasy.Zero.Helpers.csproj" />
     <ProjectReference Include="..\Fireasy.Zero.Infrastructure\Fireasy.Zero.Infrastructure.csproj" />
     <ProjectReference Include="..\Fireasy.Zero.Models\Fireasy.Zero.Models.csproj" />
     <ProjectReference Include="..\Fireasy.Zero.Services\Fireasy.Zero.Services.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="templates\" />
   </ItemGroup>
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties appsettings_1json__JSONSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 
 </Project>

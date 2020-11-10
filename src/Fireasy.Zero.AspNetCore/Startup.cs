@@ -6,21 +6,24 @@ using Fireasy.Data;
 using Fireasy.Data.Entity;
 using Fireasy.Data.Extensions;
 using Fireasy.Web.Mvc;
+using Fireasy.Web.Sockets;
 using Fireasy.Zero.Dtos;
 using Fireasy.Zero.Helpers;
 using Fireasy.Zero.Infrastructure;
 using Fireasy.Zero.Models;
 using Fireasy.Zero.Services;
 using Fireasy.Zero.Services.Impls;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+#if NETCOREAPP3_1
 using Microsoft.AspNetCore.Hosting;
+#endif
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -109,52 +112,80 @@ namespace Fireasy.Zero.AspNetCore
             //EntitySubscribeManager.AddSubscriber(subject => new BaseEntitySubscriber().Accept(subject));
             //EntitySubscribeManager.AddAsyncSubscriber(subject => new AsyncBaseEntitySubscriber().AcceptAsync(subject));
 
+            //或者
+            //services.AddPersistentSubscriber<BaseEntitySubscriber>();
+            //services.AddAsyncPersistentSubscriber<AsyncBaseEntitySubscriber>();
+
             // ############################ 演示使用第三方的日志组件 ############################
             // NLog日志
-            //services.AddNLogger();
+            services.AddNLogger();
 
             // Log4net日志
             //services.AddLog4netLogger();
 
             // ############################ 演示使用第三方的任务调度组件 ############################
             // 使用 Quartz 调度管理器
-            //services.AddQuartzScheduler();
+            services.AddQuartzScheduler(s =>
+            {
+                s.AddAsync(c => c.CronExpression = "0 */1 * * * ?", async (sp, c) =>
+                    {
+                        var client = new WebSocketClient();
+                        await client.StartAsync("ws://localhost:5001/wsChat");
+                        await client.SendAsync("Notify", "这是来自 WebSocket 的消息，一分钟后再提醒你。");
+                        await client.CloseAsync();
+                    });
+            });
 
             services.AddAutoMapper(s =>
                 {
                     s.AddProfile<AutoProfile>();
                 });
 
+#if NETCOREAPP2_2
             services.AddMvc()
                 .AddSessionStateTempDataProvider()
+                .ConfigureFireasyMvc(options =>
+                    {
+                        options.UseErrorHandleFilter = true;
+                        options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
+                    })
+                .ConfigureEasyUI();
+#elif NETCOREAPP3_1
+            services.AddControllersWithViews()
                 .ConfigureFireasyMvc(options =>
                     {
                         options.UseErrorHandleFilter = false;
                         options.JsonSerializeOption.Converters.Add(new LightEntityJsonConverter());
                     })
                 .ConfigureEasyUI();
+#endif
 
             // ############################ 演示Session自动复活 ############################
             services.AddSession()
                 .AddSessionRevive<SessionReviveNotification>();
 
             // ############################ 演示使用缓存键规范化及缓存清理栅栏 ############################
-            services.AddSingleton<ICacheKeyNormalizer, CacheKeyNormalizer>();
+            //services.AddSingleton<ICacheKeyNormalizer, CacheKeyNormalizer>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                     {
                         options.LoginPath = new PathString("/login");
                     });
-
-            services.AddOData();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+#if NETCOREAPP2_2
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
+#elif NETCOREAPP3_1
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider svp)
+        {
+            if (env.IsDevelopment())
+            {
+#endif
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -162,17 +193,14 @@ namespace Fireasy.Zero.AspNetCore
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            // ############################ 以下的顺序有讲究 ############################
             //添加静态文件映射
             app.UseStaticFiles();
-
-            app.UseAuthentication();
             app.UseSession();
+
+#if NETCOREAPP2_2
+            app.UseAuthentication();
             app.UseSessionRevive();
-
-            var builder = new ODataConventionModelBuilder(app.ApplicationServices);
-            builder.EntitySet<SysOrg>("Orgs");
-            builder.EntitySet<SysUser>("Users");
-
             app.UseMvc(routes =>
                 {
                     routes.MapRoute(
@@ -182,10 +210,18 @@ namespace Fireasy.Zero.AspNetCore
                         name: "default",
                         template: "{controller=Home}/{action=Index}/{id?}");
 
-                    routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
-                    routes.MapODataServiceRoute("ODataRoute", "odata", builder.GetEdmModel());
-                    routes.EnableDependencyInjection();
                 });
+#elif NETCOREAPP3_1
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseSessionRevive();
+            app.UseAuthorization();
+            app.UseEndpoints(c =>
+                {
+                    c.MapControllerRoute("areas", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                    c.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                });
+#endif
         }
     }
 
@@ -296,6 +332,7 @@ namespace Fireasy.Zero.AspNetCore
         public AutoProfile()
         {
             CreateMap<SysUser, UserDto>().ForMember(s => s.IDCard, s => s.MapFrom(t => t.IDCard.ToString()));
+            CreateMap<UserDto, SysUser>();
         }
     }
 }

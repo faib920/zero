@@ -8,6 +8,8 @@
 
     $(function () {
         loadModules();
+        loadOrgs();
+        loadUsers();
     });
 
     //加载数据
@@ -19,14 +21,52 @@
             treeField: 'Name',
             columns: [[
 
-                { field: 'Name', title: '模块', width: 260, halign: 'center', align: 'left', formatter: function (value, row) { return formatCheckbox(value, row); } },
+                { field: 'Name', title: '模块', width: 260, halign: 'center', align: 'left', formatter: function (value, row) { return formatCheckbox('Func', value, row); } },
                 { field: 'Operaters', title: '操作', width: 600, halign: 'center', align: 'left', formatter: formatOperates }
             ]]
         });
     }
 
-    function formatCheckbox(value, row) {
-        return '<input did="' + row.id + '" type="checkbox" ' + (row.Permissible ? 'checked' : '') + ' onclick="checkChildren(' + row.id + ', $(this).prop(\'checked\'))" />' + value;
+    //加载数据
+    function loadOrgs() {
+        $('#dgData').treegrid({
+            url: '@Url.Action("GetOrgsByRole")?roleId=' + roleId,
+            fit: true,//自动填充
+            idField: 'id',
+            treeField: 'Name',
+            columns: [[
+
+                { field: 'Name', title: '名称', width: 260, halign: 'center', align: 'left', formatter: function (value, row) { return formatCheckbox('Data', value, row); } },
+                { field: 'FullName', title: '全称', width: 600, halign: 'center', align: 'left' }
+            ]]
+        });
+    }
+
+    function loadUsers() {
+        $('#dgUser').datagrid({
+            url: '@Url.Action("GetUsersByRole")?roleId=' + roleId,
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: true,//分页信息
+            rownumbers: true,//显示行号
+            pageNumber: 1,//默认显示第一页
+            pageSize: 20,//每页的行数
+            checkOnSelect: false,
+            selectOnCheck: false,
+            idField: 'UserID',
+            columns: [[
+
+                { field: 'Name', title: '姓名', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'OrgName', title: '隶属机构', width: 350, halign: 'center', align: 'left', sortable: true },
+                { field: 'Account', title: '帐号', width: 120, halign: 'center', align: 'center', sortable: true }
+            ]],
+            queryParams: { state: '1' }
+        });
+    }
+
+
+    function formatCheckbox(ftype, value, row) {
+        return '<input ftype="' + ftype + '" did="' + row.id + '" type="checkbox" ' + (row.Permissible ? 'checked' : '') + ' onclick="checkChildren(\'' + ftype + '\', ' + row.id + ', $(this).prop(\'checked\'))" />' + value;
     }
 
     function formatOperates(value, row) {
@@ -40,26 +80,26 @@
         return str;
     }
 
-    function checkChildren(id, ck) {
+    function checkChildren(ftype, id, ck) {
         if (ck) {
-            var parent = $('#dg').treegrid('getParent', id);
+            var parent = $('#dg' + ftype).treegrid('getParent', id);
             while (parent != null) {
-                $('[did="' + parent.id + '"]').prop('checked', ck);
-                parent = $('#dg').treegrid('getParent', parent.id);
+                $('[did="' + parent.id + '"][ftype="' + ftype + '"]').prop('checked', ck);
+                parent = $('#dg' + ftype).treegrid('getParent', parent.id);
             }
         }
 
-        var children = $('#dg').treegrid('getChildren', id);
+        var children = $('#dg' + ftype).treegrid('getChildren', id);
         $.each(children, function (i, r) {
-            $('[did="' + r.id + '"]').prop('checked', ck);
-            checkAllOpers(r.id, ck);
+            $('[did="' + r.id + '"][ftype="' + ftype + '"]').prop('checked', ck);
+            checkAllOpers(ftype, r.id, ck);
         });
 
-        checkAllOpers(id, ck);
+        checkAllOpers(ftype, id, ck);
     }
 
-    function checkAllOpers(mid, ck) {
-        $('input[mid="' + mid + '"]').each(function (i, r) {
+    function checkAllOpers(ftype, mid, ck) {
+        $('input[mid="' + mid + '"][ftype="' + ftype + '"]').each(function (i, r) {
             $(r).prop('checked', ck);
         });
     }
@@ -71,12 +111,13 @@
         }
 
         common.confirm('是否保存权限?', function () {
-            var checked = $('input[did]:checked');
-            var data = [];
+            //功能权限
+            var checked = $('input[ftype="Func"][did]:checked');
+            var fdata = [];
             var opers = {};
             $.each(checked, function (i, c) {
                 var did = $(c).attr('did');
-                data.push(did);
+                fdata.push(did);
 
                 opers[did] = [];
                 $('input[mid="' + did + '"]:checked').each(function (j, o) {
@@ -84,14 +125,30 @@
                 });
             })
 
+            //数据权限
+            var checked = $('input[ftype="Data"][did]:checked');
+            var ddata = [];
+            $.each(checked, function (i, c) {
+                var did = $(c).attr('did');
+                ddata.push(did);
+            })
+
             var postData = new Object();
             postData.roleId = roleId;
-            postData.modules = JSON.stringify(data);
+            postData.modules = JSON.stringify(fdata);
             postData.opers = JSON.stringify(opers);
 
             common.showProcess();
 
             $.post('@Url.Action("SaveFuncPermissions")', postData, function (result) {
+                common.processResult(result);
+            })
+
+            postData = new Object();
+            postData.roleId = roleId;
+            postData.orgs = JSON.stringify(ddata);
+
+            $.post('@Url.Action("SaveDataPermissions")', postData, function (result) {
                 common.processResult(result);
             })
         });
@@ -102,12 +159,15 @@
         <div title="功能权限">
             <table id="dgFunc"></table>
         </div>
-        <div title="数据权限"></div>
-        <div title="相关用户"></div>
+        <div title="数据权限">
+            <table id="dgData"></table>
+        </div>
+        <div title="相关用户">
+            <table id="dgUser"></table>
+        </div>
     </div>
 </div>
 <div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
     <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
 </div>
-
-

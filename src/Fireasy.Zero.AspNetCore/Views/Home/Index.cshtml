@@ -119,6 +119,34 @@
             location.reload();
         });
     }
+
+    // 初始化一个 WebSocket 对象
+    var ws = new WebSocket("ws://localhost:5001/wsChat");
+
+    // 建立 websocket 连接成功触发事件
+    ws.onopen = function () {
+        console.log("连接成功");
+    };
+
+    // 当服务端处理完成后会将数据发送回来
+    ws.onmessage = function (evt) {
+        var data = JSON.parse(event.data)
+        console.log(data)
+
+        if (data.M === 'OnReceiveNotify') {
+            common.popup(data.A[0]);
+        }
+    };
+
+    // 心跳
+    setInterval(function () {
+        if (ws.readyState !== 1) {
+            return;
+        }
+
+        console.log('send hearting...');
+        ws.send(String.fromCharCode(0));
+    }, 10000);
 </script>
 <style type="text/css">
     .tabs-header {

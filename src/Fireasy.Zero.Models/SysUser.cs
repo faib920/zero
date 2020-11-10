@@ -103,7 +103,7 @@ namespace Fireasy.Zero.Models
         /// 获取或设置状态。
         /// </summary>
 
-        [PropertyMapping(ColumnName = "State", Description = "状态", IsNullable = true)]
+        [PropertyMapping(ColumnName = "State", Description = "状态", DefaultValue = StateFlags.Enabled, IsNullable = true)]
         public virtual StateFlags State { get; set; }
 
         /// <summary>
@@ -152,8 +152,13 @@ namespace Fireasy.Zero.Models
         /// 获取或设置关联 <see cref="SysOrg"/> 对象。
         /// </summary>
         public virtual SysOrg SysOrg { get; set; }
+
+        /// <summary>
+        /// 获取或设置关联 <see cref="SysOrg"/> 对象。
+        /// </summary>
+        public virtual EntitySet<SysUserRole> SysUserRoles { get; set; }
     }
-	
+
     public class SysUserMetadata
     {
         /// <summary>

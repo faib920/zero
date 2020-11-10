@@ -25,10 +25,10 @@ using System.Threading.Tasks;
 
 namespace Fireasy.Zero.Services.Impls
 {
-    public class AdminService : IAdminService, ITransientService
+    public class AdminService : BaseService, IAdminService, ITransientService
     {
-        private DbContext _context;
-        private IObjectMapper _mapper;
+        private readonly DbContext _context;
+        private readonly IObjectMapper _mapper;
 
         public AdminService(DbContext context, IObjectMapper mapper)
         {
@@ -60,6 +60,7 @@ namespace Fireasy.Zero.Services.Impls
                 throw new ClientNotificationException("你的帐号已被停用。");
             }
 
+            //创建令牌
             if (tokenCreator != null)
             {
                 user.Token = tokenCreator(user);
@@ -97,7 +98,8 @@ namespace Fireasy.Zero.Services.Impls
             var user = await _context.SysUsers.GetAsync(userId);
             if (user != null)
             {
-                user.Role = string.Join(",", _context.SysUserRoles.Where(s => s.UserID == userId).Select(s => s.RoleID));
+                //角色ID，延迟加载属性
+                user.Role = string.Join(",", user.SysUserRoles.Select(s => s.RoleID));
             }
 
             return user;
@@ -134,7 +136,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
         [TransactionSupport]
-        public virtual async Task<int> SaveUserAsync(int? userId, SysUser info, Func<string> pwdCreator)
+        public virtual async Task<int> SaveUserAsync(int? userId, UserDto info, Func<string> pwdCreator)
         {
             if (await _context.SysUsers.AnyAsync(s => s.Account == info.Account && userId != s.UserID))
             {
@@ -150,35 +152,48 @@ namespace Fireasy.Zero.Services.Impls
             IEnumerable<int> roleIds = null;
             var roleNames = string.Empty;
 
+            //如果传了角色ID过来
             if (!string.IsNullOrEmpty(info.Role))
             {
                 var posts = await _context.SysRoles.ToListAsync();
                 var array = new JsonSerializer().Deserialize<string[]>(info.Role);
                 roleIds = array.Select(s => Convert.ToInt32(s));
+
+                //拼接角色名称
                 roleNames = string.Join("、", posts.Where(s => roleIds.Contains(s.RoleID)).Select(s => s.Name));
+                info.RoleNames = roleNames;
             }
 
-            info.RoleNames = roleNames;
             info.PyCode = info.Name.ToPinyin();
 
+            //如果需要设置密码
             if (pwdCreator != null)
             {
                 info.Password = pwdCreator();
             }
 
+            //使用对象映射器转换
+            var user = _mapper.Map<UserDto, SysUser>(info);
+
+            //新增
             if (userId == null)
             {
-                await _context.SysUsers.InsertAsync(info);
-                userId = info.UserID;
+                await _context.SysUsers.InsertAsync(user);
+                userId = user.UserID;
             }
+            //修改
             else
             {
-                await _context.SysUsers.UpdateAsync(info, s => s.UserID == userId);
-                await _context.SysUserRoles.DeleteAsync(s => s.UserID == userId);
+                //排除更新 State 和 Photo 两个字段
+                await _context.SysUsers.ExcludeFilter(s => s.With(t => t.State).With(t => t.Photo)).UpdateAsync(user, s => s.UserID == userId);
             }
 
             if (roleIds != null)
             {
+                //清除原来的角色
+                await _context.SysUserRoles.DeleteAsync(s => s.UserID == userId);
+
+                //重建角色
                 userRoles.AddRange(roleIds.Select(s => new SysUserRole { RoleID = s, UserID = (int)userId }));
                 await _context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
             }
@@ -191,9 +206,10 @@ namespace Fireasy.Zero.Services.Impls
         /// </summary>
         /// <param name="userId">主键值。</param>
         /// <param name="info"></param>
-        public virtual async Task<bool> SaveUserAsync(int userId, SysUser info)
+        public virtual async Task<bool> SaveUserAsync(int userId, UserDto info)
         {
-            await _context.SysUsers.UpdateAsync(info, s => s.UserID == userId);
+            var user = _mapper.Map<UserDto, SysUser>(info);
+            await _context.SysUsers.ExcludeFilter(s => s.With(t => t.State)).UpdateAsync(user, s => s.UserID == userId);
             return true;
         }
 
@@ -201,28 +217,23 @@ namespace Fireasy.Zero.Services.Impls
         /// 保存多个用户。
         /// </summary>
         /// <param name="orgId">机构ID。</param>
-        /// <param name="users"></param>
+        /// <param name="infos"></param>
         /// <param name="pwdCreator"></param>
         /// <returns></returns>
         [TransactionSupport]
-        public virtual async Task<bool> SaveUsersAsync(int orgId, List<SysUser> users, Func<string> pwdCreator)
+        public virtual async Task<bool> SaveUsersAsync(int orgId, List<UserDto> infos, Func<string> pwdCreator)
         {
-            var repeats = Util.FindRepeatRows(_context.SysUsers, users, (s, t) => s.Mobile == t.Mobile);
+            var repeats = Util.FindRepeatRows(_context.SysUsers, infos, (s, t) => s.Mobile == t.Mobile);
 
             if (repeats == null || repeats.Count > 0)
             {
                 throw new DataRepeatException("手机号", repeats);
             }
 
-            users.ForEach(s =>
-                {
-                    s.PyCode = s.Name.ToPinyin();
-                    s.OrgID = orgId;
-                    s.Password = pwdCreator();
-                    s.State = StateFlags.Enabled;
-                });
+            infos.ForEach(s => s.OrgID = orgId);
+            var users = infos.Select(s => _mapper.Map<UserDto, SysUser>(s));
 
-            return await _context.SysUsers.BatchAsync(users, (u, s) => u.Insert(s)) > 0;
+            return await _context.SysUsers.ExcludeFilter(s => s.With(t => t.State)).BatchAsync(users, (u, s) => u.Insert(s)) > 0;
         }
 
         /// <summary>
@@ -232,6 +243,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="state">是否启用，反之禁用。</param>
         public virtual async Task SetUserStateAsync(int userId, StateFlags state)
         {
+            //只更新 State
             await _context.SysUsers.UpdateAsync(() => new SysUser { State = state }, s => s.UserID == userId);
         }
 
@@ -243,6 +255,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="pwdCreator">密码生成器。</param>
         public virtual async Task ResetUserPasswordAsync(int userId, string password, Func<string> pwdCreator)
         {
+            //只更新密码
             await _context.SysUsers.UpdateAsync(() => new SysUser { Password = pwdCreator() }, s => s.UserID == userId);
         }
 
@@ -302,6 +315,7 @@ namespace Fireasy.Zero.Services.Impls
                 .AsNoTracking()
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -341,6 +355,7 @@ namespace Fireasy.Zero.Services.Impls
                 .OrderBy(sorting, u => u.OrderBy(s => s.SysOrg.Code))
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -358,6 +373,7 @@ namespace Fireasy.Zero.Services.Impls
                 .Select(s => new SysUser { UserID = s.UserID, Name = s.Name })
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -380,6 +396,7 @@ namespace Fireasy.Zero.Services.Impls
                 .Select(s => new SysUser { UserID = s.UserID, Name = s.Name })
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -405,6 +422,7 @@ namespace Fireasy.Zero.Services.Impls
                 })
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -444,6 +462,7 @@ namespace Fireasy.Zero.Services.Impls
                 .Select(s => new SysUser { UserID = s.UserID, Name = s.Name, DeviceNo = s.DeviceNo })
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -462,6 +481,7 @@ namespace Fireasy.Zero.Services.Impls
                 .AssertWhere(state != null, s => s.State == state)
                 .ToListAsync();
 
+            //使用DTO返回
             return _mapper.Map<List<SysUser>, List<UserDto>>(users);
         }
 
@@ -482,6 +502,7 @@ namespace Fireasy.Zero.Services.Impls
         /// <param name="photo">照片路径。</param>
         public virtual async Task<bool> UpdateUserPhotoAsync(int userId, string photo)
         {
+            //只更新照片
             return await _context.SysUsers.UpdateAsync(() => new SysUser { Photo = photo }, s => s.UserID == userId) > 0;
         }
 
@@ -1099,6 +1120,7 @@ namespace Fireasy.Zero.Services.Impls
             {
                 info.PyCode = info.Name.ToPinyin();
                 info.Code = GetNextCode();
+                info.State = StateFlags.Enabled;
                 await _context.SysRoles.InsertAsync(info);
                 roleId = info.RoleID;
             }
@@ -1223,6 +1245,21 @@ namespace Fireasy.Zero.Services.Impls
         }
 
         /// <summary>
+        /// 获取用户具有的角色。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<List<SysRole>> GetPurviewRolesAsync(int userId)
+        {
+            return await _context.SysRoles
+                .Where(s => s.State == StateFlags.Enabled)
+                .Select(s => s.ExtendAs<SysRole>(() => new SysRole
+                {
+                    Assign = _context.SysUserRoles.Any(t => t.RoleID == s.RoleID && t.UserID == userId)
+                })).ToListAsync();
+        }
+
+        /// <summary>
         /// 根据架构ID和角色ID获取模块列表。
         /// </summary>
         /// <param name="roleId">角色ID。</param>
@@ -1337,6 +1374,28 @@ namespace Fireasy.Zero.Services.Impls
             });
 
             await _context.SysOrgPermissions.BatchAsync(permissions, (u, s) => u.Insert(s));
+        }
+
+        /// <summary>
+        /// 保存用户角色。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roleIds"></param>
+        /// <returns></returns>
+        [TransactionSupport]
+        public virtual async Task SaveUserRoles(int userId, List<int> roleIds)
+        {
+            //拼角色名称
+            var roleNames = string.Join("、", _context.SysRoles.Where(s => roleIds.Contains(s.RoleID)).Select(s => s.Name));
+
+            //清除原来的角色
+            await _context.SysUserRoles.DeleteAsync(s => s.UserID == userId);
+
+            //重建角色
+            var userRoles = roleIds.Select(s => new SysUserRole { RoleID = s, UserID = userId });
+            await _context.SysUserRoles.BatchAsync(userRoles, (u, s) => u.Insert(s));
+
+            await _context.SysUsers.UpdateAsync(() => new SysUser { RoleNames = roleNames }, s => s.UserID == userId);
         }
 
         /// <summary>

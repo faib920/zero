@@ -6,11 +6,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 using Fireasy.Zero.Infrastructure;
-using System;
 using Fireasy.Common.Extensions;
+using System;
 using System.Linq;
 #if NETSTANDARD2_0
-using Fireasy.Common.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,7 +18,6 @@ using System.Collections.Generic;
 #else
 using System.Web;
 using System.Web.Security;
-using Fireasy.Common.Serialization;
 #endif
 
 namespace Fireasy.Zero.Helpers
@@ -50,7 +48,7 @@ namespace Fireasy.Zero.Helpers
             context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, new AuthenticationProperties
                 {
                     IsPersistent = false
-                });
+                }).Wait();
         }
 #else
         public static void SignIn(this HttpContextBase context, SessionContext session)
@@ -127,7 +125,6 @@ namespace Fireasy.Zero.Helpers
             var ticket = FormsAuthentication.Decrypt(cookie.Value);
             return ticket.UserData.To<int>();
         }
-
 #endif
     }
 }

@@ -41,6 +41,7 @@
                 { field: 'Email', title: '电子邮件', width: 200, halign: 'center', align: 'left', sortable: true },
                 { field: 'SexName', title: '性别', width: 60, halign: 'center', align: 'center', sortable: true },
                 { field: 'Mobile', title: '手机号码', width: 120, halign: 'center', align: 'center', sortable: true },
+                { field: 'RoleNames', title: '角色', width: 200, halign: 'center', align: 'left', sortable: false },
                 { field: 'DegreeName', title: '学历', width: 120, halign: 'center', align: 'center', sortable: true },
                 { field: 'TitleName', title: '职称', width: 120, halign: 'center', align: 'center', sortable: true },
                 { field: 'Account', title: '帐号', width: 120, halign: 'center', align: 'center', sortable: true }
@@ -77,6 +78,9 @@
                 break;
             case "ResetPwd":
                 resetPwd();
+                break;
+            case "Auth":
+                auth();
                 break;
         }
     }
@@ -185,6 +189,17 @@
                 common.processResult(result);
             });
         });
+    }
+
+    //授权
+    function auth() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row == null) {
+            common.alert('请先选择一条记录。');
+            return;
+        }
+
+        common.showDialog('@Url.Action("Auth", "Permission")?id=' + row.UserID, '用户权限', 600, 500);
     }
 
     //查询

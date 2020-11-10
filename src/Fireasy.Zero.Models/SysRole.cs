@@ -120,7 +120,6 @@ namespace Fireasy.Zero.Models
         /// <summary>
         /// 属性 Attribute 的验证特性。
         /// </summary>
-        [Required]
         public object Attribute { get; set; }
 
         /// <summary>

@@ -2,8 +2,10 @@
 
 该 demo 演示了如何使用 fireasy 创建一个后台的管理系统。解决方案包含 asp.net mvc5 和 asp.net core 两个示例，使用 SQLite 数据库，基于 easyui 1.4.3 构建。
 
+该 demo 是基于 Fireasy 框架搭建的，Fireasy 在线文档请点这里进入：[http://www.fireasy.cn/docs](http://www.fireasy.cn/docs)
+
 <b>注意</b>
-* 最新的版本基于.net core 2.2，请确定你已安装sdk，否则将无法运行。
+* 最新的版本基于.net core 2.2 / .net core 3.1 (默认为 2.2，若需切换请直接修改项目文件里的 TargetFramework)，请确定你已安装sdk，否则将无法运行。
 * 示例中使用 redis 作为数据缓存，你可以安装 redis 2.8 或在配置中将缓存关闭（删除配置节）。
 * 示例中使用 mongodb 作为日志数据库。如果你未安装 mongodb 及未正确配置，登录后记录日志时将连接超时，错误日志将在控制台输出，属于正常情况。
 * 用户名: admin   密码: admin
@@ -15,6 +17,7 @@
 * action 接收的实体对象能够主动区分哪些属性被修改，这得益于 LightEntityJsonConverter 转换器，这样，新增或修改时，不必考虑原有数据被覆盖的可能。
 * 没有创建 ViewModel，而直接使用 DataModel，这样节省了很多开发时间，然而这样带来的一个问题，可能也是使用 entity framework 一样面临的问题，那就是 <b>延迟加载</b> 属性会被一概序列化。因此 json 序列化也被优化过，采用 fireasy json serializer 能够主动识别延迟加载对象。
 * 没有 ViewModel，但是可以扩展更多的属性给前端使用，在实体类_Ex 中，可以定义非 virtual 的属性，然后用 ExtendAs 扩展方法，这样避免了 new {   } 这样繁琐的赋值操作。
+* 新版也引入了 DTO 模式，具体可查看用户相关的功能。
 * services 是基于 AOP 的实例，提供了事务处理、缓存处理等拦截器，只需要标识特性就可以实现这些功能。这也必须使用 fireasy 的 IOC 容器。
 
 <b>项目结构</b>
@@ -68,7 +71,7 @@ GlobalSetting.Converters.Add(new ContainerJsonConverter(container));
 
 以上面示例相似，core 的配置在 appsettings.json 里，也是对数据库实例，IOC容器进行配置。
 
-Startup 类文件里的配置
+Startup 类文件里的配置（有更新，具体请查看代码）
 
 ```C#
 public void ConfigureServices(IServiceCollection services)
@@ -103,7 +106,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ------------------------------------------------------------------------
 QQ号： 55570729
-QQ群： 6406277、225698098
+QQ群： 225698098
 ------------------------------------------------------------------------
 
 ![](http://www.fireasy.cn/content/images/Donate_fireasy.png)

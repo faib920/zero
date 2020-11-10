@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "用户授权";
+    Layout = "~/Views/Shared/_EasyUILayout.cshtml";
+}
+
+<script type="text/javascript">
+    var userId = @Context.Request.Query["id"];
+    $(function () {
+        loadRoles();
+    });
+
+    function loadRoles() {
+        $('#dg').datagrid({
+            url: '@Url.Action("GetRolesByUser")?userId=' + userId,
+            fit: true,//自动填充
+            singleSelect: true,//单选
+            pagination: false,//分页信息
+            idField: 'RoleID',
+            checkOnSelect: false,
+            selectOnCheck: false,
+            columns: [[
+
+                { field: 'Assign', checkbox: true },
+                { field: 'Name', title: '名称', width: 160, halign: 'center', align: 'left', sortable: true },
+                { field: 'Remark', title: '备注', width: 300, halign: 'center', align: 'left', sortable: true }
+            ]],
+            queryParams: { state: '1' },
+            onLoadSuccess: function(data) {
+                if (data) {
+                    $.each(data.rows, function (index, item) {
+                        if (item.Assign) {
+                            $('#dg').datagrid('checkRow', index);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function saveInfo() {
+        common.confirm('是否保存用户角色?', function () {
+            var checked = $('#dg').datagrid('getChecked');
+            var data = [];
+            $.each(checked, function (i, c) {
+                data.push(c.RoleID);
+            })
+
+            var postData = new Object();
+            postData.userId = userId;
+            postData.roles = JSON.stringify(data);
+
+            common.showProcess();
+
+            $.post('@Url.Action("SaveUserRoles")', postData, function (result) {
+                common.processResult(result);
+            })
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+<div data-options="region:'center',border:false">
+    <div class="easyui-tabs" data-options="fit:true">
+        <div title="角色列表">
+            <table id="dg"></table>
+        </div>
+    </div>
+</div>
+<div data-options="region:'south',border:false" class="form-button">
+    <a class="easyui-linkbutton" onclick="saveInfo()" id="btnSave" data-options="iconCls:'icon-save'">保存</a>
+    <a class="easyui-linkbutton" onclick="common.closeWindow()" id="btnClose" data-options="iconCls:'icon-cancel'">关闭</a>
+</div>

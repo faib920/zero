@@ -49,7 +49,7 @@ namespace Fireasy.Zero.AspNetCore.Controllers
                 HttpContext.SetSession(session);
                 HttpContext.SignIn(session);
 
-                //logger.Info($"{account}登录到系统");
+                logger.Info($"{account}登录到系统");
 
                 return Json(Result.Success("登录成功"));
             }

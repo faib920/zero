@@ -42,6 +42,11 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             return View();
         }
 
+        public ActionResult Auth()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 根据角色获取相应的模块及操作。
         /// </summary>
@@ -79,6 +84,17 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             hosting.Option.Converters.Add(converter);
 
             var list = await _adminService.GetOrgsByRoleAsync((int)roleId);
+            return Json(list);
+        }
+
+        /// <summary>
+        /// 获取角色列表。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> GetRolesByUser(int userId)
+        {
+            var list = await _adminService.GetPurviewRolesAsync(userId);
             return Json(list);
         }
 
@@ -176,6 +192,19 @@ namespace Fireasy.Zero.AspNetCore.Areas.Admin.Controllers
             await _adminService.DeleteRoleUsers(roleId, users);
 
             return Json(Result.Success("删除成功。"));
+        }
+
+        /// <summary>
+        /// 保存用户角色。
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> SaveUserRoles(int userId, List<int> roles)
+        {
+            await _adminService.SaveUserRoles(userId, roles);
+
+            return Json(Result.Success("保存成功。"));
         }
     }
 }

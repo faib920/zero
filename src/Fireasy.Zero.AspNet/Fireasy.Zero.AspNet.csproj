@@ -56,26 +56,26 @@
     <Reference Include="CSRedisCore, Version=3.6.2.0, Culture=neutral, PublicKeyToken=9aa6a3079358d437, processorArchitecture=MSIL">
       <HintPath>..\packages\CSRedisCore.3.6.2\lib\net45\CSRedisCore.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.AutoMapper, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.AutoMapper.2.2.2\lib\net461\Fireasy.AutoMapper.dll</HintPath>
+    <Reference Include="Fireasy.AutoMapper, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.AutoMapper.2.2.3\lib\net461\Fireasy.AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Common, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Common.2.2.2\lib\net46\Fireasy.Common.dll</HintPath>
+    <Reference Include="Fireasy.Common, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Common.2.2.3\lib\net45\Fireasy.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.2.2.2\lib\net45\Fireasy.Data.dll</HintPath>
+    <Reference Include="Fireasy.Data, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.2.2.3\lib\net45\Fireasy.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Data.Entity, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Data.Entity.2.2.2\lib\net45\Fireasy.Data.Entity.dll</HintPath>
+    <Reference Include="Fireasy.Data.Entity, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Data.Entity.2.2.3\lib\net45\Fireasy.Data.Entity.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Redis, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Redis.2.2.2\lib\net45\Fireasy.Redis.dll</HintPath>
+    <Reference Include="Fireasy.Redis, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Redis.2.2.3\lib\net45\Fireasy.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Web.EasyUI, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.EasyUI.2.2.2\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
+    <Reference Include="Fireasy.Web.EasyUI, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Web.EasyUI.2.2.3\lib\net45\Fireasy.Web.EasyUI.dll</HintPath>
     </Reference>
-    <Reference Include="Fireasy.Web.Mvc, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fireasy.Web.Mvc.2.2.2\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
+    <Reference Include="Fireasy.Web.Mvc, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31261c3914251779, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fireasy.Web.Mvc.2.2.3\lib\net45\Fireasy.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
